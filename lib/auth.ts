@@ -1,7 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { nextCookies } from 'better-auth/next-js';
 import { Pool } from 'pg';
-import { redis } from '@/lib/redis';
 
 const trustedOrigins = [
   'https://sitterfolio.com',
@@ -45,35 +44,11 @@ export const auth = betterAuth({
     autoSignIn: true,
     minPasswordLength: 8
   },
-  secondaryStorage: {
-    get: async (key) => redis.get<string>(`auth:${key}`),
-    set: async (key, value, ttl) => {
-      if (ttl) {
-        await redis.set(`auth:${key}`, value, { ex: ttl });
-        return;
-      }
-      await redis.set(`auth:${key}`, value);
-    },
-    delete: async (key) => {
-      await redis.del(`auth:${key}`);
-    },
-    getAndDelete: async (key) => redis.getdel<string>(`auth:${key}`),
-    increment: async (key, ttl) => {
-      const storageKey = `auth:${key}`;
-      const value = await redis.incr(storageKey);
-      if (value === 1) await redis.expire(storageKey, ttl);
-      return value;
-    }
-  },
   session: {
-    cookieCache: {
-      enabled: true,
-      maxAge: 5 * 60
-    }
-  },
-  rateLimit: {
-    enabled: true,
-    storage: 'secondary-storage'
+    // Keep the authoritative session in Neon so sign-in does not depend on KV.
+    storeSessionInDatabase: true,
+    expiresIn: 30 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60
   },
   plugins: [nextCookies()]
 });
