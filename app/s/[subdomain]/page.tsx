@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getSubdomainData } from '@/lib/subdomains';
+import { profiles } from '@/lib/profiles';
 import { protocol, rootDomain } from '@/lib/utils';
 import { createLeadAction } from '@/app/actions';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -15,7 +15,7 @@ export async function generateMetadata({
   params: Promise<{ subdomain: string }>;
 }): Promise<Metadata> {
   const { subdomain } = await params;
-  const subdomainData = await getSubdomainData(subdomain);
+  const subdomainData = await profiles.get(subdomain);
 
   if (!subdomainData) {
     return {
@@ -35,7 +35,7 @@ export default async function SubdomainPage({
   params: Promise<{ subdomain: string }>;
 }) {
   const { subdomain } = await params;
-  const subdomainData = await getSubdomainData(subdomain);
+  const subdomainData = await profiles.get(subdomain);
 
   if (!subdomainData) {
     notFound();

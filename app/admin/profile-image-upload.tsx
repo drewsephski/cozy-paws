@@ -4,6 +4,11 @@ import { upload } from '@vercel/blob/client';
 import { useState } from 'react';
 import { saveProfileImageAction } from '@/app/actions';
 import { Camera, CheckCircle2, Loader2 } from 'lucide-react';
+import {
+  isProfileImageContentType,
+  PROFILE_IMAGE_MAX_BYTES,
+  profileImagePath
+} from '@/lib/upload-authorization';
 
 export function ProfileImageUpload({ subdomain, currentImageUrl, onUploaded }: { subdomain: string; currentImageUrl?: string; onUploaded?: (url: string) => void }) {
   const [imageUrl, setImageUrl] = useState(currentImageUrl);
@@ -11,18 +16,18 @@ export function ProfileImageUpload({ subdomain, currentImageUrl, onUploaded }: {
 
   async function handleChange(file: File | undefined) {
     if (!file) return;
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    if (!isProfileImageContentType(file.type)) {
       setStatus('Use a JPG, PNG, or WebP image.');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > PROFILE_IMAGE_MAX_BYTES) {
       setStatus('Images must be smaller than 5 MB.');
       return;
     }
 
     setStatus('Uploading…');
     try {
-      const blob = await upload(`profiles/${subdomain}/${file.name}`, file, {
+      const blob = await upload(profileImagePath(subdomain, file.name), file, {
         access: 'public',
         handleUploadUrl: '/api/upload',
         clientPayload: JSON.stringify({ subdomain })
