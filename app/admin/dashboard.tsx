@@ -270,7 +270,7 @@ export function AdminDashboard({ tenants, leads }: { tenants: Tenant[]; leads: {
   if (onboardingTenant) return <ProfileOnboarding tenant={onboardingTenant} />;
 
   return (
-    <div className="relative mx-auto w-full max-w-6xl space-y-12">
+    <div className="relative mx-auto w-full max-w-6xl space-y-12 px-5 pb-12 pt-8 lg:px-8 lg:pb-16 lg:pt-12">
       <DashboardHeader />
       <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><TenantGrid tenants={tenants} action={action} isPending={isPending} /></section>
       {tenants[0] && <ProfileEditor tenant={tenants[0]} />}
