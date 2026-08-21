@@ -1,5 +1,16 @@
 # Sitterfolio
 
+## Inquiry-to-revenue database migration
+
+Site, Lead, connected-account, and payment records are stored in PostgreSQL. After independently confirming that `DATABASE_URL` targets the intended environment, apply the idempotent schema migration with:
+
+```bash
+CONFIRM_FINANCIAL_MIGRATION=yes pnpm db:migrate:revenue
+CONFIRM_FINANCIAL_MIGRATION=yes pnpm db:backfill:revenue
+```
+
+Do not run it against preview or production until database isolation and the rollback expectations in `docs/adr/0001-postgres-inquiry-to-revenue.md` are verified. Existing Redis Site and Lead records are backfilled lazily and remain available as a temporary compatibility source.
+
 Sitterfolio is a simple, shareable online home for independent pet sitters. It helps a sitter turn the essentials of their business—who they are, where they work, what they offer, and how to reach them—into one polished page they can send to pet owners.
 
 The product is designed for the moment when a sitter needs a professional web presence without spending time designing or maintaining a full website. A sitter chooses a memorable address, adds their profile details and photo, and gets a public page where prospective clients can learn about their care and ask about availability.

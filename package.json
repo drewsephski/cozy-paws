@@ -5,6 +5,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "db:migrate:revenue": "node scripts/migrate-inquiry-to-revenue.mjs",
+    "db:backfill:revenue": "node scripts/backfill-inquiry-to-revenue.mjs",
     "build": "next build",
     "start": "next start"
   },

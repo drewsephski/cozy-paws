@@ -6,6 +6,9 @@ import { siteIntake } from '@/lib/intake';
 import { profiles, type BusinessProfile } from '@/lib/profiles';
 import { getSession } from '@/lib/session';
 import { leadIntake, leadRateLimitKey } from '@/lib/leads';
+import { createPaymentRequestForLead } from '@/lib/payment-requests';
+import { createOrContinueOnboarding } from '@/lib/connected-accounts';
+import { transitionOwnedLead } from '@/lib/lead-management';
 
 async function requireUser(callbackURL = '/admin') {
   const session = await getSession();
@@ -106,7 +109,15 @@ export async function createLeadAction(
       name: formData.get('name'),
       email: formData.get('email'),
       dates: formData.get('dates'),
-      message: formData.get('message')
+      message: formData.get('details'),
+      service: formData.get('service'),
+      startDate: formData.get('startDate'),
+      endDate: formData.get('endDate'),
+      petTypes: formData.get('petTypes'),
+      petCount: formData.get('petCount'),
+      postalCode: formData.get('postalCode'),
+      source: formData.get('source'),
+      campaign: formData.get('campaign')
     },
     await leadRateLimitKey(subdomain)
   );
@@ -139,6 +150,31 @@ export async function markLeadReadAction(formData: FormData): Promise<void> {
   const leadId = String(formData.get('leadId') || '');
   const marked = await profiles.markLeadRead(user.id, subdomain, leadId);
   if (marked) revalidatePath('/admin');
+}
+
+export async function updateLeadStatusAction(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const leadId = String(formData.get('leadId') || '');
+  await transitionOwnedLead(user.id, leadId, formData.get('status'));
+  revalidatePath('/admin');
+}
+
+export type PaymentRequestState = { error?: string; paymentUrl?: string };
+export async function createPaymentRequestAction(_state: PaymentRequestState, formData: FormData): Promise<PaymentRequestState> {
+  const user = await requireUser();
+  try {
+    const dollars = String(formData.get('amount') || '');
+    if (!/^\d{1,7}(\.\d{1,2})?$/.test(dollars)) return { error: 'Enter a valid amount.' };
+    const payment = await createPaymentRequestForLead(user.id, { leadId: String(formData.get('leadId') || ''), amountCents: Math.round(Number(dollars) * 100), description: String(formData.get('description') || '').trim().slice(0, 200), customerNote: String(formData.get('note') || '').trim().slice(0, 500) });
+    revalidatePath('/admin');
+    return { paymentUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://sitterfolio.com'}/pay/${payment.publicToken}` };
+  } catch (error) { return { error: error instanceof Error ? error.message : 'Unable to create payment request.' }; }
+}
+
+export async function startStripeOnboardingAction(formData: FormData): Promise<never> {
+  const user = await requireUser();
+  const url = await createOrContinueOnboarding(user.id, String(formData.get('businessId') || ''));
+  redirect(url);
 }
 
 type DeleteState = { error?: string; success?: string };

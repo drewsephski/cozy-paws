@@ -1,19 +1,18 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { markLeadReadAction } from '@/app/actions';
+import { createPaymentRequestAction, markLeadReadAction, updateLeadStatusAction, type PaymentRequestState } from '@/app/actions';
+import { useActionState } from 'react';
+import type { OwnedLead } from '@/lib/profile-ownership';
+import { canRequestPayment } from '@/lib/domain/leads';
 
-type InboxLead = {
-  id: string;
-  subdomain: string;
-  siteName: string;
-  name: string;
-  email: string;
-  dates: string;
-  message: string;
-  createdAt: number;
-  readAt: number | null;
-};
+type InboxLead = OwnedLead;
+
+function PaymentForm({ lead }: { lead: InboxLead }) {
+  const [state, action, pending] = useActionState<PaymentRequestState, FormData>(createPaymentRequestAction, {});
+  if (state.paymentUrl) return <div className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm dark:bg-emerald-950/40"><p className="font-medium">Payment request ready</p><a className="mt-1 block break-all underline" href={state.paymentUrl} target="_blank" rel="noreferrer">{state.paymentUrl}</a></div>;
+  return <form action={action} className="mt-4 grid gap-3 rounded-lg border border-border p-3 sm:grid-cols-2"><input type="hidden" name="leadId" value={lead.id} /><label><span className="mb-1 block text-xs font-medium">Total amount</span><input name="amount" required inputMode="decimal" placeholder="240.00" className="h-10 w-full rounded-lg border border-input bg-background px-3" /></label><label><span className="mb-1 block text-xs font-medium">Service</span><input name="description" required defaultValue={lead.serviceRequested || 'Pet care'} className="h-10 w-full rounded-lg border border-input bg-background px-3" /></label><label className="sm:col-span-2"><span className="mb-1 block text-xs font-medium">Customer note (optional)</span><input name="note" className="h-10 w-full rounded-lg border border-input bg-background px-3" /></label>{state.error && <p className="text-destructive sm:col-span-2">{state.error}</p>}<button disabled={pending} className="h-10 rounded-lg bg-primary px-4 font-medium text-primary-foreground sm:col-span-2">{pending ? 'Creating…' : 'Create payment request'}</button></form>;
+}
 
 export function LeadInbox({ leads }: { leads: InboxLead[] }) {
   const [filter, setFilter] = useState('all');
@@ -57,7 +56,7 @@ export function LeadInbox({ leads }: { leads: InboxLead[] }) {
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"><span className="font-semibold">{lead.name}{!lead.readAt && <span className="ml-2 inline-block size-2 rounded-full bg-emerald-500" aria-label="Unread" />}</span><span className="text-xs text-muted-foreground">{lead.siteName} · {new Date(lead.createdAt).toLocaleDateString()}</span></div>
         <p className="mt-2 truncate text-sm text-muted-foreground">{lead.dates || 'Dates not provided'}{lead.message ? `: ${lead.message}` : ''}</p>
       </button>
-      {expanded === lead.id && <div className="mt-4 border-t border-border pt-4 text-sm"><div className="flex flex-wrap gap-3"><a href={`mailto:${lead.email}`} className="font-medium underline underline-offset-4">Email {lead.email}</a><button type="button" onClick={() => void copyDetails(lead)} className="underline underline-offset-4">{copyState === lead.id ? 'Copied' : 'Copy details'}</button></div><p className="mt-3 whitespace-pre-wrap leading-6 text-muted-foreground">{lead.message || 'No care details provided.'}</p></div>}
+      {expanded === lead.id && <div className="mt-4 border-t border-border pt-4 text-sm"><div className="flex flex-wrap gap-3"><a href={`mailto:${lead.email}`} className="font-medium underline underline-offset-4">Email {lead.email}</a><button type="button" onClick={() => void copyDetails(lead)} className="underline underline-offset-4">{copyState === lead.id ? 'Copied' : 'Copy details'}</button><span className="rounded-full bg-muted px-2 py-0.5 text-xs">{lead.status || 'NEW'}</span></div><p className="mt-3 text-muted-foreground">{lead.serviceRequested || 'Service not specified'} · {[lead.requestedStartDate, lead.requestedEndDate].filter(Boolean).join(' to ') || lead.dates || 'Dates not provided'} · {lead.petCount ? `${lead.petCount} ` : ''}{lead.petTypes?.join(', ') || 'Pets not specified'}{lead.postalCode ? ` · ${lead.postalCode}` : ''}</p><p className="mt-3 whitespace-pre-wrap leading-6 text-muted-foreground">{lead.message || 'No care details provided.'}</p>{(lead.status === 'NEW' || !lead.status) && <form action={updateLeadStatusAction} className="mt-4 flex gap-2"><input type="hidden" name="leadId" value={lead.id} /><button name="status" value="QUALIFIED" className="rounded-lg bg-primary px-3 py-2 text-primary-foreground">Qualify inquiry</button><button name="status" value="DECLINED" className="rounded-lg border px-3 py-2">Decline</button><button name="status" value="SPAM" className="rounded-lg border px-3 py-2">Spam</button></form>}{canRequestPayment(lead.status) && <PaymentForm lead={lead} />}</div>}
     </article>)}</div>
     {isPending && <p className="text-xs text-muted-foreground" role="status">Updating inbox...</p>}
   </div>;

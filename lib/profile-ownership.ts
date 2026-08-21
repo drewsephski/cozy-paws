@@ -22,7 +22,18 @@ export type Lead = {
   message: string;
   createdAt: number;
   readAt: number | null;
+  serviceRequested?: string;
+  requestedStartDate?: string | null;
+  requestedEndDate?: string | null;
+  petTypes?: string[];
+  petCount?: number | null;
+  postalCode?: string;
+  source?: string;
+  campaign?: string | null;
+  status?: import('./domain/leads').LeadStatus;
 };
+
+export type OwnedLead = Lead & { subdomain: string; siteName: string };
 
 export type ProfileRepository = {
   readProfile(subdomain: string): Promise<BusinessProfile | null>;

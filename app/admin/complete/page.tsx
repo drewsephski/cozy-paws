@@ -13,15 +13,15 @@ export default async function OnboardingCompletePage({
   if (!session) redirect('/auth?callbackURL=%2Fadmin');
 
   const { site } = await searchParams;
-  const tenant = site ? await profiles.getOwned(site, session.user.id) : null;
+  const siteProfile = site ? await profiles.getOwned(site, session.user.id) : null;
 
-  if (!tenant?.onboardingCompletedAt) redirect('/admin');
+  if (!siteProfile?.onboardingCompletedAt) redirect('/admin');
 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader dashboard signedIn />
       <main>
-        <OnboardingComplete tenant={tenant} />
+        <OnboardingComplete site={siteProfile} />
       </main>
     </div>
   );

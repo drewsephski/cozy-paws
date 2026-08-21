@@ -5,6 +5,7 @@ import { rootDomain } from '@/lib/utils';
 import { SiteHeader } from '@/components/site-header';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
+import { getOwnerPaymentSetup, getOwnerRevenue } from '@/lib/payment-requests';
 
 export const metadata: Metadata = {
   title: `Sitter dashboard | ${rootDomain}`,
@@ -15,13 +16,14 @@ export default async function AdminPage() {
   const session = await getSession();
   if (!session) redirect('/auth?callbackURL=%2Fadmin');
 
-  const tenants = await profiles.listOwned(session.user.id);
+  const sites = await profiles.listOwned(session.user.id);
   const leads = await profiles.getOwnedLeadsForAllSites(session.user.id);
+  const [revenue, paymentSetup] = await Promise.all([getOwnerRevenue(session.user.id), getOwnerPaymentSetup(session.user.id)]);
 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader dashboard signedIn />
-      <main><AdminDashboard tenants={tenants} leads={leads} /></main>
+      <main><AdminDashboard sites={sites} leads={leads} revenue={revenue} paymentSetup={paymentSetup} /></main>
     </div>
   );
 }

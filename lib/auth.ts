@@ -1,6 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { nextCookies } from 'better-auth/next-js';
-import { Pool } from 'pg';
+import { pool } from './db';
 
 const trustedOrigins = [
   'https://sitterfolio.com',
@@ -15,22 +15,6 @@ const trustedOrigins = [
 const baseURL =
   process.env.BETTER_AUTH_URL ||
   (process.env.NODE_ENV === 'production' ? 'https://sitterfolio.com' : 'http://localhost:3000');
-
-function databaseUrl() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) return undefined;
-
-  const url = new URL(connectionString);
-  if (url.searchParams.has('sslmode')) {
-    url.searchParams.set('sslmode', 'verify-full');
-  }
-  return url.toString();
-}
-
-const pool = new Pool({
-  connectionString: databaseUrl(),
-  max: 5
-});
 
 export const auth = betterAuth({
   appName: 'Sitterfolio',
