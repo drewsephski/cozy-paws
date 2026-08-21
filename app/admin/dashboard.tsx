@@ -13,6 +13,8 @@ import { ProfileImageUpload } from './profile-image-upload';
 import { ShareSiteButton } from './share-site-button';
 import { DeleteSiteDialog } from './delete-site-dialog';
 import { PetIcon } from '@/components/pet-icon';
+import { ShareSiteDialog } from './share-site-dialog';
+import { ServiceAreaField, ServicesField, SuggestionField } from './profile-select-fields';
 
 type Tenant = {
   subdomain: string;
@@ -156,12 +158,16 @@ function DashboardHeader() {
   );
 }
 
-function ProfileField({ label, name, defaultValue, placeholder, type = 'text', hint, className }: { label: string; name: string; defaultValue: string; placeholder: string; type?: string; hint?: string; className?: string }) {
+const profileSuggestions = {
+  businessName: ['Happy Tails Pet Care', 'Paws & Whiskers', 'Neighborhood Pet Care', 'Home Sweet Home Pet Sitting', 'The Pet Nanny'],
+  tagline: ['Kind, reliable care for your favorite family members.', 'Trusted care that keeps pets happy at home.', 'Personalized care for every paw, feather, and whisker.', 'A familiar face while you’re away.']
+} as const;
+
+function ProfileField({ label, name, defaultValue, placeholder, type = 'text', className }: { label: string; name: string; defaultValue: string; placeholder: string; type?: string; className?: string }) {
   return (
     <div className={className}>
       <label htmlFor={name} className="mb-1.5 block text-xs font-medium text-muted-foreground">{label}</label>
-      <input id={name} name={name} type={type} defaultValue={defaultValue} placeholder={placeholder} className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none transition-shadow focus:ring-2 focus:ring-ring/30" />
-      {hint && <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p>}
+      <input id={name} name={name} type={type} defaultValue={defaultValue} placeholder={placeholder} className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none transition focus:border-emerald-500/70 focus:ring-4 focus:ring-emerald-500/10" />
     </div>
   );
 }
@@ -182,14 +188,14 @@ function ProfileEditor({ tenant }: { tenant: Tenant }) {
       <div><h2 className="text-xl font-semibold">Edit what pet owners see</h2><p className="mt-1 text-sm text-muted-foreground">Keep the essentials current. Changes appear after you save.</p></div>
       <form action={saveAction} className="rounded-xl border border-border bg-card shadow-sm">
         <input type="hidden" name="subdomain" value={tenant.subdomain} />
-        <div className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4">
-          <ProfileField label="Business name" name="businessName" defaultValue={tenant.businessName || ''} placeholder="Happy Tails Pet Care" className="lg:col-span-2" />
-          <ProfileField label="One-sentence introduction" name="tagline" defaultValue={tenant.tagline || ''} placeholder="Reliable care for pets nearby." className="lg:col-span-2" />
-          <ProfileField label="Area you serve" name="location" defaultValue={tenant.location || ''} placeholder="Oak Park and nearby" className="lg:col-span-2" />
-          <ProfileField label="Services you offer" name="services" defaultValue={(tenant.services || []).join(', ')} placeholder="Dog walking, Drop-ins, Overnight stays" hint="Separate services with commas." className="lg:col-span-2" />
+        <div className="grid gap-4 p-5 sm:grid-cols-2">
+          <SuggestionField label="Business name" name="businessName" defaultValue={tenant.businessName || ''} placeholder="Happy Tails Pet Care" suggestions={profileSuggestions.businessName} hint="Choose a suggestion or type your own." />
+          <SuggestionField label="One-sentence introduction" name="tagline" defaultValue={tenant.tagline || ''} placeholder="Reliable care for pets nearby." suggestions={profileSuggestions.tagline} hint="Choose a starting point or write your own." />
+          <ServiceAreaField defaultValue={tenant.location || ''} />
+          <ServicesField defaultValue={tenant.services || []} />
           <ProfileField label="Phone" name="phone" type="tel" defaultValue={tenant.phone || ''} placeholder="(555) 123-4567" />
           <ProfileField label="Email" name="email" type="email" defaultValue={tenant.email || ''} placeholder="hello@example.com" />
-          <div className="sm:col-span-2 lg:col-span-2">
+          <div className="sm:col-span-2">
             <p className="mb-1.5 text-xs font-medium text-muted-foreground">Profile photo</p>
             <ProfileImageUpload subdomain={tenant.subdomain} currentImageUrl={tenant.profileImageUrl} />
           </div>
@@ -230,7 +236,7 @@ function TenantGrid({
   }
 
   return (
-    <div className="grid gap-3 lg:grid-cols-2">
+    <div className="mx-auto grid max-w-3xl gap-3 md:grid-cols-2 lg:max-w-none">
       {tenants.map((tenant) => (
         <Card key={tenant.subdomain} className="group relative flex-row items-center gap-3 overflow-hidden rounded-xl p-3 shadow-sm transition-all hover:border-primary/40 hover:shadow-md focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-ring/30">
           <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-muted text-emerald-700 transition-colors group-hover:bg-accent dark:text-emerald-400"><PetIcon value={tenant.emoji} className="size-6" fallbackClassName="text-2xl" /></div>
@@ -274,7 +280,7 @@ export function AdminDashboard({ tenants, leads }: { tenants: Tenant[]; leads: {
       <DashboardHeader />
       <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><TenantGrid tenants={tenants} action={action} isPending={isPending} /></section>
       {tenants[0] && <ProfileEditor tenant={tenants[0]} />}
-      <section className="space-y-4"><div><h2 className="text-xl font-semibold">Recent inquiries</h2><p className="mt-1 text-sm text-muted-foreground">Messages pet owners sent through your public site.</p></div>{leads.length > 0 ? <div className="grid gap-3 lg:grid-cols-2">{leads.slice(0, 6).map((lead, index) => <div key={`${lead.email}-${index}`} className="rounded-2xl border border-border bg-card p-5 shadow-sm"><div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"><strong>{lead.name}</strong><a href={`mailto:${lead.email}`} className="text-sm text-muted-foreground hover:text-foreground">{lead.email}</a></div><p className="mt-3 text-sm leading-6 text-muted-foreground">{lead.dates || 'Dates not provided'}{lead.message ? ` — ${lead.message}` : ''}</p></div>)}</div> : <div className="rounded-2xl border border-dashed border-border p-8 text-center"><p className="font-medium">No inquiries yet</p><p className="mt-1 text-sm text-muted-foreground">Share your site link with clients to start receiving messages here.</p></div>}</section>
+      <section className="space-y-4"><div><h2 className="text-xl font-semibold">Recent inquiries</h2><p className="mt-1 text-sm text-muted-foreground">Messages pet owners sent through your public site.</p></div>{leads.length > 0 ? <div className="grid gap-3 lg:grid-cols-2">{leads.slice(0, 6).map((lead, index) => <div key={`${lead.email}-${index}`} className="rounded-2xl border border-border bg-card p-5 shadow-sm"><div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"><strong>{lead.name}</strong><a href={`mailto:${lead.email}`} className="text-sm text-muted-foreground hover:text-foreground">{lead.email}</a></div><p className="mt-3 text-sm leading-6 text-muted-foreground">{lead.dates || 'Dates not provided'}{lead.message ? ` — ${lead.message}` : ''}</p></div>)}</div> : <div className="rounded-2xl border border-dashed border-border p-8 text-center"><p className="font-medium">No inquiries yet</p><p className="mt-1 text-sm text-muted-foreground">Share your site link with clients to start receiving messages here.</p>{tenants.length > 0 && <ShareSiteDialog sites={tenants.map((tenant) => ({ name: tenant.businessName || tenant.subdomain, subdomain: `${tenant.subdomain}.${rootDomain}`, url: `${protocol}://${tenant.subdomain}.${rootDomain}` }))} />}</div>}</section>
 
       {state.error && (
         <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md">

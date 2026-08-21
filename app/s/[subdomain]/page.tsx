@@ -1,12 +1,13 @@
-import Link from 'next/link';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getSubdomainData } from '@/lib/subdomains';
 import { protocol, rootDomain } from '@/lib/utils';
 import { createLeadAction } from '@/app/actions';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { MapPin, PawPrint } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { PetIcon } from '@/components/pet-icon';
+import { AboutSitterfolioDialog } from '@/components/about-sitterfolio-dialog';
 
 export async function generateMetadata({
   params
@@ -41,15 +42,15 @@ export default async function SubdomainPage({
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="border-b border-border/70">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Link href={`${protocol}://${rootDomain}`} className="flex items-center gap-2 text-sm font-semibold"><PawPrint className="size-4 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />{subdomainData.businessName || `${subdomain}'s pet care`}</Link>
-          <div className="flex items-center gap-2"><span className="hidden text-xs text-muted-foreground sm:inline">Site by Sitterfolio</span><ThemeToggle /></div>
+          <AboutSitterfolioDialog businessName={subdomainData.businessName || `${subdomain}'s pet care`} />
+          <ThemeToggle />
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-6xl gap-12 px-6 py-14 lg:grid-cols-[1fr_390px] lg:items-center lg:py-20">
+      <main className="mx-auto grid w-full max-w-6xl flex-1 gap-12 px-6 py-14 lg:grid-cols-[1fr_390px] lg:items-center lg:py-20">
         <section>
           {subdomainData.profileImageUrl ? <img src={subdomainData.profileImageUrl} alt={`${subdomainData.businessName || subdomain}'s profile`} className="mb-8 h-28 w-28 rounded-3xl object-cover shadow-lg ring-4 ring-card" /> : <div className="mb-8 grid size-28 place-items-center rounded-3xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"><PetIcon value={subdomainData.emoji} className="size-14" fallbackClassName="text-6xl" /></div>}
           <p className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400"><MapPin className="size-4" aria-hidden="true" />{subdomainData.location || 'Local pet care'}</p>
@@ -71,6 +72,12 @@ export default async function SubdomainPage({
           </form>
         </section>
       </main>
+
+      <footer className="border-t border-border/70">
+        <div className="mx-auto flex max-w-6xl items-center justify-center px-6 py-5 text-xs text-muted-foreground sm:justify-end">
+          <Link href={`${protocol}://${rootDomain}`} className="rounded-sm underline-offset-4 transition hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Site by Sitterfolio</Link>
+        </div>
+      </footer>
     </div>
   );
 }

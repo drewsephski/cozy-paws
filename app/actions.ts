@@ -95,7 +95,7 @@ export async function saveProfileAction(
     ...current,
     businessName: readValue('businessName', 80),
     tagline: readValue('tagline', 160),
-    location: readValue('location', 80),
+    location: readValue('location', 240),
     phone: readValue('phone', 40),
     email: readValue('email', 120),
     services
