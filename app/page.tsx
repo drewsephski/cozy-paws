@@ -1,8 +1,12 @@
 import { SubdomainForm } from './subdomain-form';
 import { PawPrint } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
+import { getSession } from '@/lib/session';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default async function HomePage() {
+  const session = await getSession();
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
@@ -22,7 +26,12 @@ export default async function HomePage() {
             <div><p className="text-sm font-medium text-muted-foreground">Start here</p><h2 className="mt-1 text-2xl font-semibold tracking-tight">Choose your site address</h2></div>
             <div className="grid size-8 place-items-center rounded-full border border-border bg-muted/40 text-emerald-700 dark:text-emerald-400"><PawPrint aria-hidden="true" className="size-4" /></div>
           </div>
-          <SubdomainForm />
+          {session ? <SubdomainForm /> : (
+            <div>
+              <Button asChild className="w-full"><Link href="/auth?callbackURL=%2F">Sign in to create your site</Link></Button>
+              <p className="mt-3 text-center text-xs text-muted-foreground">Your account keeps your profile and inquiries private.</p>
+            </div>
+          )}
           <p className="mt-5 text-center text-xs text-muted-foreground">Next, you’ll add your business details and photo.</p>
         </section>
       </main>

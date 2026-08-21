@@ -32,6 +32,7 @@ export function isValidIcon(str: string) {
 }
 
 type SubdomainData = {
+  ownerId?: string;
   emoji: string;
   createdAt: number;
   businessName?: string;
@@ -62,7 +63,7 @@ export async function getSubdomainData(subdomain: string) {
   return data;
 }
 
-export async function getAllSubdomains() {
+export async function getSubdomainsForOwner(ownerId: string) {
   const keys = await redis.keys('subdomain:*');
 
   if (!keys.length) {
@@ -77,6 +78,7 @@ export async function getAllSubdomains() {
 
     return {
       subdomain,
+      ownerId: data?.ownerId,
       emoji: data?.emoji || '❓',
       createdAt: data?.createdAt || Date.now(),
       businessName: data?.businessName,
@@ -88,7 +90,7 @@ export async function getAllSubdomains() {
       ,profileImageUrl: data?.profileImageUrl,
       onboardingCompletedAt: data?.onboardingCompletedAt
     };
-  });
+  }).filter((tenant) => tenant.ownerId === ownerId);
 }
 
 export async function getLeads(subdomain: string) {

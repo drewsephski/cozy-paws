@@ -1,9 +1,11 @@
-import { getAllSubdomains } from '@/lib/subdomains';
+import { getSubdomainsForOwner } from '@/lib/subdomains';
 import type { Metadata } from 'next';
 import { AdminDashboard } from './dashboard';
 import { rootDomain } from '@/lib/utils';
 import { getLeads } from '@/lib/subdomains';
 import { SiteHeader } from '@/components/site-header';
+import { getSession } from '@/lib/session';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: `Sitter dashboard | ${rootDomain}`,
@@ -11,8 +13,10 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminPage() {
-  // TODO: You can add authentication here with your preferred auth provider
-  const tenants = await getAllSubdomains();
+  const session = await getSession();
+  if (!session) redirect('/auth?callbackURL=%2Fadmin');
+
+  const tenants = await getSubdomainsForOwner(session.user.id);
   const leads = tenants.length ? await getLeads(tenants[0].subdomain) : [];
 
   return (

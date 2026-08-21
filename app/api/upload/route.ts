@@ -1,7 +1,13 @@
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { redis } from '@/lib/redis';
+import { headers } from 'next/headers';
 
 export async function POST(request: Request) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+
   const body = (await request.json()) as HandleUploadBody;
 
   try {
@@ -9,7 +15,16 @@ export async function POST(request: Request) {
       request,
       body,
       onBeforeGenerateToken: async (pathname, clientPayload) => {
-        if (!clientPayload || !pathname.startsWith('profiles/')) {
+        let payload: { subdomain?: string } = {};
+        try {
+          payload = JSON.parse(clientPayload || '{}') as { subdomain?: string };
+        } catch {
+          throw new Error('Invalid upload payload');
+        }
+
+        const subdomain = String(payload.subdomain || '').toLowerCase().replace(/[^a-z0-9-]/g, '');
+        const profile = await redis.get<{ ownerId?: string }>(`subdomain:${subdomain}`);
+        if (!subdomain || profile?.ownerId !== session.user.id || !pathname.startsWith(`profiles/${subdomain}/`)) {
           throw new Error('Invalid upload request');
         }
         return {

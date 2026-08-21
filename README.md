@@ -1,90 +1,113 @@
-# Next.js Multi-Tenant Example
+# Sitterfolio
 
-A production-ready example of a multi-tenant application built with Next.js 16, featuring custom subdomains for each tenant.
+Sitterfolio is a simple, shareable online home for independent pet sitters. It helps a sitter turn the essentials of their business—who they are, where they work, what they offer, and how to reach them—into one polished page they can send to pet owners.
 
-## Features
+The product is designed for the moment when a sitter needs a professional web presence without spending time designing or maintaining a full website. A sitter chooses a memorable address, adds their profile details and photo, and gets a public page where prospective clients can learn about their care and ask about availability.
 
-- ✅ Custom subdomain routing with Next.js proxy
-- ✅ Tenant-specific content and pages
-- ✅ Shared components and layouts across tenants
-- ✅ Redis for tenant data storage
-- ✅ Admin interface for managing tenants
-- ✅ Emoji support for tenant branding
-- ✅ Support for local development with subdomains
-- ✅ Compatible with Vercel preview deployments
+## How Sitterfolio works
 
-## Tech Stack
+### 1. Claim a memorable site address
 
-- [Next.js 16](https://nextjs.org/) with App Router
-- [React 19](https://react.dev/)
-- [Upstash Redis](https://upstash.com/) for data storage
-- [Tailwind 4](https://tailwindcss.com/) for styling
-- [shadcn/ui](https://ui.shadcn.com/) for the design system
+The home page lets a sitter choose a unique site name, such as `happy-tails`. That name becomes a shareable address in the form `happy-tails.<root-domain>`. Each site also starts with a pet icon that represents the business and can later be complemented by a profile photo.
 
-## Getting Started
+Site names are normalized and validated before they are created. They use lowercase letters, numbers, and hyphens, must be between 3 and 30 characters, and cannot already belong to another site.
 
-### Prerequisites
+### 2. Build the profile in a guided flow
 
-- Node.js 20.9.0 or later
-- pnpm (recommended) or npm/yarn
-- Upstash Redis account (for production)
+The dashboard walks the sitter through a short onboarding sequence. It collects:
 
-### Installation
+- Business name
+- A one-sentence introduction
+- Service areas
+- Services offered
+- Contact email
+- Optional phone number
+- Optional profile photo
 
-1. Clone the repository:
+The profile is saved as the sitter moves through the flow, and a live preview shows how the public page is taking shape. Service areas can be searched and selected from location suggestions, while services can be selected from common options or entered by the sitter. Up to five service areas and eight services can be displayed.
 
-   ```bash
-   git clone https://github.com/vercel/platforms.git
-   cd platforms
-   ```
+When onboarding is complete, the sitter can open the live page or return to the dashboard to make changes.
 
-2. Install dependencies:
+### 3. Give pet owners one clear place to learn more
 
-   ```bash
-   pnpm install
-   ```
+Each public Sitterfolio page presents the sitter’s profile in a focused, mobile-friendly layout. It can show:
 
-3. Set up environment variables:
-   Create a `.env.local` file in the root directory with:
+- Profile photo or pet icon
+- Business name
+- Service area
+- Short introduction
+- Services offered
+- A direct availability request form
 
-   ```
-   KV_REST_API_URL=your_redis_url
-   KV_REST_API_TOKEN=your_redis_token
-   ```
+Pet owners can send their name, email address, dates they need care, and a description of their pet or care request. The request is associated with the specific Sitterfolio page they used.
 
-4. Start the development server:
+Sitterfolio connects pet owners with sitters; it does not book, schedule, or confirm care on a sitter’s behalf.
 
-   ```bash
-   pnpm dev
-   ```
+### 4. Review inquiries and share the site
 
-5. Access the application:
-   - Main site: http://localhost:3000
-   - Admin panel: http://localhost:3000/admin
-   - Tenants: http://[tenant-name].localhost:3000
+The sitter dashboard displays recent messages submitted through the public page, including the sender’s contact information, requested dates, and care details. The sitter can open the live site, copy or share its link, and keep the profile current as their business changes.
 
-## Multi-Tenant Architecture
+Profile photos are uploaded through the product and displayed on both the dashboard preview and the public page. A sitter can also delete a site from the dashboard.
 
-This application demonstrates a subdomain-based multi-tenant architecture where:
+## Product surfaces
 
-- Each tenant gets their own subdomain (`tenant.yourdomain.com`)
-- The proxy handles routing requests to the correct tenant
-- Tenant data is stored in Redis using a `subdomain:{name}` key pattern
-- The main domain hosts the landing page and admin interface
-- Subdomains are dynamically mapped to tenant-specific content
+- **Public home page:** Explains the product and starts site creation.
+- **Authentication:** Email and password sign-up and sign-in for sitters.
+- **Sitter dashboard:** Guides profile creation, previews changes, edits profile information, shares the site, and shows recent inquiries.
+- **Public sitter page:** A dedicated subdomain for the sitter’s business and its availability request form.
+- **Location search:** Helps sitters find and select the cities, neighborhoods, or areas they serve.
+- **Responsive presentation:** Public pages and dashboard screens adapt to smaller screens and support light and dark themes.
 
-The proxy (`proxy.ts`, the Next.js 16 replacement for `middleware.ts`) intelligently detects subdomains across various environments (local development, production, and Vercel preview deployments).
+## Technical foundation
 
-## Deployment
+Sitterfolio is a Next.js application built with the App Router and React. The main technical pieces are:
 
-This application is designed to be deployed on Vercel. To deploy:
+- **Next.js 16** for the application, server-rendered pages, server actions, API routes, and subdomain routing through `proxy.ts`.
+- **React 19** for interactive onboarding, profile editing, sharing controls, image upload, dialogs, and form states.
+- **TypeScript** for application and data-model typing.
+- **Tailwind CSS 4** and **shadcn/ui-style components** for the responsive visual system and accessible UI primitives.
+- **Better Auth** with PostgreSQL for email-and-password accounts.
+- **Upstash Redis** for site profiles, site-name availability, inquiry storage, cached location results, sessions, and auth rate limits.
+- **Vercel Blob** for profile-image uploads, restricted to common web image formats and a 5 MB maximum upload size.
+- **OpenStreetMap Nominatim** for location search suggestions. Results are normalized, cached in Redis, and rate-limited before external lookup.
+- **Vercel Analytics and Speed Insights** for product usage and performance visibility.
 
-1. Push your repository to GitHub
-2. Connect your repository to Vercel
-3. Configure environment variables
-4. Deploy
+## Local configuration
 
-For custom domains, make sure to:
+Use pnpm for this repository. Install dependencies with `pnpm install`, then configure these values in `.env.local`:
 
-1. Add your root domain to Vercel
-2. Set up a wildcard DNS record (`*.yourdomain.com`) on Vercel
+```dotenv
+DATABASE_URL=postgresql://...
+BETTER_AUTH_SECRET=generate-a-random-secret-of-at-least-32-characters
+BETTER_AUTH_URL=http://localhost:3000
+KV_REST_API_URL=https://...
+KV_REST_API_TOKEN=...
+```
+
+Generate a local secret with `openssl rand -base64 32`. Do not commit it. Before starting the app for the first time, apply [`migrations/auth.sql`](migrations/auth.sql) to the PostgreSQL database. Production must use its canonical HTTPS root URL for `BETTER_AUTH_URL` and its own secret and database credentials.
+
+## Feature behavior in the application
+
+### Subdomain-based sites
+
+The proxy identifies a sitter’s subdomain and rewrites its root URL to the corresponding public profile. The same behavior supports local hostnames, production domains, and Vercel preview-style hostnames. The root domain remains the product home and dashboard surface, while each sitter’s subdomain acts as their public site.
+
+### Profile and inquiry data
+
+Site data is stored under a site-specific Redis key. Profile updates preserve existing fields and revalidate the public page after saving. Availability requests are stored per site, newest first, with the latest 100 requests retained for dashboard review.
+
+### Image handling
+
+Profile images are uploaded to Vercel Blob using a server-authorized upload route. The application accepts JPEG, PNG, and WebP images, adds a random suffix to uploaded paths, and stores the resulting HTTPS URL with the sitter’s profile.
+
+### Location suggestions
+
+The dashboard’s service-area picker calls the application’s location API rather than contacting the geocoder directly from the browser. The API validates the query length, caches repeated searches for 30 days, limits request frequency, and converts geocoder results into concise place-and-region labels for the profile.
+
+### Authentication boundary
+
+Sitterfolio includes Better Auth routes and session-aware navigation so signed-in users can access the sitter experience. The dashboard and site actions are the current product surfaces for managing profiles and inquiries.
+
+## Product scope
+
+Sitterfolio is intentionally focused: it creates a trustworthy presence and makes it easier for a pet owner to start a conversation. It is not a marketplace, payment processor, calendar, booking engine, or replacement for the sitter’s own client relationship.

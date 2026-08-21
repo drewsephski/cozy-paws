@@ -4,11 +4,26 @@ import { redis } from '@/lib/redis';
 import { isValidIcon } from '@/lib/subdomains';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { getSession } from '@/lib/session';
+
+async function requireUser() {
+  const session = await getSession();
+  if (!session) redirect('/auth?callbackURL=%2Fadmin');
+  return session.user;
+}
+
+async function getOwnedProfile(subdomain: string, userId: string) {
+  const sanitizedSubdomain = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, '');
+  const current = await redis.get<Record<string, unknown>>(`subdomain:${sanitizedSubdomain}`);
+  if (!current || current.ownerId !== userId) return null;
+  return { subdomain: sanitizedSubdomain, current };
+}
 
 export async function createSubdomainAction(
   prevState: any,
   formData: FormData
 ) {
+  const user = await requireUser();
   const subdomain = formData.get('subdomain') as string;
   const icon = formData.get('icon') as string;
 
@@ -54,6 +69,7 @@ export async function createSubdomainAction(
   }
 
   await redis.set(`subdomain:${sanitizedSubdomain}`, {
+    ownerId: user.id,
     emoji: icon,
     createdAt: Date.now(),
     businessName: '',
@@ -74,9 +90,11 @@ export async function saveProfileAction(
   _prevState: SaveProfileState,
   formData: FormData
 ): Promise<SaveProfileState> {
+  const user = await requireUser();
   const subdomain = String(formData.get('subdomain') || '');
-  const current = await redis.get<Record<string, unknown>>(`subdomain:${subdomain}`);
-  if (!current) return { error: 'This site could not be found. Refresh and try again.' };
+  const ownedProfile = await getOwnedProfile(subdomain, user.id);
+  if (!ownedProfile) return { error: 'This site could not be found. Refresh and try again.' };
+  const { current, subdomain: ownedSubdomain } = ownedProfile;
 
   const readValue = (name: string, maximumLength: number) =>
     formData.has(name)
@@ -91,7 +109,7 @@ export async function saveProfileAction(
         .slice(0, 8)
     : current.services;
 
-  await redis.set(`subdomain:${subdomain}`, {
+  await redis.set(`subdomain:${ownedSubdomain}`, {
     ...current,
     businessName: readValue('businessName', 80),
     tagline: readValue('tagline', 160),
@@ -100,7 +118,7 @@ export async function saveProfileAction(
     email: readValue('email', 120),
     services
   });
-  revalidatePath(`/s/${subdomain}`);
+  revalidatePath(`/s/${ownedSubdomain}`);
   return {
     success: true,
     savedAt: Date.now()
@@ -108,19 +126,22 @@ export async function saveProfileAction(
 }
 
 export async function completeOnboardingAction(formData: FormData): Promise<never> {
+  const user = await requireUser();
   const subdomain = String(formData.get('subdomain') || '');
-  const current = await redis.get<Record<string, unknown>>(`subdomain:${subdomain}`);
+  const ownedProfile = await getOwnedProfile(subdomain, user.id);
 
-  if (!current) {
+  if (!ownedProfile) {
     redirect('/admin');
   }
 
-  await redis.set(`subdomain:${subdomain}`, {
+  const { current, subdomain: ownedSubdomain } = ownedProfile;
+
+  await redis.set(`subdomain:${ownedSubdomain}`, {
     ...current,
     onboardingCompletedAt: Date.now()
   });
-  revalidatePath(`/s/${subdomain}`);
-  redirect(`/admin/complete?site=${encodeURIComponent(subdomain)}`);
+  revalidatePath(`/s/${ownedSubdomain}`);
+  redirect(`/admin/complete?site=${encodeURIComponent(ownedSubdomain)}`);
 }
 
 export async function createLeadAction(formData: FormData): Promise<void> {
@@ -135,21 +156,26 @@ export async function createLeadAction(formData: FormData): Promise<void> {
 }
 
 export async function saveProfileImageAction(formData: FormData): Promise<void> {
+  const user = await requireUser();
   const subdomain = String(formData.get('subdomain') || '');
   const imageUrl = String(formData.get('imageUrl') || '');
-  const current = await redis.get<Record<string, unknown>>(`subdomain:${subdomain}`);
-  if (!current || !imageUrl.startsWith('https://')) return;
-  await redis.set(`subdomain:${subdomain}`, { ...current, profileImageUrl: imageUrl });
+  const ownedProfile = await getOwnedProfile(subdomain, user.id);
+  if (!ownedProfile || !imageUrl.startsWith('https://')) return;
+  const { current, subdomain: ownedSubdomain } = ownedProfile;
+  await redis.set(`subdomain:${ownedSubdomain}`, { ...current, profileImageUrl: imageUrl });
   revalidatePath('/admin');
-  revalidatePath(`/s/${subdomain}`);
+  revalidatePath(`/s/${ownedSubdomain}`);
 }
 
 export async function deleteSubdomainAction(
   prevState: any,
   formData: FormData
 ) {
-  const subdomain = formData.get('subdomain');
-  await redis.del(`subdomain:${subdomain}`);
+  const user = await requireUser();
+  const subdomain = String(formData.get('subdomain') || '');
+  const ownedProfile = await getOwnedProfile(subdomain, user.id);
+  if (!ownedProfile) return { error: 'This site could not be found.' };
+  await redis.del(`subdomain:${ownedProfile.subdomain}`);
   revalidatePath('/admin');
   return { success: 'Domain deleted successfully' };
 }
