@@ -33,13 +33,13 @@ type CreateState = {
 function SubdomainInput({ defaultValue }: { defaultValue?: string }) {
   return (
     <div className="space-y-2">
-      <Label htmlFor="subdomain">Subdomain</Label>
+      <Label htmlFor="subdomain">Your site address</Label>
       <div className="flex items-center">
         <div className="relative flex-1">
           <Input
             id="subdomain"
             name="subdomain"
-            placeholder="your-subdomain"
+            placeholder="happy-tails"
             defaultValue={defaultValue}
             className="w-full rounded-r-none focus:z-10"
             required
@@ -71,7 +71,7 @@ function IconPicker({
 
   return (
     <div className="space-y-2">
-      <Label htmlFor="icon">Icon</Label>
+      <Label htmlFor="icon">Pick a pet icon</Label>
       <div className="flex flex-col gap-2">
         <input type="hidden" name="icon" value={icon} required />
         <div className="flex items-center gap-2">
@@ -95,7 +95,7 @@ function IconPicker({
                   onClick={() => setIsPickerOpen(!isPickerOpen)}
                 >
                   <Smile className="h-4 w-4 mr-2" />
-                  Select Emoji
+                  Choose icon
                 </Button>
               </PopoverTrigger>
               <PopoverContent
@@ -117,7 +117,7 @@ function IconPicker({
           </Card>
         </div>
         <p className="text-xs text-muted-foreground">
-          Select an emoji to represent your subdomain
+          This adds a friendly marker to your site before you upload a photo.
         </p>
       </div>
     </div>
@@ -143,7 +143,7 @@ export function SubdomainForm() {
       )}
 
       <Button type="submit" className="w-full" disabled={isPending || !icon}>
-        {isPending ? 'Creating...' : 'Create Subdomain'}
+        {isPending ? 'Creating your site…' : 'Create my site'}
       </Button>
     </form>
   );

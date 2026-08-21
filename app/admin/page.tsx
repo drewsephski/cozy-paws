@@ -3,10 +3,11 @@ import type { Metadata } from 'next';
 import { AdminDashboard } from './dashboard';
 import { rootDomain } from '@/lib/utils';
 import { getLeads } from '@/lib/subdomains';
+import { SiteHeader } from '@/components/site-header';
 
 export const metadata: Metadata = {
-  title: `Admin Dashboard | ${rootDomain}`,
-  description: `Manage subdomains for ${rootDomain}`
+  title: `Sitter dashboard | ${rootDomain}`,
+  description: 'Update and share your pet-sitting website.'
 };
 
 export default async function AdminPage() {
@@ -15,8 +16,9 @@ export default async function AdminPage() {
   const leads = tenants.length ? await getLeads(tenants[0].subdomain) : [];
 
   return (
-      <div className="min-h-screen bg-background px-4 py-6 md:px-8 md:py-10">
-      <AdminDashboard tenants={tenants} leads={leads} />
+    <div className="min-h-screen bg-background">
+      <SiteHeader dashboard />
+      <main className="px-4 py-8 md:px-8 md:py-12"><AdminDashboard tenants={tenants} leads={leads} /></main>
     </div>
   );
 }

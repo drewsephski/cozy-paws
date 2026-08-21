@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { rootDomain, protocol } from '@/lib/utils';
+import { SiteHeader } from '@/components/site-header';
+import { PawPrint } from 'lucide-react';
 
 export default function NotFound() {
   const [subdomain, setSubdomain] = useState<string | null>(null);
@@ -27,30 +29,32 @@ export default function NotFound() {
   }, [pathname]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-white p-4">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+    <div className="min-h-screen bg-background text-foreground">
+      <SiteHeader />
+      <main className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-xl flex-col items-center justify-center px-6 py-16 text-center">
+        <span className="mb-6 grid size-14 place-items-center rounded-2xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"><PawPrint aria-hidden="true" /></span>
+        <p className="mb-3 text-sm font-semibold uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400">Page not found</p>
+        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
           {subdomain ? (
             <>
-              <span className="text-blue-600">{subdomain}</span>.{rootDomain}{' '}
-              doesn't exist
+              <span>{subdomain}</span>.{rootDomain} isn’t live yet
             </>
           ) : (
-            'Subdomain Not Found'
+            'We couldn’t find that page'
           )}
         </h1>
-        <p className="mt-3 text-lg text-gray-600">
-          This subdomain hasn't been created yet.
+        <p className="mt-4 text-lg text-muted-foreground">
+          {subdomain ? 'This site address is still available. You can claim it and start building your pet-care site.' : 'The link may be outdated. Head home to create a site or open your dashboard.'}
         </p>
-        <div className="mt-6">
+        <div className="mt-8">
           <Link
             href={`${protocol}://${rootDomain}`}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="inline-flex h-10 items-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            {subdomain ? `Create ${subdomain}` : `Go to ${rootDomain}`}
+            {subdomain ? `Claim ${subdomain}` : 'Go to Sitterfolio home'}
           </Link>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

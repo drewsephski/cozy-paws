@@ -3,6 +3,7 @@
 import { upload } from '@vercel/blob/client';
 import { useState } from 'react';
 import { saveProfileImageAction } from '@/app/actions';
+import { Camera, CheckCircle2, Loader2 } from 'lucide-react';
 
 export function ProfileImageUpload({ subdomain, currentImageUrl }: { subdomain: string; currentImageUrl?: string }) {
   const [imageUrl, setImageUrl] = useState(currentImageUrl);
@@ -37,17 +38,26 @@ export function ProfileImageUpload({ subdomain, currentImageUrl }: { subdomain: 
     }
   }
 
+  const isUploading = status === 'Uploading…';
+  const isSaved = status === 'Photo saved.';
+
   return (
-    <div className="flex items-center gap-4 rounded-2xl bg-[#f3f7f1] p-4">
-      {imageUrl ? <img src={imageUrl} alt="Your profile" className="h-20 w-20 rounded-2xl object-cover" /> : <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#dfeadd] text-3xl">🐾</div>}
-      <div>
-        <p className="font-medium">Profile photo</p>
-        <p className="mb-2 text-xs text-gray-500">JPG, PNG, or WebP up to 5 MB</p>
-        <label className="cursor-pointer rounded-lg bg-[#27332c] px-3 py-2 text-sm font-medium text-white hover:bg-[#3b4a40]">
-          {status === 'Uploading…' ? 'Uploading…' : 'Choose photo'}
-          <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => handleChange(event.target.files?.[0])} disabled={status === 'Uploading…'} />
+    <div className="flex min-w-0 items-center gap-3">
+      {imageUrl ? (
+        <img src={imageUrl} alt="Your profile" className="size-14 shrink-0 rounded-lg border border-border object-cover" />
+      ) : (
+        <div className="grid size-14 shrink-0 place-items-center rounded-lg border border-dashed border-border bg-muted/50 text-muted-foreground">
+          <Camera aria-hidden="true" className="size-5" />
+        </div>
+      )}
+      <div className="min-w-0">
+        <label className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border border-input bg-background px-3 text-sm font-medium shadow-xs transition-colors hover:bg-muted focus-within:ring-2 focus-within:ring-ring/50">
+          {isUploading ? <Loader2 aria-hidden="true" className="size-4 animate-spin" /> : <Camera aria-hidden="true" className="size-4" />}
+          {isUploading ? 'Uploading…' : imageUrl ? 'Change photo' : 'Choose photo'}
+          <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => handleChange(event.target.files?.[0])} disabled={isUploading} />
         </label>
-        {status && status !== 'Uploading…' && <p className="mt-2 text-xs text-gray-600">{status}</p>}
+        <p className="mt-1.5 text-xs text-muted-foreground">JPG, PNG, or WebP · 5 MB max</p>
+        {status && !isUploading && <p className={`mt-1 flex items-center gap-1 text-xs ${isSaved ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>{isSaved && <CheckCircle2 aria-hidden="true" className="size-3" />}{status}</p>}
       </div>
     </div>
   );
