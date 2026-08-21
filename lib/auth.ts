@@ -35,6 +35,9 @@ export const auth = betterAuth({
   trustedOrigins,
   emailAndPassword: {
     enabled: true,
+    // Accounts are usable immediately; no verification email is sent or required.
+    requireEmailVerification: false,
+    autoSignIn: true,
     minPasswordLength: 8
   },
   secondaryStorage: {

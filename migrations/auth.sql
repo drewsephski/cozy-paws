@@ -4,8 +4,12 @@ create table "account" ("id" text not null primary key, "issuer" text not null, 
 
 create table "verification" ("id" text not null primary key, "identifier" text not null, "value" text not null, "expiresAt" timestamptz not null, "createdAt" timestamptz default CURRENT_TIMESTAMP not null, "updatedAt" timestamptz default CURRENT_TIMESTAMP not null);
 
+create table "session" ("id" text not null primary key, "expiresAt" timestamptz not null, "token" text not null unique, "createdAt" timestamptz default CURRENT_TIMESTAMP not null, "updatedAt" timestamptz default CURRENT_TIMESTAMP not null, "ipAddress" text, "userAgent" text, "userId" text not null references "user" ("id") on delete cascade);
+
 create index "account_userId_idx" on "account" ("userId");
 
 create unique index "account_issuer_accountId_uidx" on "account" ("issuer", "accountId");
 
 create index "verification_identifier_idx" on "verification" ("identifier");
+
+create index "session_userId_idx" on "session" ("userId");
