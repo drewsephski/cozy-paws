@@ -20,7 +20,7 @@ export default async function OnboardingCompletePage({
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader dashboard />
+      <SiteHeader dashboard signedIn />
       <main>
         <OnboardingComplete tenant={{ subdomain, ...tenant }} />
       </main>

@@ -9,8 +9,31 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: 'Sitterfolio',
-  description: 'A simple, shareable website for independent pet sitters.'
+  title: {
+    default: 'Sitterfolio | Website for Pet Sitters',
+    template: '%s | Sitterfolio'
+  },
+  description:
+    'Create a professional pet sitter contact page, share your services directly with clients, and make it easier for pet owners to reach you outside Rover.',
+  keywords: [
+    'website for pet sitters',
+    'pet sitter contact page',
+    'take Rover clients direct',
+    'pet sitting website',
+    'independent pet sitter website'
+  ],
+  openGraph: {
+    title: 'Sitterfolio | Website for Pet Sitters',
+    description:
+      'A simple, shareable website and contact page for independent pet sitters.',
+    type: 'website'
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Sitterfolio | Website for Pet Sitters',
+    description:
+      'Create a professional pet sitter contact page and share it directly with clients.'
+  }
 };
 
 const themeScript = `(() => { try { const saved = localStorage.getItem('theme'); const dark = saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches); document.documentElement.classList.toggle('dark', dark); document.documentElement.style.colorScheme = dark ? 'dark' : 'light'; } catch {} })()`;

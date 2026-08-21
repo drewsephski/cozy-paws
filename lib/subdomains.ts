@@ -64,7 +64,8 @@ export async function getSubdomainData(subdomain: string) {
 }
 
 export async function getSubdomainsForOwner(ownerId: string) {
-  const keys = await redis.keys('subdomain:*');
+  const subdomains = await redis.smembers<string[]>(`owner:${ownerId}:subdomains`);
+  const keys = subdomains.map((subdomain) => `subdomain:${subdomain}`);
 
   if (!keys.length) {
     return [];

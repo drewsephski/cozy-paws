@@ -5,19 +5,25 @@ import { getSession } from '@/lib/session';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
+export const metadata = {
+  title: 'Website for Pet Sitters',
+  description:
+    'Create a professional pet sitter website and contact page so clients can reach you directly, including clients you meet through Rover.'
+};
+
 export default async function HomePage() {
   const session = await getSession();
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <SiteHeader />
+      <SiteHeader signedIn={Boolean(session)} />
 
       <main className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center gap-16 px-5 py-16 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:py-24">
         <section>
           <p className="mb-6 flex items-center text-sm font-medium text-muted-foreground"><PawPrint aria-hidden="true" className="mr-2 size-4 text-emerald-600 dark:text-emerald-400" strokeWidth={2.25} />Your pet-care business, easy to share</p>
-          <h1 className="max-w-xl text-5xl font-bold tracking-[-.055em] sm:text-6xl lg:text-7xl">Give pet owners one clear place to meet you.</h1>
-          <p className="mt-6 max-w-lg text-lg leading-8 text-muted-foreground">Create a polished site with your services, photo, and contact form—then send your link anywhere you talk with clients.</p>
+          <h1 className="max-w-xl text-5xl font-bold tracking-[-.055em] sm:text-6xl lg:text-7xl">Your own website for pet-sitting clients.</h1>
+          <p className="mt-6 max-w-lg text-lg leading-8 text-muted-foreground">Create a polished pet sitter contact page with your services, photo, and availability form—then share one direct link anywhere you talk with clients.</p>
           <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted-foreground">
-            <span>✓ Your own web address</span><span>✓ No design work</span><span>✓ Inquiries in one place</span>
+            <span>✓ Your own web address</span><span>✓ No design work</span><span>✓ Direct inquiries</span>
           </div>
         </section>
 

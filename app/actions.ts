@@ -80,6 +80,7 @@ export async function createSubdomainAction(
     email: '',
     onboardingCompletedAt: null
   });
+  await redis.sadd(`owner:${user.id}:subdomains`, sanitizedSubdomain);
 
   redirect('/admin');
 }
@@ -176,6 +177,7 @@ export async function deleteSubdomainAction(
   const ownedProfile = await getOwnedProfile(subdomain, user.id);
   if (!ownedProfile) return { error: 'This site could not be found.' };
   await redis.del(`subdomain:${ownedProfile.subdomain}`);
+  await redis.srem(`owner:${user.id}:subdomains`, ownedProfile.subdomain);
   revalidatePath('/admin');
   return { success: 'Domain deleted successfully' };
 }

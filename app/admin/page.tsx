@@ -21,7 +21,7 @@ export default async function AdminPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader dashboard />
+      <SiteHeader dashboard signedIn />
       <main><AdminDashboard tenants={tenants} leads={leads} /></main>
     </div>
   );
