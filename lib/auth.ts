@@ -3,6 +3,16 @@ import { nextCookies } from 'better-auth/next-js';
 import { Pool } from 'pg';
 import { redis } from '@/lib/redis';
 
+const trustedOrigins = [
+  'https://sitterfolio.com',
+  'https://www.sitterfolio.com',
+  'http://localhost:3000',
+  process.env.BETTER_AUTH_URL,
+  ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',') ?? [])
+]
+  .map((origin) => origin?.trim())
+  .filter((origin): origin is string => Boolean(origin));
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   max: 5,
@@ -12,6 +22,7 @@ const pool = new Pool({
 export const auth = betterAuth({
   appName: 'Sitterfolio',
   database: pool,
+  trustedOrigins,
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8

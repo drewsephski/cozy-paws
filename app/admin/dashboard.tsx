@@ -71,6 +71,9 @@ function SitePreview({ tenant, values }: { tenant: Tenant; values: Record<string
 
 export function OnboardingComplete({ tenant }: { tenant: Tenant }) {
   const siteUrl = `${protocol}://${tenant.subdomain}.${rootDomain}`;
+  useEffect(() => {
+    window.localStorage.removeItem('sitterfolio-draft');
+  }, []);
   return (
     <div className="mx-auto flex min-h-[calc(100vh-10rem)] max-w-2xl items-center justify-center px-4 py-12 text-center">
       <div>

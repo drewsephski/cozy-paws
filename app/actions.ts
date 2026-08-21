@@ -6,9 +6,9 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/session';
 
-async function requireUser() {
+async function requireUser(callbackURL = '/admin') {
   const session = await getSession();
-  if (!session) redirect('/auth?callbackURL=%2Fadmin');
+  if (!session) redirect(`/auth?callbackURL=${encodeURIComponent(callbackURL)}`);
   return session.user;
 }
 
@@ -19,11 +19,17 @@ async function getOwnedProfile(subdomain: string, userId: string) {
   return { subdomain: sanitizedSubdomain, current };
 }
 
-export async function createSubdomainAction(
-  prevState: any,
+export type DraftAddressState = {
+  success?: boolean;
+  error?: string;
+  subdomain?: string;
+  icon?: string;
+};
+
+export async function checkDraftAddressAction(
+  _prevState: DraftAddressState,
   formData: FormData
-) {
-  const user = await requireUser();
+): Promise<DraftAddressState> {
   const subdomain = formData.get('subdomain') as string;
   const icon = formData.get('icon') as string;
 
@@ -68,21 +74,59 @@ export async function createSubdomainAction(
     };
   }
 
-  await redis.set(`subdomain:${sanitizedSubdomain}`, {
-    ownerId: user.id,
-    emoji: icon,
-    createdAt: Date.now(),
-    businessName: '',
-    tagline: '',
-    location: '',
-    services: [],
-    phone: '',
-    email: '',
-    onboardingCompletedAt: null
-  });
-  await redis.sadd(`owner:${user.id}:subdomains`, sanitizedSubdomain);
+  return { success: true, subdomain: sanitizedSubdomain, icon };
+}
 
-  redirect('/admin');
+export type LaunchDraftState = { error?: string };
+
+export async function launchDraftAction(
+  _prevState: LaunchDraftState,
+  formData: FormData
+): Promise<LaunchDraftState> {
+  const user = await requireUser('/launch');
+  const subdomain = String(formData.get('subdomain') || '').toLowerCase();
+  const icon = String(formData.get('icon') || '');
+  const businessName = String(formData.get('businessName') || '').trim().slice(0, 80);
+  const tagline = String(formData.get('tagline') || '').trim().slice(0, 160);
+  const location = String(formData.get('location') || '').trim().slice(0, 240);
+  const email = String(formData.get('email') || '').trim().slice(0, 120);
+  const phone = String(formData.get('phone') || '').trim().slice(0, 40);
+  const services = String(formData.get('services') || '')
+    .split(',')
+    .map((service) => service.trim())
+    .filter(Boolean)
+    .slice(0, 8);
+  const sanitizedSubdomain = subdomain.replace(/[^a-z0-9-]/g, '');
+
+  if (sanitizedSubdomain !== subdomain || subdomain.length < 3 || subdomain.length > 30 || !isValidIcon(icon)) {
+    return { error: 'Your draft address is invalid. Return to the home page and choose another.' };
+  }
+  if (!businessName || !tagline || !location || !services.length || !email || !/^\S+@\S+\.\S+$/.test(email)) {
+    return { error: 'Your draft is incomplete. Return to the builder and finish the required details.' };
+  }
+
+  const created = await redis.set(
+    `subdomain:${sanitizedSubdomain}`,
+    {
+      ownerId: user.id,
+      emoji: icon,
+      createdAt: Date.now(),
+      businessName,
+      tagline,
+      location,
+      services,
+      phone,
+      email,
+      onboardingCompletedAt: Date.now()
+    },
+    { nx: true }
+  );
+
+  if (!created) return { error: 'That site address was just taken. Choose another address to launch.' };
+
+  await redis.sadd(`owner:${user.id}:subdomains`, sanitizedSubdomain);
+  revalidatePath(`/s/${sanitizedSubdomain}`);
+  redirect(`/admin/complete?site=${encodeURIComponent(sanitizedSubdomain)}`);
 }
 
 export type SaveProfileState = { success?: boolean; error?: string; savedAt?: number };

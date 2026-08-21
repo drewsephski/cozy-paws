@@ -1,21 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useActionState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { createSubdomainAction } from '@/app/actions';
+import { checkDraftAddressAction, type DraftAddressState } from '@/app/actions';
 import { rootDomain } from '@/lib/utils';
 import { petIconOptions } from '@/lib/pet-icons';
 import { PetIcon } from '@/components/pet-icon';
 
-type CreateState = {
-  error?: string;
-  success?: boolean;
-  subdomain?: string;
-  icon?: string;
-};
+import { useRouter } from 'next/navigation';
 
 function SubdomainInput({ defaultValue }: { defaultValue?: string }) {
   return (
@@ -72,12 +67,19 @@ function IconPicker({
 }
 
 export function SubdomainForm() {
+  const router = useRouter();
   const [icon, setIcon] = useState('');
 
-  const [state, action, isPending] = useActionState<CreateState, FormData>(
-    createSubdomainAction,
+  const [state, action, isPending] = useActionState<DraftAddressState, FormData>(
+    checkDraftAddressAction,
     {}
   );
+
+  useEffect(() => {
+    if (!state.success || !state.subdomain || !state.icon) return;
+    window.localStorage.setItem('sitterfolio-draft', JSON.stringify({ subdomain: state.subdomain, icon: state.icon }));
+    router.push('/build');
+  }, [router, state]);
 
   return (
     <form action={action} className="space-y-4">
@@ -90,7 +92,7 @@ export function SubdomainForm() {
       )}
 
       <Button type="submit" className="w-full" disabled={isPending || !icon}>
-        {isPending ? 'Creating your site…' : 'Create my site'}
+        {isPending ? 'Checking your address…' : 'Start building free'}
       </Button>
     </form>
   );
