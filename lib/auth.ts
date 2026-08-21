@@ -13,10 +13,20 @@ const trustedOrigins = [
   .map((origin) => origin?.trim())
   .filter((origin): origin is string => Boolean(origin));
 
+function databaseUrl() {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) return undefined;
+
+  const url = new URL(connectionString);
+  if (url.searchParams.has('sslmode')) {
+    url.searchParams.set('sslmode', 'verify-full');
+  }
+  return url.toString();
+}
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  max: 5,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined
+  connectionString: databaseUrl(),
+  max: 5
 });
 
 export const auth = betterAuth({
