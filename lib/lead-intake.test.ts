@@ -4,7 +4,7 @@ import { createProfileOwnership } from './profile-ownership';
 import { MemoryProfileRepository } from '../tests/support/memory-profile-repository';
 
 describe('lead intake', () => {
-  it('validates and bounds public Lead fields before storing them', async () => {
+  it('rejects public Lead fields that exceed their limits', async () => {
     const profiles = createProfileOwnership(new MemoryProfileRepository());
     await profiles.create('owner-1', 'happy-tails', { emoji: 'dog', createdAt: 100 });
     const intake = createLeadIntake(profiles, async () => true);
@@ -17,10 +17,8 @@ describe('lead intake', () => {
       message: 'M'.repeat(3000)
     }, 'ip:1', 200);
 
-    expect(result.success).toBe(true);
-    const lead = (await profiles.getOwnedLeads('owner-1', 'happy-tails'))[0];
-    expect(lead.name).toHaveLength(120);
-    expect(lead.message).toHaveLength(2000);
+    expect(result).toMatchObject({ success: false, error: expect.stringContaining('shorten') });
+    expect(await profiles.getOwnedLeads('owner-1', 'happy-tails')).toEqual([]);
   });
 
   it('rejects malformed or rate-limited submissions', async () => {

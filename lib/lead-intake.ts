@@ -10,20 +10,23 @@ export type LeadSubmission = {
 
 export type LeadRateLimiter = (key: string) => Promise<boolean>;
 
-const readText = (value: unknown, maximumLength: number) =>
-  typeof value === 'string' ? value.trim().slice(0, maximumLength) : '';
+const readText = (value: unknown) => typeof value === 'string' ? value.trim() : '';
 
 export function createLeadIntake(profiles: ProfileOwnership, maySubmit: LeadRateLimiter) {
   return {
     async submit(input: LeadSubmission, rateLimitKey: string, createdAt = Date.now()) {
-      const subdomain = readText(input.subdomain, 30);
-      const name = readText(input.name, 120);
-      const email = readText(input.email, 160);
-      const dates = readText(input.dates, 120);
-      const message = readText(input.message, 2000);
+      const subdomain = readText(input.subdomain);
+      const name = readText(input.name);
+      const email = readText(input.email);
+      const dates = readText(input.dates);
+      const message = readText(input.message);
 
       if (!subdomain || !name || !email || !/^\S+@\S+\.\S+$/.test(email)) {
         return { success: false as const, error: 'Please provide your name and a valid email address.' };
+      }
+
+      if (subdomain.length > 30 || name.length > 120 || email.length > 160 || dates.length > 120 || message.length > 2000) {
+        return { success: false as const, error: 'Please shorten your request and try again.' };
       }
 
       if (!(await maySubmit(rateLimitKey))) {

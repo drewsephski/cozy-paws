@@ -18,10 +18,22 @@ type InboxLead = {
 export function LeadInbox({ leads }: { leads: InboxLead[] }) {
   const [filter, setFilter] = useState('all');
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [copyState, setCopyState] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const sites = [...new Map(leads.map((lead) => [lead.subdomain, lead.siteName])).entries()];
   const visible = filter === 'all' ? leads : leads.filter((lead) => lead.subdomain === filter);
   const unread = leads.filter((lead) => !lead.readAt).length;
+  const unreadBySite = new Map(sites.map(([subdomain]) => [subdomain, leads.filter((lead) => lead.subdomain === subdomain && !lead.readAt).length]));
+
+  async function copyDetails(lead: InboxLead) {
+    try {
+      await navigator.clipboard.writeText(`${lead.name} <${lead.email}>\n${lead.message}`);
+      setCopyState(lead.id);
+      window.setTimeout(() => setCopyState((current) => current === lead.id ? null : current), 1800);
+    } catch {
+      setCopyState(null);
+    }
+  }
 
   function openLead(lead: InboxLead) {
     setExpanded(lead.id);
@@ -38,14 +50,14 @@ export function LeadInbox({ leads }: { leads: InboxLead[] }) {
   return <div className="space-y-4">
     <div className="flex flex-wrap items-center justify-between gap-3">
       <p className="text-sm text-muted-foreground">{unread ? `${unread} unread` : 'All caught up'}</p>
-      <label className="flex items-center gap-2 text-sm"><span className="text-muted-foreground">Site</span><select value={filter} onChange={(event) => setFilter(event.target.value)} className="h-9 rounded-lg border border-input bg-background px-3"><option value="all">All Sites</option>{sites.map(([subdomain, name]) => <option key={subdomain} value={subdomain}>{name}</option>)}</select></label>
+      <label className="flex items-center gap-2 text-sm"><span className="text-muted-foreground">Site</span><select value={filter} onChange={(event) => setFilter(event.target.value)} className="h-9 rounded-lg border border-input bg-background px-3"><option value="all">All Sites ({unread})</option>{sites.map(([subdomain, name]) => <option key={subdomain} value={subdomain}>{name} ({unreadBySite.get(subdomain) || 0})</option>)}</select></label>
     </div>
     <div className="space-y-2">{visible.map((lead) => <article key={lead.id} className={`rounded-2xl border bg-card p-4 shadow-sm ${lead.readAt ? 'border-border' : 'border-emerald-500/50'}`}>
       <button type="button" onClick={() => openLead(lead)} className="w-full text-left" aria-expanded={expanded === lead.id}>
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"><span className="font-semibold">{lead.name}{!lead.readAt && <span className="ml-2 inline-block size-2 rounded-full bg-emerald-500" aria-label="Unread" />}</span><span className="text-xs text-muted-foreground">{lead.siteName} · {new Date(lead.createdAt).toLocaleDateString()}</span></div>
         <p className="mt-2 truncate text-sm text-muted-foreground">{lead.dates || 'Dates not provided'}{lead.message ? ` — ${lead.message}` : ''}</p>
       </button>
-      {expanded === lead.id && <div className="mt-4 border-t border-border pt-4 text-sm"><div className="flex flex-wrap gap-3"><a href={`mailto:${lead.email}`} className="font-medium underline underline-offset-4">Email {lead.email}</a><button type="button" onClick={() => void navigator.clipboard?.writeText(`${lead.name} <${lead.email}>\n${lead.message}`)} className="underline underline-offset-4">Copy details</button></div><p className="mt-3 whitespace-pre-wrap leading-6 text-muted-foreground">{lead.message || 'No care details provided.'}</p></div>}
+      {expanded === lead.id && <div className="mt-4 border-t border-border pt-4 text-sm"><div className="flex flex-wrap gap-3"><a href={`mailto:${lead.email}`} className="font-medium underline underline-offset-4">Email {lead.email}</a><button type="button" onClick={() => void copyDetails(lead)} className="underline underline-offset-4">{copyState === lead.id ? 'Copied' : 'Copy details'}</button></div><p className="mt-3 whitespace-pre-wrap leading-6 text-muted-foreground">{lead.message || 'No care details provided.'}</p></div>}
     </article>)}</div>
     {isPending && <p className="text-xs text-muted-foreground" role="status">Updating inbox…</p>}
   </div>;
