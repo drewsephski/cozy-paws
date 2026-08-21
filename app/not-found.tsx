@@ -37,10 +37,10 @@ export default function NotFound() {
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
           {subdomain ? (
             <>
-              <span>{subdomain}</span>.{rootDomain} isn’t live yet
+              <span>{subdomain}</span>.{rootDomain} isn&apos;t live yet
             </>
           ) : (
-            'We couldn’t find that page'
+            "We couldn't find that page"
           )}
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">

@@ -26,8 +26,10 @@
     "pg": "^8.23.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "stripe": "^22.5.0",
     "tailwind-merge": "^3.3.0",
-    "vercel": "^59.3.0"
+    "vercel": "^59.3.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.6",

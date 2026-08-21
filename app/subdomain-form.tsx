@@ -61,7 +61,7 @@ function IconPicker({
           </button>
         ))}
       </div>
-      <p className="text-xs text-muted-foreground">Pick the pet that best represents your business. You can add a photo next.</p>
+      <p className="text-xs text-muted-foreground">Pick an icon for your draft. You can replace it with a photo later.</p>
     </div>
   );
 }
@@ -92,7 +92,7 @@ export function SubdomainForm() {
       )}
 
       <Button type="submit" className="w-full" disabled={isPending || !icon}>
-        {isPending ? 'Checking your address…' : 'Start building free'}
+        {isPending ? 'Checking your address...' : 'Start building free'}
       </Button>
     </form>
   );

@@ -37,12 +37,12 @@ type DeleteState = {
 
 const onboardingSteps = [
   { name: 'businessName', title: 'What should pet owners call your business?', helper: 'Use the name clients already recognize.', placeholder: 'Happy Tails Pet Care', required: true },
-  { name: 'tagline', title: 'How would you describe your care?', helper: 'Write one warm sentence that helps a pet owner understand what makes you different.', placeholder: 'Kind, reliable care for your favorite family members.', required: true },
+  { name: 'tagline', title: 'How would you describe your care?', helper: 'Write one sentence about the care clients can expect from you.', placeholder: 'Reliable visits for dogs and cats in Oak Park.', required: true },
   { name: 'location', title: 'Where do you care for pets?', helper: 'Name the neighborhood, city, or area you serve.', placeholder: 'Oak Park and nearby neighborhoods', required: true },
   { name: 'services', title: 'Which services do you offer?', helper: 'Separate each service with a comma. You can add up to eight.', placeholder: 'Dog walking, Drop-in visits, Overnight stays', required: true },
-  { name: 'email', title: 'Where should pet owners email you?', helper: 'This will appear on your site so interested clients can reach you directly.', placeholder: 'hello@example.com', type: 'email', required: true },
-  { name: 'phone', title: 'Would you like to share a phone number?', helper: 'This is optional. You can leave it blank and continue.', placeholder: '(555) 123-4567', type: 'tel', required: false },
-  { name: 'profileImageUrl', title: 'Add a friendly profile photo', helper: 'A clear photo helps pet owners feel like they already know you.', placeholder: '', required: false }
+  { name: 'email', title: 'Where should pet owners email you?', helper: 'Clients will use this address to reply to you.', placeholder: 'hello@example.com', type: 'email', required: true },
+  { name: 'phone', title: 'Do you want to share a phone number?', helper: 'Optional. Leave this blank if you prefer email.', placeholder: '(555) 123-4567', type: 'tel', required: false },
+  { name: 'profileImageUrl', title: 'Add a profile photo', helper: 'Use a clear, recent photo of yourself.', placeholder: '', required: false }
 ] as const;
 
 function SitePreview({ tenant, values }: { tenant: Tenant; values: Record<string, string> }) {
@@ -79,7 +79,7 @@ export function OnboardingComplete({ tenant }: { tenant: Tenant }) {
       <div>
         <span className="mx-auto grid size-16 place-items-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"><CheckCircle2 className="size-8" aria-hidden="true" /></span>
         <h1 className="mt-7 text-4xl font-semibold tracking-[-.04em] sm:text-5xl">Your Sitterfolio is ready.</h1>
-        <p className="mx-auto mt-4 max-w-lg text-lg leading-8 text-muted-foreground">Take a look at your live site, then share it with pet owners whenever you’re ready.</p>
+        <p className="mx-auto mt-4 max-w-lg text-lg leading-8 text-muted-foreground">Open the live site to check it, then copy the link when you want to share it.</p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Button asChild size="lg"><a href={siteUrl} target="_blank" rel="noopener noreferrer">View live site <ExternalLink aria-hidden="true" /></a></Button>
           <Button asChild size="lg" variant="outline"><Link href="/admin">Go to dashboard</Link></Button>
@@ -163,7 +163,7 @@ function DashboardHeader() {
 
 const profileSuggestions = {
   businessName: ['Happy Tails Pet Care', 'Paws & Whiskers', 'Neighborhood Pet Care', 'Home Sweet Home Pet Sitting', 'The Pet Nanny'],
-  tagline: ['Kind, reliable care for your favorite family members.', 'Trusted care that keeps pets happy at home.', 'Personalized care for every paw, feather, and whisker.', 'A familiar face while you’re away.']
+  tagline: ['Reliable visits for dogs and cats in Oak Park.', 'In-home care that keeps your pet on their usual routine.', 'Daily walks and drop-in visits for busy pet owners.', 'A familiar sitter while you are away.']
 } as const;
 
 function ProfileField({ label, name, defaultValue, placeholder, type = 'text', className }: { label: string; name: string; defaultValue: string; placeholder: string; type?: string; className?: string }) {
@@ -230,7 +230,7 @@ function TenantGrid({
       <Card>
         <CardContent className="py-12 text-center">
           <Globe2 className="mx-auto mb-4 size-8 text-muted-foreground" aria-hidden="true" />
-          <p className="font-medium">You haven’t created a site yet.</p>
+          <p className="font-medium">You haven&apos;t created a site yet.</p>
           <p className="mt-1 text-sm text-muted-foreground">Choose a web address on the home page to get started.</p>
           <Button asChild className="mt-5"><Link href="/">Create my site</Link></Button>
         </CardContent>
@@ -283,7 +283,7 @@ export function AdminDashboard({ tenants, leads }: { tenants: Tenant[]; leads: {
       <DashboardHeader />
       <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><TenantGrid tenants={tenants} action={action} isPending={isPending} /></section>
       {tenants[0] && <ProfileEditor tenant={tenants[0]} />}
-      <section className="space-y-4"><div><h2 className="text-xl font-semibold">Recent inquiries</h2><p className="mt-1 text-sm text-muted-foreground">Messages pet owners sent through your Sites.</p></div><LeadInbox leads={leads} /></section>
+      <section className="space-y-4"><div><h2 className="text-xl font-semibold">Recent inquiries</h2><p className="mt-1 text-sm text-muted-foreground">Messages pet owners sent through your sites.</p></div><LeadInbox leads={leads} /></section>
 
       {state.error && (
         <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md">

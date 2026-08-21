@@ -21,7 +21,7 @@ export function LaunchDraft() {
     }
   }, []);
 
-  if (!draft) return <main className="mx-auto max-w-xl px-5 py-20 text-center"><h1 className="text-3xl font-semibold">Your draft isn’t in this browser.</h1><Button asChild className="mt-6"><Link href="/">Start a new site</Link></Button></main>;
+  if (!draft) return <main className="mx-auto max-w-xl px-5 py-20 text-center"><h1 className="text-3xl font-semibold">We couldn&apos;t find a draft in this browser.</h1><Button asChild className="mt-6"><Link href="/">Start a new site</Link></Button></main>;
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-2xl items-center px-5 py-12">
@@ -33,7 +33,7 @@ export function LaunchDraft() {
         <form action={action} className="mt-8">
           {Object.entries(draft).map(([name, value]) => <input key={name} type="hidden" name={name} value={value} />)}
           {state.error && <p role="alert" className="mb-4 text-sm text-destructive">{state.error}</p>}
-          <Button type="submit" size="lg" disabled={pending}>{pending ? 'Launching…' : 'Launch my site'}</Button>
+          <Button type="submit" size="lg" disabled={pending}>{pending ? 'Launching...' : 'Launch my site'}</Button>
           <Button asChild type="button" size="lg" variant="ghost" className="ml-2"><Link href="/build">Keep editing</Link></Button>
         </form>
       </section>

@@ -55,10 +55,10 @@ export function LeadInbox({ leads }: { leads: InboxLead[] }) {
     <div className="space-y-2">{visible.map((lead) => <article key={lead.id} className={`rounded-2xl border bg-card p-4 shadow-sm ${lead.readAt ? 'border-border' : 'border-emerald-500/50'}`}>
       <button type="button" onClick={() => openLead(lead)} className="w-full text-left" aria-expanded={expanded === lead.id}>
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"><span className="font-semibold">{lead.name}{!lead.readAt && <span className="ml-2 inline-block size-2 rounded-full bg-emerald-500" aria-label="Unread" />}</span><span className="text-xs text-muted-foreground">{lead.siteName} · {new Date(lead.createdAt).toLocaleDateString()}</span></div>
-        <p className="mt-2 truncate text-sm text-muted-foreground">{lead.dates || 'Dates not provided'}{lead.message ? ` — ${lead.message}` : ''}</p>
+        <p className="mt-2 truncate text-sm text-muted-foreground">{lead.dates || 'Dates not provided'}{lead.message ? `: ${lead.message}` : ''}</p>
       </button>
       {expanded === lead.id && <div className="mt-4 border-t border-border pt-4 text-sm"><div className="flex flex-wrap gap-3"><a href={`mailto:${lead.email}`} className="font-medium underline underline-offset-4">Email {lead.email}</a><button type="button" onClick={() => void copyDetails(lead)} className="underline underline-offset-4">{copyState === lead.id ? 'Copied' : 'Copy details'}</button></div><p className="mt-3 whitespace-pre-wrap leading-6 text-muted-foreground">{lead.message || 'No care details provided.'}</p></div>}
     </article>)}</div>
-    {isPending && <p className="text-xs text-muted-foreground" role="status">Updating inbox…</p>}
+    {isPending && <p className="text-xs text-muted-foreground" role="status">Updating inbox...</p>}
   </div>;
 }

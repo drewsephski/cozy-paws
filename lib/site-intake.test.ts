@@ -12,7 +12,7 @@ describe('site intake', () => {
       subdomain: 'Happy-Tails',
       icon: 'dog',
       success: false,
-      error: 'Subdomain can only have lowercase letters, numbers, and hyphens. Please try again.'
+      error: 'Use only lowercase letters, numbers, and hyphens.'
     });
     expect(await intake.checkAddress({ subdomain: 'happy-tails', icon: 'dog' })).toEqual({
       success: true,
@@ -22,7 +22,7 @@ describe('site intake', () => {
     await profiles.create('owner-1', 'happy-tails', { emoji: 'dog', createdAt: 100 });
     expect(await intake.checkAddress({ subdomain: 'happy-tails', icon: 'dog' })).toMatchObject({
       success: false,
-      error: 'This subdomain is already taken'
+      error: 'That site address is already taken.'
     });
   });
 
@@ -32,13 +32,13 @@ describe('site intake', () => {
 
     await expect(intake.checkAddress({})).resolves.toEqual({
       success: false,
-      error: 'Subdomain and icon are required'
+      error: 'Enter a site address and choose a pet icon.'
     });
     await expect(
       intake.checkAddress({ subdomain: 'happy-tails', icon: 'not-an-icon' })
     ).resolves.toMatchObject({
       success: false,
-      error: 'Please enter a valid emoji (maximum 10 characters)'
+      error: 'Choose a valid pet icon.'
     });
     await expect(intake.checkAddress({ subdomain: 'hi', icon: 'dog' })).resolves.toMatchObject({
       success: false,

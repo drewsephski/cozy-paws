@@ -36,7 +36,7 @@ export function createSiteIntake(profiles: ProfileOwnership, now = Date.now) {
       const subdomain = readString(input.subdomain);
       const icon = readString(input.icon);
       if (!subdomain || !icon) {
-        return { success: false as const, error: 'Subdomain and icon are required' };
+        return { success: false as const, error: 'Enter a site address and choose a pet icon.' };
       }
 
       if (!isValidIcon(icon)) {
@@ -44,7 +44,7 @@ export function createSiteIntake(profiles: ProfileOwnership, now = Date.now) {
           subdomain,
           icon,
           success: false as const,
-          error: 'Please enter a valid emoji (maximum 10 characters)'
+          error: 'Choose a valid pet icon.'
         };
       }
 
@@ -63,7 +63,7 @@ export function createSiteIntake(profiles: ProfileOwnership, now = Date.now) {
           subdomain,
           icon,
           success: false as const,
-          error: 'Subdomain can only have lowercase letters, numbers, and hyphens. Please try again.'
+          error: 'Use only lowercase letters, numbers, and hyphens.'
         };
       }
 
@@ -72,7 +72,7 @@ export function createSiteIntake(profiles: ProfileOwnership, now = Date.now) {
           subdomain,
           icon,
           success: false as const,
-          error: 'This subdomain is already taken'
+          error: 'That site address is already taken.'
         };
       }
 

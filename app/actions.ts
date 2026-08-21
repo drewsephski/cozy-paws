@@ -155,5 +155,5 @@ export async function deleteSubdomainAction(
   if (!deleted) return { error: 'This site could not be found.' };
 
   revalidatePath('/admin');
-  return { success: 'Domain deleted successfully' };
+  return { success: 'Site deleted.' };
 }

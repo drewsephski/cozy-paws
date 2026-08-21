@@ -51,8 +51,8 @@ export function ShareSiteDialog({ sites }: { sites: ShareableSite[] }) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Which site would you like to share?</DialogTitle>
-          <DialogDescription>Choose a site and we’ll copy its link to your clipboard.</DialogDescription>
+          <DialogTitle>Choose a site to share</DialogTitle>
+          <DialogDescription>Select a site, then copy its link.</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-2 py-2" role="radiogroup" aria-label="Sites to share">
@@ -93,8 +93,8 @@ export function ShareSiteDialog({ sites }: { sites: ShareableSite[] }) {
         </div>
 
         <div className="min-h-5" aria-live="polite">
-          {status === 'copied' && <p className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-400"><Check className="size-4" aria-hidden="true" />Link copied. It’s ready to paste.</p>}
-          {status === 'error' && <p className="text-sm text-destructive">Couldn’t copy the link. Check your browser’s clipboard permission and try again.</p>}
+          {status === 'copied' && <p className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-400"><Check className="size-4" aria-hidden="true" />Link copied. Paste it anywhere.</p>}
+          {status === 'error' && <p className="text-sm text-destructive">We couldn&apos;t copy the link. Check your browser&apos;s clipboard permission and try again.</p>}
         </div>
 
         <DialogFooter>

@@ -50,7 +50,7 @@ export function AuthForm() {
         return;
       }
 
-      setSuccess(mode === 'sign-up' ? 'Account created. Taking you to your workspace…' : 'Signed in. Taking you to your workspace…');
+      setSuccess(mode === 'sign-up' ? 'Account created. Opening your dashboard...' : 'Signed in. Opening your dashboard...');
       router.replace(callbackURL);
       router.refresh();
     } catch {
@@ -87,7 +87,7 @@ export function AuthForm() {
         {success && <p role="status" aria-live="polite" className="flex items-center gap-2 rounded-lg border border-emerald-600/20 bg-emerald-50 px-3 py-2 text-sm text-emerald-800"><CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />{success}</p>}
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
-          {isPending ? (mode === 'sign-up' ? 'Creating account…' : 'Signing in…') : mode === 'sign-up' ? 'Create my account' : 'Sign in'}
+          {isPending ? (mode === 'sign-up' ? 'Creating account...' : 'Signing in...') : mode === 'sign-up' ? 'Create my account' : 'Sign in'}
         </Button>
       </form>
     </div>

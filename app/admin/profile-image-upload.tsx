@@ -25,7 +25,7 @@ export function ProfileImageUpload({ subdomain, currentImageUrl, onUploaded }: {
       return;
     }
 
-    setStatus('Uploading…');
+    setStatus('Uploading...');
     try {
       const blob = await upload(profileImagePath(subdomain, file.name), file, {
         access: 'public',
@@ -44,7 +44,7 @@ export function ProfileImageUpload({ subdomain, currentImageUrl, onUploaded }: {
     }
   }
 
-  const isUploading = status === 'Uploading…';
+  const isUploading = status === 'Uploading...';
   const isSaved = status === 'Photo saved.';
 
   return (
@@ -59,7 +59,7 @@ export function ProfileImageUpload({ subdomain, currentImageUrl, onUploaded }: {
       <div className="min-w-0">
         <label className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border border-input bg-background px-3 text-sm font-medium shadow-xs transition-colors hover:bg-muted focus-within:ring-2 focus-within:ring-ring/50">
           {isUploading ? <Loader2 aria-hidden="true" className="size-4 animate-spin" /> : <Camera aria-hidden="true" className="size-4" />}
-          {isUploading ? 'Uploading…' : imageUrl ? 'Change photo' : 'Choose photo'}
+          {isUploading ? 'Uploading...' : imageUrl ? 'Change photo' : 'Choose photo'}
           <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => handleChange(event.target.files?.[0])} disabled={isUploading} />
         </label>
         <p className="mt-1.5 text-xs text-muted-foreground">JPG, PNG, or WebP · 5 MB max</p>

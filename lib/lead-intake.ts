@@ -36,7 +36,7 @@ export function createLeadIntake(profiles: ProfileOwnership, maySubmit: LeadRate
       const savedSubdomain = await profiles.recordLead(subdomain, { name, email, dates, message }, createdAt);
       return savedSubdomain
         ? { success: true as const, subdomain: savedSubdomain }
-        : { success: false as const, error: 'This Site is no longer available.' };
+        : { success: false as const, error: 'This site is no longer available.' };
     }
   };
 }

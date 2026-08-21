@@ -29,9 +29,9 @@ export function AboutSitterfolioDialog({ businessName }: { businessName: string 
           <div className="mb-1 grid size-10 place-items-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
             <PawPrint className="size-5" aria-hidden="true" />
           </div>
-          <DialogTitle className="text-xl">A simpler way to connect over pet care</DialogTitle>
+          <DialogTitle className="text-xl">About this page</DialogTitle>
           <DialogDescription className="leading-6">
-            This is a Sitterfolio—a shareable pet-care profile where sitters introduce their services and pet owners can ask about availability directly.
+            This page was made with Sitterfolio. It lists the sitter&apos;s services and lets pet owners send an availability request.
           </DialogDescription>
         </DialogHeader>
 
@@ -39,23 +39,23 @@ export function AboutSitterfolioDialog({ businessName }: { businessName: string 
           <section className="rounded-xl border border-border bg-muted/25 p-4">
             <div className="flex items-center gap-2 text-sm font-semibold"><HeartHandshake className="size-4 text-emerald-600" aria-hidden="true" />For pet owners</div>
             <ul className="mt-3 space-y-2 text-sm leading-5 text-muted-foreground">
-              <li className="flex gap-2"><Check className="mt-0.5 size-3.5 shrink-0 text-emerald-600" aria-hidden="true" />Review services and service areas.</li>
-              <li className="flex gap-2"><Send className="mt-0.5 size-3.5 shrink-0 text-emerald-600" aria-hidden="true" />Send dates and care details in one place.</li>
-              <li className="flex gap-2"><Check className="mt-0.5 size-3.5 shrink-0 text-emerald-600" aria-hidden="true" />Hear back directly from the sitter.</li>
+              <li className="flex gap-2"><Check className="mt-0.5 size-3.5 shrink-0 text-emerald-600" aria-hidden="true" />Check services and service areas.</li>
+              <li className="flex gap-2"><Send className="mt-0.5 size-3.5 shrink-0 text-emerald-600" aria-hidden="true" />Send the dates and care details.</li>
+              <li className="flex gap-2"><Check className="mt-0.5 size-3.5 shrink-0 text-emerald-600" aria-hidden="true" />Get a reply from the sitter.</li>
             </ul>
           </section>
 
           <section className="rounded-xl border border-border bg-muted/25 p-4">
             <div className="flex items-center gap-2 text-sm font-semibold"><LayoutDashboard className="size-4 text-emerald-600" aria-hidden="true" />For pet sitters</div>
             <ul className="mt-3 space-y-2 text-sm leading-5 text-muted-foreground">
-              <li className="flex gap-2"><Check className="mt-0.5 size-3.5 shrink-0 text-emerald-600" aria-hidden="true" />Create a polished profile without building a website.</li>
-              <li className="flex gap-2"><Check className="mt-0.5 size-3.5 shrink-0 text-emerald-600" aria-hidden="true" />Share one memorable site link anywhere.</li>
-              <li className="flex gap-2"><Check className="mt-0.5 size-3.5 shrink-0 text-emerald-600" aria-hidden="true" />Review new inquiries from a simple dashboard.</li>
+              <li className="flex gap-2"><Check className="mt-0.5 size-3.5 shrink-0 text-emerald-600" aria-hidden="true" />Publish a profile without building a website.</li>
+              <li className="flex gap-2"><Check className="mt-0.5 size-3.5 shrink-0 text-emerald-600" aria-hidden="true" />Share the same link with every client.</li>
+              <li className="flex gap-2"><Check className="mt-0.5 size-3.5 shrink-0 text-emerald-600" aria-hidden="true" />Read new inquiries in the dashboard.</li>
             </ul>
           </section>
         </div>
 
-        <p className="text-xs leading-5 text-muted-foreground">Availability requests go to the sitter whose profile you’re viewing. Sitterfolio does not book or confirm care on their behalf.</p>
+        <p className="text-xs leading-5 text-muted-foreground">Your request goes to the sitter on this page. Sitterfolio does not book or confirm care for them.</p>
 
         <DialogFooter>
           <DialogClose asChild><Button type="button">Got it</Button></DialogClose>

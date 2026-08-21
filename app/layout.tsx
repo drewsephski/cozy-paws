@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: '%s | Sitterfolio'
   },
   description:
-    'Create a professional pet sitter contact page, share your services directly with clients, and make it easier for pet owners to reach you outside Rover.',
+    'Create a pet-sitting site with your services, service area, and a form clients can use to ask about availability.',
   keywords: [
     'website for pet sitters',
     'pet sitter contact page',
@@ -25,14 +25,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Sitterfolio | Website for Pet Sitters',
     description:
-      'A simple, shareable website and contact page for independent pet sitters.',
+      'A shareable website with services, service areas, and availability requests for independent pet sitters.',
     type: 'website'
   },
   twitter: {
     card: 'summary',
     title: 'Sitterfolio | Website for Pet Sitters',
     description:
-      'Create a professional pet sitter contact page and share it directly with clients.'
+      'Create a pet-sitting site and give clients one link to ask about availability.'
   }
 };
 
