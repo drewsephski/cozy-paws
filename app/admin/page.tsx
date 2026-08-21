@@ -16,9 +16,7 @@ export default async function AdminPage() {
   if (!session) redirect('/auth?callbackURL=%2Fadmin');
 
   const tenants = await profiles.listOwned(session.user.id);
-  const leads = tenants.length
-    ? await profiles.getOwnedLeads(session.user.id, tenants[0].subdomain)
-    : [];
+  const leads = await profiles.getOwnedLeadsForAllSites(session.user.id);
 
   return (
     <div className="min-h-screen bg-background">

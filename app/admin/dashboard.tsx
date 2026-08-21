@@ -13,8 +13,8 @@ import { ProfileImageUpload } from './profile-image-upload';
 import { ShareSiteButton } from './share-site-button';
 import { DeleteSiteDialog } from './delete-site-dialog';
 import { PetIcon } from '@/components/pet-icon';
-import { ShareSiteDialog } from './share-site-dialog';
 import { ServiceAreaField, ServicesField, SuggestionField } from './profile-select-fields';
+import { LeadInbox } from './lead-inbox';
 
 type Tenant = {
   subdomain: string;
@@ -269,7 +269,7 @@ function TenantGrid({
   );
 }
 
-export function AdminDashboard({ tenants, leads }: { tenants: Tenant[]; leads: { name: string; email: string; dates: string; message: string; createdAt: number }[] }) {
+export function AdminDashboard({ tenants, leads }: { tenants: Tenant[]; leads: { id: string; subdomain: string; siteName: string; name: string; email: string; dates: string; message: string; createdAt: number; readAt: number | null }[] }) {
   const [state, action, isPending] = useActionState<DeleteState, FormData>(
     deleteSubdomainAction,
     {}
@@ -283,7 +283,7 @@ export function AdminDashboard({ tenants, leads }: { tenants: Tenant[]; leads: {
       <DashboardHeader />
       <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><TenantGrid tenants={tenants} action={action} isPending={isPending} /></section>
       {tenants[0] && <ProfileEditor tenant={tenants[0]} />}
-      <section className="space-y-4"><div><h2 className="text-xl font-semibold">Recent inquiries</h2><p className="mt-1 text-sm text-muted-foreground">Messages pet owners sent through your public site.</p></div>{leads.length > 0 ? <div className="grid gap-3 lg:grid-cols-2">{leads.slice(0, 6).map((lead, index) => <div key={`${lead.email}-${index}`} className="rounded-2xl border border-border bg-card p-5 shadow-sm"><div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"><strong>{lead.name}</strong><a href={`mailto:${lead.email}`} className="text-sm text-muted-foreground hover:text-foreground">{lead.email}</a></div><p className="mt-3 text-sm leading-6 text-muted-foreground">{lead.dates || 'Dates not provided'}{lead.message ? ` — ${lead.message}` : ''}</p></div>)}</div> : <div className="rounded-2xl border border-dashed border-border p-8 text-center"><p className="font-medium">No inquiries yet</p><p className="mt-1 text-sm text-muted-foreground">Share your site link with clients to start receiving messages here.</p>{tenants.length > 0 && <ShareSiteDialog sites={tenants.map((tenant) => ({ name: tenant.businessName || tenant.subdomain, subdomain: `${tenant.subdomain}.${rootDomain}`, url: `${protocol}://${tenant.subdomain}.${rootDomain}` }))} />}</div>}</section>
+      <section className="space-y-4"><div><h2 className="text-xl font-semibold">Recent inquiries</h2><p className="mt-1 text-sm text-muted-foreground">Messages pet owners sent through your Sites.</p></div><LeadInbox leads={leads} /></section>
 
       {state.error && (
         <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md">

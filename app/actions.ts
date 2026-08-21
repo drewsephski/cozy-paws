@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { siteIntake } from '@/lib/intake';
 import { profiles, type BusinessProfile } from '@/lib/profiles';
 import { getSession } from '@/lib/session';
+import { leadIntake, leadRateLimitKey } from '@/lib/leads';
 
 async function requireUser(callbackURL = '/admin') {
   const session = await getSession();
@@ -92,22 +93,28 @@ export async function completeOnboardingAction(formData: FormData): Promise<neve
   redirect(`/admin/complete?site=${encodeURIComponent(updated.subdomain)}`);
 }
 
-export async function createLeadAction(formData: FormData): Promise<void> {
+export type LeadSubmissionState = { success?: boolean; error?: string };
+
+export async function createLeadAction(
+  _prevState: LeadSubmissionState,
+  formData: FormData
+): Promise<LeadSubmissionState> {
   const subdomain = String(formData.get('subdomain') || '');
-  const name = String(formData.get('name') || '').trim();
-  const email = String(formData.get('email') || '').trim();
-  if (!subdomain || !name || !email) return;
+  const result = await leadIntake.submit(
+    {
+      subdomain,
+      name: formData.get('name'),
+      email: formData.get('email'),
+      dates: formData.get('dates'),
+      message: formData.get('message')
+    },
+    await leadRateLimitKey(subdomain)
+  );
+  if (!result.success) return { error: result.error };
 
-  const savedSubdomain = await profiles.recordLead(subdomain, {
-    name,
-    email,
-    dates: String(formData.get('dates') || ''),
-    message: String(formData.get('message') || '')
-  });
-  if (!savedSubdomain) return;
-
-  revalidatePath(`/s/${savedSubdomain}`);
+  revalidatePath(`/s/${result.subdomain}`);
   revalidatePath('/admin');
+  return { success: true };
 }
 
 export async function saveProfileImageAction(formData: FormData): Promise<void> {
@@ -124,6 +131,14 @@ export async function saveProfileImageAction(formData: FormData): Promise<void> 
 
   revalidatePath('/admin');
   revalidatePath(`/s/${updated.subdomain}`);
+}
+
+export async function markLeadReadAction(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const subdomain = String(formData.get('subdomain') || '');
+  const leadId = String(formData.get('leadId') || '');
+  const marked = await profiles.markLeadRead(user.id, subdomain, leadId);
+  if (marked) revalidatePath('/admin');
 }
 
 type DeleteState = { error?: string; success?: string };

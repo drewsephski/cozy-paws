@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { profiles } from '@/lib/profiles';
 import { protocol, rootDomain } from '@/lib/utils';
-import { createLeadAction } from '@/app/actions';
+import { LeadForm } from './lead-form';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { MapPin } from 'lucide-react';
 import { PetIcon } from '@/components/pet-icon';
@@ -62,14 +62,7 @@ export default async function SubdomainPage({
           <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400">Ask about availability</p>
           <h2 className="text-xl font-semibold">Tell me about your pet</h2>
           <p className="mt-1.5 text-sm leading-5 text-muted-foreground">Share the basics and I’ll follow up directly.</p>
-          <form action={createLeadAction} className="mt-5 space-y-3">
-            <input type="hidden" name="subdomain" value={subdomain} />
-            <label className="block"><span className="mb-1.5 block text-xs font-medium">Your name</span><input name="name" required autoComplete="name" className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label>
-            <label className="block"><span className="mb-1.5 block text-xs font-medium">Email</span><input name="email" type="email" required autoComplete="email" className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label>
-            <label className="block"><span className="mb-1.5 block text-xs font-medium">Dates you need care</span><input name="dates" placeholder="For example, Sept. 12–15" className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label>
-            <label className="block"><span className="mb-1.5 block text-xs font-medium">Pet and care details</span><textarea name="message" placeholder="Pet, routine, and care needed" rows={3} className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label>
-            <button className="h-10 w-full rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90">Send availability request</button>
-          </form>
+          <LeadForm subdomain={subdomain} />
         </section>
       </main>
 
