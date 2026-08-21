@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { saveProfileImageAction } from '@/app/actions';
 import { Camera, CheckCircle2, Loader2 } from 'lucide-react';
 
-export function ProfileImageUpload({ subdomain, currentImageUrl }: { subdomain: string; currentImageUrl?: string }) {
+export function ProfileImageUpload({ subdomain, currentImageUrl, onUploaded }: { subdomain: string; currentImageUrl?: string; onUploaded?: (url: string) => void }) {
   const [imageUrl, setImageUrl] = useState(currentImageUrl);
   const [status, setStatus] = useState('');
 
@@ -32,6 +32,7 @@ export function ProfileImageUpload({ subdomain, currentImageUrl }: { subdomain: 
       formData.set('imageUrl', blob.url);
       await saveProfileImageAction(formData);
       setImageUrl(blob.url);
+      onUploaded?.(blob.url);
       setStatus('Photo saved.');
     } catch {
       setStatus('Upload failed. Check your Blob connection and try again.');

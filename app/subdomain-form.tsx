@@ -1,27 +1,14 @@
 'use client';
 
-import type React from 'react';
-
 import { useState } from 'react';
 import { useActionState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@/components/ui/popover';
-import { Smile } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import {
-  EmojiPicker,
-  EmojiPickerContent,
-  EmojiPickerSearch,
-  EmojiPickerFooter
-} from '@/components/ui/emoji-picker';
 import { createSubdomainAction } from '@/app/actions';
 import { rootDomain } from '@/lib/utils';
+import { petIconOptions } from '@/lib/pet-icons';
+import { PetIcon } from '@/components/pet-icon';
 
 type CreateState = {
   error?: string;
@@ -55,71 +42,31 @@ function SubdomainInput({ defaultValue }: { defaultValue?: string }) {
 
 function IconPicker({
   icon,
-  setIcon,
-  defaultValue
+  setIcon
 }: {
   icon: string;
   setIcon: (icon: string) => void;
-  defaultValue?: string;
 }) {
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
-
-  const handleEmojiSelect = ({ emoji }: { emoji: string }) => {
-    setIcon(emoji);
-    setIsPickerOpen(false);
-  };
-
   return (
     <div className="space-y-2">
-      <Label htmlFor="icon">Pick a pet icon</Label>
-      <div className="flex flex-col gap-2">
-        <input type="hidden" name="icon" value={icon} required />
-        <div className="flex items-center gap-2">
-          <Card className="flex flex-1 flex-row items-center justify-between rounded-md border border-input p-2 shadow-none">
-            <div className="min-w-[40px] min-h-[40px] flex items-center pl-[14px] select-none">
-              {icon ? (
-                <span className="text-3xl">{icon}</span>
-              ) : (
-                <span className="text-gray-400 text-sm font-normal">
-                  No icon selected
-                </span>
-              )}
-            </div>
-            <Popover open={isPickerOpen} onOpenChange={setIsPickerOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="ml-auto rounded-md"
-                  onClick={() => setIsPickerOpen(!isPickerOpen)}
-                >
-                  <Smile className="h-4 w-4 mr-2" />
-                  Choose icon
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="p-0 w-[256px]"
-                align="end"
-                sideOffset={5}
-              >
-                <EmojiPicker
-                  className="h-[300px] w-[256px]"
-                  defaultValue={defaultValue}
-                  onEmojiSelect={handleEmojiSelect}
-                >
-                  <EmojiPickerSearch />
-                  <EmojiPickerContent />
-                  <EmojiPickerFooter />
-                </EmojiPicker>
-              </PopoverContent>
-            </Popover>
-          </Card>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          This adds a friendly marker to your site before you upload a photo.
-        </p>
+      <Label>Choose a pet</Label>
+      <input type="hidden" name="icon" value={icon} required />
+      <div className="grid grid-cols-4 gap-2" role="group" aria-label="Pet icon">
+        {petIconOptions.map((pet) => (
+          <button
+            key={pet.id}
+            type="button"
+            onClick={() => setIcon(pet.id)}
+            aria-label={pet.label}
+            aria-pressed={icon === pet.id}
+            className="group flex h-16 flex-col items-center justify-center gap-1 rounded-lg border border-input bg-background transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary aria-pressed:ring-2 aria-pressed:ring-primary/20"
+          >
+            <PetIcon value={pet.id} className="size-6 transition-transform group-hover:scale-110" />
+            <span className="text-[10px] font-medium leading-none text-muted-foreground group-aria-pressed:text-primary">{pet.label}</span>
+          </button>
+        ))}
       </div>
+      <p className="text-xs text-muted-foreground">Pick the pet that best represents your business. You can add a photo next.</p>
     </div>
   );
 }
@@ -136,7 +83,7 @@ export function SubdomainForm() {
     <form action={action} className="space-y-4">
       <SubdomainInput defaultValue={state?.subdomain} />
 
-      <IconPicker icon={icon} setIcon={setIcon} defaultValue={state?.icon} />
+      <IconPicker icon={icon} setIcon={setIcon} />
 
       {state?.error && (
         <div className="text-sm text-red-500">{state.error}</div>

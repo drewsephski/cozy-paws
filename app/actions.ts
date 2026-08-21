@@ -4,7 +4,6 @@ import { redis } from '@/lib/redis';
 import { isValidIcon } from '@/lib/subdomains';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { rootDomain, protocol } from '@/lib/utils';
 
 export async function createSubdomainAction(
   prevState: any,
@@ -57,33 +56,71 @@ export async function createSubdomainAction(
   await redis.set(`subdomain:${sanitizedSubdomain}`, {
     emoji: icon,
     createdAt: Date.now(),
-    businessName: 'Happy Tails Care',
-    tagline: 'Kind, reliable care for your favorite family members.',
-    location: 'Your neighborhood',
-    services: ['Dog walking', 'Drop-in visits', 'Overnight stays'],
+    businessName: '',
+    tagline: '',
+    location: '',
+    services: [],
     phone: '',
-    email: ''
+    email: '',
+    onboardingCompletedAt: null
   });
 
-  redirect(`${protocol}://${sanitizedSubdomain}.${rootDomain}`);
+  redirect('/admin');
 }
 
-export async function saveProfileAction(formData: FormData): Promise<void> {
+export type SaveProfileState = { success?: boolean; error?: string; savedAt?: number };
+
+export async function saveProfileAction(
+  _prevState: SaveProfileState,
+  formData: FormData
+): Promise<SaveProfileState> {
   const subdomain = String(formData.get('subdomain') || '');
   const current = await redis.get<Record<string, unknown>>(`subdomain:${subdomain}`);
-  if (!current) return;
+  if (!current) return { error: 'This site could not be found. Refresh and try again.' };
+
+  const readValue = (name: string, maximumLength: number) =>
+    formData.has(name)
+      ? String(formData.get(name) || '').trim().slice(0, maximumLength)
+      : current[name];
+
+  const services = formData.has('services')
+    ? String(formData.get('services') || '')
+        .split(',')
+        .map((service) => service.trim())
+        .filter(Boolean)
+        .slice(0, 8)
+    : current.services;
 
   await redis.set(`subdomain:${subdomain}`, {
     ...current,
-    businessName: String(formData.get('businessName') || '').slice(0, 80),
-    tagline: String(formData.get('tagline') || '').slice(0, 160),
-    location: String(formData.get('location') || '').slice(0, 80),
-    phone: String(formData.get('phone') || '').slice(0, 40),
-    email: String(formData.get('email') || '').slice(0, 120),
-    services: String(formData.get('services') || '').split(',').map((s) => s.trim()).filter(Boolean).slice(0, 8)
+    businessName: readValue('businessName', 80),
+    tagline: readValue('tagline', 160),
+    location: readValue('location', 80),
+    phone: readValue('phone', 40),
+    email: readValue('email', 120),
+    services
   });
-  revalidatePath('/admin');
   revalidatePath(`/s/${subdomain}`);
+  return {
+    success: true,
+    savedAt: Date.now()
+  };
+}
+
+export async function completeOnboardingAction(formData: FormData): Promise<never> {
+  const subdomain = String(formData.get('subdomain') || '');
+  const current = await redis.get<Record<string, unknown>>(`subdomain:${subdomain}`);
+
+  if (!current) {
+    redirect('/admin');
+  }
+
+  await redis.set(`subdomain:${subdomain}`, {
+    ...current,
+    onboardingCompletedAt: Date.now()
+  });
+  revalidatePath(`/s/${subdomain}`);
+  redirect(`/admin/complete?site=${encodeURIComponent(subdomain)}`);
 }
 
 export async function createLeadAction(formData: FormData): Promise<void> {

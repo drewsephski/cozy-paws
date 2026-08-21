@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head>
-      <body className={`${geistSans.variable} antialiased`}>
+      <body className={`${geistSans.className} ${geistSans.variable} antialiased`}>
         {children}
         <SpeedInsights />
       </body>

@@ -36,32 +36,32 @@ export function DeleteSiteDialog({
           <Trash2 aria-hidden="true" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="gap-0 overflow-hidden rounded-xl border-border p-0 shadow-2xl sm:max-w-md">
-        <div className="border-b border-border px-6 pb-5 pt-6">
-          <div className="mb-5 grid size-10 place-items-center rounded-lg bg-destructive/10 text-destructive">
-            <AlertTriangle aria-hidden="true" className="size-5" />
+      <DialogContent className="gap-0 overflow-hidden rounded-xl border-border p-0 shadow-2xl sm:max-w-sm">
+        <div className="px-5 pb-4 pt-5">
+          <div className="flex items-start gap-3 pr-7">
+            <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-destructive/10 text-destructive">
+              <AlertTriangle aria-hidden="true" className="size-4" />
+            </div>
+            <DialogHeader className="gap-1.5 text-left">
+              <DialogTitle className="text-lg tracking-tight">Delete this site?</DialogTitle>
+              <DialogDescription className="text-xs leading-5">
+                Your public site will stop working immediately. This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
           </div>
-          <DialogHeader className="gap-2 pr-8 text-left">
-            <DialogTitle className="text-xl tracking-tight">Delete this site?</DialogTitle>
-            <DialogDescription className="leading-6">
-              Your public site will stop working immediately. This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
+          <div className="mt-4 rounded-md border border-border bg-muted/40 px-3 py-2">
+            <p className="truncate font-mono text-xs font-medium text-foreground">{siteUrl}</p>
+          </div>
         </div>
 
-        <div className="bg-muted/40 px-6 py-4">
-          <p className="text-xs font-medium uppercase tracking-[.14em] text-muted-foreground">Site to delete</p>
-          <p className="mt-1 truncate font-mono text-sm font-medium text-foreground">{siteUrl}</p>
-        </div>
-
-        <DialogFooter className="border-t border-border bg-background px-6 py-4 sm:justify-between">
+        <DialogFooter className="border-t border-border bg-muted/20 px-5 py-3 sm:justify-between">
           <DialogClose asChild>
             <Button type="button" variant="ghost" disabled={isPending}>Keep site</Button>
           </DialogClose>
           <form action={action}>
             <input type="hidden" name="subdomain" value={subdomain} />
-            <Button type="submit" variant="destructive" disabled={isPending} className="w-full sm:w-auto">
-              {isPending ? <Loader2 aria-hidden="true" className="animate-spin" /> : <Trash2 aria-hidden="true" />}
+            <Button type="submit" variant="destructive" disabled={isPending} className={`group/delete w-full transition-transform duration-150 active:scale-95 sm:w-auto ${isPending ? 'animate-pulse' : ''}`}>
+              {isPending ? <Loader2 aria-hidden="true" className="animate-spin" /> : <Trash2 aria-hidden="true" className="transition-transform duration-200 group-hover/delete:translate-y-0.5 group-hover/delete:rotate-6" />}
               {isPending ? 'Deleting…' : 'Delete site'}
             </Button>
           </form>

@@ -18,7 +18,7 @@ export default async function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader dashboard />
-      <main className="px-4 py-8 md:px-8 md:py-12"><AdminDashboard tenants={tenants} leads={leads} /></main>
+      <main><AdminDashboard tenants={tenants} leads={leads} /></main>
     </div>
   );
 }

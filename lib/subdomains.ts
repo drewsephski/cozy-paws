@@ -1,6 +1,11 @@
 import { redis } from '@/lib/redis';
+import { isPetIconId } from '@/lib/pet-icons';
 
 export function isValidIcon(str: string) {
+  if (isPetIconId(str)) {
+    return true;
+  }
+
   if (str.length > 10) {
     return false;
   }
@@ -36,6 +41,7 @@ type SubdomainData = {
   phone?: string;
   email?: string;
   profileImageUrl?: string;
+  onboardingCompletedAt?: number | null;
 };
 
 export type BusinessProfile = SubdomainData;
@@ -79,7 +85,8 @@ export async function getAllSubdomains() {
       services: data?.services,
       phone: data?.phone,
       email: data?.email
-      ,profileImageUrl: data?.profileImageUrl
+      ,profileImageUrl: data?.profileImageUrl,
+      onboardingCompletedAt: data?.onboardingCompletedAt
     };
   });
 }
