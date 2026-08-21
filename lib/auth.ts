@@ -13,6 +13,10 @@ const trustedOrigins = [
   .map((origin) => origin?.trim())
   .filter((origin): origin is string => Boolean(origin));
 
+const baseURL =
+  process.env.BETTER_AUTH_URL ||
+  (process.env.NODE_ENV === 'production' ? 'https://sitterfolio.com' : 'http://localhost:3000');
+
 function databaseUrl() {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) return undefined;
@@ -31,6 +35,7 @@ const pool = new Pool({
 
 export const auth = betterAuth({
   appName: 'Sitterfolio',
+  baseURL,
   database: pool,
   trustedOrigins,
   emailAndPassword: {
