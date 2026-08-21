@@ -29,6 +29,23 @@ export function isValidIcon(str: string) {
 type SubdomainData = {
   emoji: string;
   createdAt: number;
+  businessName?: string;
+  tagline?: string;
+  location?: string;
+  services?: string[];
+  phone?: string;
+  email?: string;
+  profileImageUrl?: string;
+};
+
+export type BusinessProfile = SubdomainData;
+
+export type Lead = {
+  name: string;
+  email: string;
+  dates: string;
+  message: string;
+  createdAt: number;
 };
 
 export async function getSubdomainData(subdomain: string) {
@@ -55,7 +72,18 @@ export async function getAllSubdomains() {
     return {
       subdomain,
       emoji: data?.emoji || '❓',
-      createdAt: data?.createdAt || Date.now()
+      createdAt: data?.createdAt || Date.now(),
+      businessName: data?.businessName,
+      tagline: data?.tagline,
+      location: data?.location,
+      services: data?.services,
+      phone: data?.phone,
+      email: data?.email
+      ,profileImageUrl: data?.profileImageUrl
     };
   });
+}
+
+export async function getLeads(subdomain: string) {
+  return (await redis.get<Lead[]>(`leads:${subdomain}`)) || [];
 }

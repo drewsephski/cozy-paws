@@ -45,7 +45,7 @@ function SubdomainInput({ defaultValue }: { defaultValue?: string }) {
             required
           />
         </div>
-        <span className="bg-gray-100 px-3 border border-l-0 border-input rounded-r-md text-gray-500 min-h-[36px] flex items-center">
+        <span className="flex min-h-9 items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm text-muted-foreground">
           .{rootDomain}
         </span>
       </div>
@@ -75,7 +75,7 @@ function IconPicker({
       <div className="flex flex-col gap-2">
         <input type="hidden" name="icon" value={icon} required />
         <div className="flex items-center gap-2">
-          <Card className="flex-1 flex flex-row items-center justify-between p-2 border border-input rounded-md">
+          <Card className="flex flex-1 flex-row items-center justify-between rounded-md border border-input p-2 shadow-none">
             <div className="min-w-[40px] min-h-[40px] flex items-center pl-[14px] select-none">
               {icon ? (
                 <span className="text-3xl">{icon}</span>
@@ -91,7 +91,7 @@ function IconPicker({
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="ml-auto rounded-sm"
+                  className="ml-auto rounded-md"
                   onClick={() => setIsPickerOpen(!isPickerOpen)}
                 >
                   <Smile className="h-4 w-4 mr-2" />
@@ -116,7 +116,7 @@ function IconPicker({
             </Popover>
           </Card>
         </div>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted-foreground">
           Select an emoji to represent your subdomain
         </p>
       </div>

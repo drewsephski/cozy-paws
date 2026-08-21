@@ -28,6 +28,10 @@ export async function createSubdomainAction(
 
   const sanitizedSubdomain = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, '');
 
+  if (sanitizedSubdomain.length < 3 || sanitizedSubdomain.length > 30) {
+    return { subdomain, icon, success: false, error: 'Choose a name between 3 and 30 characters.' };
+  }
+
   if (sanitizedSubdomain !== subdomain) {
     return {
       subdomain,
@@ -52,10 +56,55 @@ export async function createSubdomainAction(
 
   await redis.set(`subdomain:${sanitizedSubdomain}`, {
     emoji: icon,
-    createdAt: Date.now()
+    createdAt: Date.now(),
+    businessName: 'Happy Tails Care',
+    tagline: 'Kind, reliable care for your favorite family members.',
+    location: 'Your neighborhood',
+    services: ['Dog walking', 'Drop-in visits', 'Overnight stays'],
+    phone: '',
+    email: ''
   });
 
   redirect(`${protocol}://${sanitizedSubdomain}.${rootDomain}`);
+}
+
+export async function saveProfileAction(formData: FormData): Promise<void> {
+  const subdomain = String(formData.get('subdomain') || '');
+  const current = await redis.get<Record<string, unknown>>(`subdomain:${subdomain}`);
+  if (!current) return;
+
+  await redis.set(`subdomain:${subdomain}`, {
+    ...current,
+    businessName: String(formData.get('businessName') || '').slice(0, 80),
+    tagline: String(formData.get('tagline') || '').slice(0, 160),
+    location: String(formData.get('location') || '').slice(0, 80),
+    phone: String(formData.get('phone') || '').slice(0, 40),
+    email: String(formData.get('email') || '').slice(0, 120),
+    services: String(formData.get('services') || '').split(',').map((s) => s.trim()).filter(Boolean).slice(0, 8)
+  });
+  revalidatePath('/admin');
+  revalidatePath(`/s/${subdomain}`);
+}
+
+export async function createLeadAction(formData: FormData): Promise<void> {
+  const subdomain = String(formData.get('subdomain') || '');
+  const name = String(formData.get('name') || '').trim();
+  const email = String(formData.get('email') || '').trim();
+  if (!subdomain || !name || !email) return;
+  const leads = (await redis.get<Array<Record<string, unknown>>>(`leads:${subdomain}`)) || [];
+  await redis.set(`leads:${subdomain}`, [{ name, email, dates: String(formData.get('dates') || ''), message: String(formData.get('message') || ''), createdAt: Date.now() }, ...leads].slice(0, 100));
+  revalidatePath(`/s/${subdomain}`);
+  revalidatePath('/admin');
+}
+
+export async function saveProfileImageAction(formData: FormData): Promise<void> {
+  const subdomain = String(formData.get('subdomain') || '');
+  const imageUrl = String(formData.get('imageUrl') || '');
+  const current = await redis.get<Record<string, unknown>>(`subdomain:${subdomain}`);
+  if (!current || !imageUrl.startsWith('https://')) return;
+  await redis.set(`subdomain:${subdomain}`, { ...current, profileImageUrl: imageUrl });
+  revalidatePath('/admin');
+  revalidatePath(`/s/${subdomain}`);
 }
 
 export async function deleteSubdomainAction(
