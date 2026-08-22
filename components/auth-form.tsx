@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { CheckCircle2, Loader2 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,6 @@ import { Label } from '@/components/ui/label';
 type Mode = 'sign-in' | 'sign-up';
 
 export function AuthForm({ initialMode = 'sign-in' }: { initialMode?: Mode }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<Mode>(initialMode);
   const [isPending, setIsPending] = useState(false);
@@ -54,8 +53,9 @@ export function AuthForm({ initialMode = 'sign-in' }: { initialMode?: Mode }) {
       }
 
       setSuccess(mode === 'sign-up' ? 'Account created. Opening your dashboard...' : 'Signed in. Opening your dashboard...');
-      router.replace(callbackURL);
-      router.refresh();
+      // Use a full navigation so the next server request observes the session
+      // cookie set by Better Auth before protected routes evaluate it.
+      window.location.assign(callbackURL);
     } catch {
       setError('We could not reach Sitterfolio. Check your connection and try again.');
     } finally {
