@@ -44,9 +44,12 @@ export function AuthForm({ initialMode = 'sign-in' }: { initialMode?: Mode }) {
         return;
       }
 
-      const session = await authClient.getSession();
-      if (session.error || !session.data?.user) {
-        setError('Your account was created, but we could not start your session. Please try signing in again.');
+      // Better Auth has already created the durable session and returned the
+      // authenticated user. A second getSession request is race-prone here:
+      // it can run before the browser has committed the Set-Cookie response
+      // and incorrectly turn a successful auth response into an error.
+      if (!result.data?.user) {
+        setError('Authentication succeeded, but no user session was returned. Please try again.');
         return;
       }
 
