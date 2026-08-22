@@ -6,10 +6,12 @@ create table if not exists business (
   name text not null,
   stripe_account_id text unique,
   stripe_ready boolean not null default false,
+  payment_link_url text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 create index if not exists business_owner_idx on business(owner_user_id);
+alter table business add column if not exists payment_link_url text;
 
 create table if not exists site (
   id uuid primary key default gen_random_uuid(),

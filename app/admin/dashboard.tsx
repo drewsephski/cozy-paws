@@ -28,6 +28,7 @@ type SiteProfile = {
   email?: string;
   profileImageUrl?: string;
   onboardingCompletedAt?: number | null;
+  paymentLinkUrl?: string;
 };
 
 type DeleteState = {
@@ -166,11 +167,18 @@ const profileSuggestions = {
   tagline: ['Reliable visits for dogs and cats in Oak Park.', 'In-home care that keeps your pet on their usual routine.', 'Daily walks and drop-in visits for busy pet owners.', 'A familiar sitter while you are away.']
 } as const;
 
+function formatPhoneNumber(value: string) {
+  const digits = value.replace(/\D/g, '').replace(/^1(?=\d{10})/, '').slice(0, 10);
+  if (digits.length < 4) return digits;
+  if (digits.length < 7) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
 function ProfileField({ label, name, defaultValue, placeholder, type = 'text', className }: { label: string; name: string; defaultValue: string; placeholder: string; type?: string; className?: string }) {
   return (
     <div className={className}>
       <label htmlFor={name} className="mb-1.5 block text-xs font-medium text-muted-foreground">{label}</label>
-      <input id={name} name={name} type={type} defaultValue={defaultValue} placeholder={placeholder} className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none transition focus:border-emerald-500/70 focus:ring-4 focus:ring-emerald-500/10" />
+      <input id={name} name={name} type={type} defaultValue={name === 'phone' ? formatPhoneNumber(defaultValue) : defaultValue} placeholder={placeholder} onChange={name === 'phone' ? (event) => { event.currentTarget.value = formatPhoneNumber(event.currentTarget.value); } : undefined} inputMode={name === 'phone' ? 'tel' : undefined} className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none transition focus:border-emerald-500/70 focus:ring-4 focus:ring-emerald-500/10" />
     </div>
   );
 }
@@ -198,6 +206,7 @@ function ProfileEditor({ site }: { site: SiteProfile }) {
           <ServicesField defaultValue={site.services || []} />
           <ProfileField label="Phone" name="phone" type="tel" defaultValue={site.phone || ''} placeholder="(555) 123-4567" />
           <ProfileField label="Email" name="email" type="email" defaultValue={site.email || ''} placeholder="hello@example.com" />
+          <div className="sm:col-span-2"><ProfileField label="Stripe Payment Link (optional)" name="paymentLinkUrl" type="url" defaultValue={site.paymentLinkUrl || ''} placeholder="https://buy.stripe.com/..." /><p className="mt-1 text-xs text-muted-foreground">Create a Payment Link in Stripe, then paste it here. It will appear as a secure payment button on your public site.</p></div>
           <div className="sm:col-span-2">
             <p className="mb-1.5 text-xs font-medium text-muted-foreground">Profile photo</p>
             <ProfileImageUpload subdomain={site.subdomain} currentImageUrl={site.profileImageUrl} />
@@ -281,9 +290,9 @@ export function AdminDashboard({ sites, leads, revenue, paymentSetup }: { sites:
   return (
     <div className="relative mx-auto w-full max-w-6xl space-y-12 px-5 pb-12 pt-8 lg:px-8 lg:pb-16 lg:pt-12">
       <DashboardHeader />
+      <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><SiteGrid sites={sites} action={action} isPending={isPending} /></section>
       <section className="rounded-2xl border border-emerald-500/20 bg-emerald-50/60 p-6 dark:bg-emerald-950/20"><p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">Generated from your sites</p><p className="mt-2 text-4xl font-semibold tracking-tight">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(revenue.generatedRevenueCents / 100)}</p><p className="mt-2 text-sm text-muted-foreground">Net paid customer volume after refunds · {revenue.inquiries} inquiries · {revenue.paymentRequests} payment requests · {revenue.successfulPayments} successful payments</p><div className="mt-4 flex flex-wrap gap-2">{revenue.sites.map((item) => <span key={item.subdomain} className="rounded-full bg-background/80 px-3 py-1 text-xs">{item.subdomain}: {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(item.generatedRevenueCents/100)} generated</span>)}</div>{revenue.sources.length > 0 && <div className="mt-2 flex flex-wrap gap-2">{revenue.sources.map((item) => <span key={item.source} className="rounded-full bg-background/80 px-3 py-1 text-xs">{item.source}: {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(item.generatedRevenueCents/100)}</span>)}</div>}</section>
       {paymentSetup.some((business) => !business.ready) && <section className="rounded-2xl border border-border bg-card p-5"><h2 className="font-semibold">Collect payments with Stripe</h2><p className="mt-1 text-sm text-muted-foreground">Stripe setup is only required when you want to request payment.</p><div className="mt-4 flex flex-wrap gap-2">{paymentSetup.filter((business) => !business.ready).map((business) => <form key={business.businessId} action={startStripeOnboardingAction}><input type="hidden" name="businessId" value={business.businessId} /><Button type="submit" size="sm">{business.connected ? `Continue setup for ${business.businessName}` : `Set up ${business.businessName}`}</Button></form>)}</div></section>}
-      <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><SiteGrid sites={sites} action={action} isPending={isPending} /></section>
       {sites[0] && <ProfileEditor site={sites[0]} />}
       <section className="space-y-4"><div><h2 className="text-xl font-semibold">Recent inquiries</h2><p className="mt-1 text-sm text-muted-foreground">Messages pet owners sent through your sites.</p></div><LeadInbox leads={leads} /></section>
 

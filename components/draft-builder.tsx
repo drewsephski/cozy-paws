@@ -85,6 +85,7 @@ export function DraftBuilder({ signedIn }: { signedIn: boolean }) {
                 <Button type="submit" size="lg">{stepIndex === steps.length - 1 ? <>Preview and launch <ArrowRight /></> : <>Continue <ArrowRight /></>}</Button>
               </div>
             </form>
+            {!signedIn && <Button type="button" variant="link" className="mt-4 px-0" onClick={() => router.push('/auth?mode=sign-up&callbackURL=%2Flaunch')}>Skip to sign up</Button>}
           </div>
         </main>
         <aside className="overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_70px_-48px_rgba(0,0,0,.3)] lg:sticky lg:top-24">

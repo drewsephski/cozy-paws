@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
+import Script from 'next/script';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 
@@ -45,7 +46,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head>
+      <head>
+        <Script id="sitterfolio-theme" strategy="beforeInteractive">
+          {themeScript}
+        </Script>
+      </head>
       <body className={`${geistSans.className} ${geistSans.variable} antialiased`}>
         {children}
         <SpeedInsights />

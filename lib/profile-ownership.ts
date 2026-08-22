@@ -10,6 +10,7 @@ export type BusinessProfile = {
   email?: string;
   profileImageUrl?: string;
   onboardingCompletedAt?: number | null;
+  paymentLinkUrl?: string;
 };
 
 export type ProfileRecord = BusinessProfile & { subdomain: string };

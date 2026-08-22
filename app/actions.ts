@@ -58,13 +58,22 @@ export async function saveProfileAction(
     ['tagline', 160],
     ['location', 240],
     ['phone', 40],
-    ['email', 120]
+    ['email', 120],
+    ['paymentLinkUrl', 500]
   ] as const;
 
   for (const [name, maximumLength] of textFields) {
     if (formData.has(name)) {
       updates[name] = String(formData.get(name) || '').trim().slice(0, maximumLength);
     }
+  }
+
+  if (updates.paymentLinkUrl) {
+    try {
+      const url = new URL(updates.paymentLinkUrl);
+      if (url.protocol !== 'https:' || !['buy.stripe.com', 'checkout.stripe.com'].includes(url.hostname)) throw new Error();
+      updates.paymentLinkUrl = url.toString();
+    } catch { return { error: 'Use a valid Stripe Payment Link beginning with https://buy.stripe.com.' }; }
   }
 
   if (formData.has('services')) {

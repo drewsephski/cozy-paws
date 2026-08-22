@@ -10,10 +10,10 @@ import { Label } from '@/components/ui/label';
 
 type Mode = 'sign-in' | 'sign-up';
 
-export function AuthForm() {
+export function AuthForm({ initialMode = 'sign-in' }: { initialMode?: Mode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [mode, setMode] = useState<Mode>('sign-in');
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
