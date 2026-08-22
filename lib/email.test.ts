@@ -1,5 +1,22 @@
 import { describe, expect, it } from 'vitest';
-import { sendPaymentRequestNotification } from './email';
+import { sendPasswordResetEmail, sendPaymentRequestNotification } from './email';
+
+describe('password reset email', () => {
+  it('sends the single-use reset URL and expiry guidance', async () => {
+    let sent: unknown;
+    await sendPasswordResetEmail(
+      { email: 'sitter@example.com', url: 'https://sitterfolio.com/api/auth/reset-password/token' },
+      async (email) => { sent = email; }
+    );
+
+    expect(sent).toMatchObject({
+      to: 'sitter@example.com',
+      subject: 'Reset your Sitterfolio password'
+    });
+    expect((sent as { text: string }).text).toContain('https://sitterfolio.com/api/auth/reset-password/token');
+    expect((sent as { text: string }).text).toContain('expires in 30 minutes');
+  });
+});
 
 describe('payment request email', () => {
   it('uses canonical payment data and a payment-request idempotency key', async () => {

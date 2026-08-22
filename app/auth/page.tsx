@@ -36,7 +36,7 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
           <span className="mb-6 grid size-10 place-items-center rounded-xl bg-emerald-700 text-white"><PawPrint aria-hidden="true" className="size-5" /></span>
           <h1 className="text-3xl font-semibold tracking-tight">{isLaunching ? 'Save and launch your site' : 'Welcome to Sitterfolio'}</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">{isLaunching ? 'Create an account to publish your finished draft and manage inquiries.' : 'Sign in to manage your pet-care website.'}</p>
-          <div className="mt-7"><AuthForm initialMode={mode === 'sign-up' ? 'sign-up' : 'sign-in'} /></div>
+          <div className="mt-7"><AuthForm initialMode={mode === 'sign-up' ? 'sign-up' : mode === 'forgot-password' ? 'forgot-password' : 'sign-in'} /></div>
         </section>
       </main>
     </div>

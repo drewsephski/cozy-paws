@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-type Mode = 'sign-in' | 'sign-up';
+type Mode = 'sign-in' | 'sign-up' | 'forgot-password';
 
 export function AuthForm({ initialMode = 'sign-in' }: { initialMode?: Mode }) {
   const searchParams = useSearchParams();
@@ -34,6 +34,21 @@ export function AuthForm({ initialMode = 'sign-in' }: { initialMode?: Mode }) {
     const name = String(formData.get('name') || '').trim();
 
     try {
+      if (mode === 'forgot-password') {
+        const result = await authClient.requestPasswordReset({
+          email,
+          redirectTo: `${window.location.origin}/reset-password`
+        });
+
+        if (result.error) {
+          setError('We could not send a reset link right now. Please try again.');
+          return;
+        }
+
+        setSuccess('If an account exists for that email, we sent a password reset link.');
+        return;
+      }
+
       const result = mode === 'sign-up'
         ? await authClient.signUp.email({ name, email, password, callbackURL })
         : await authClient.signIn.email({ email, password, callbackURL });
@@ -70,6 +85,13 @@ export function AuthForm({ initialMode = 'sign-in' }: { initialMode?: Mode }) {
         <button type="button" onClick={() => { setMode('sign-up'); setError(''); setSuccess(''); }} className={`rounded-md px-3 py-2 text-sm font-medium transition ${mode === 'sign-up' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>Create account</button>
       </div>
 
+      {mode === 'forgot-password' && (
+        <div className="mt-6">
+          <h2 className="text-lg font-semibold">Reset your password</h2>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">Enter your account email and we’ll send you a secure reset link.</p>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         {mode === 'sign-up' && (
           <div className="space-y-2">
@@ -81,17 +103,25 @@ export function AuthForm({ initialMode = 'sign-in' }: { initialMode?: Mode }) {
           <Label htmlFor="email">Email</Label>
           <Input id="email" name="email" type="email" autoComplete="email" required />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" name="password" type="password" autoComplete={mode === 'sign-up' ? 'new-password' : 'current-password'} minLength={8} required />
-          {mode === 'sign-up' && <p className="text-xs text-muted-foreground">Use at least 8 characters.</p>}
-        </div>
+        {mode !== 'forgot-password' && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <Label htmlFor="password">Password</Label>
+              {mode === 'sign-in' && <button type="button" onClick={() => { setMode('forgot-password'); setError(''); setSuccess(''); }} className="text-xs font-medium text-emerald-700 hover:underline">Forgot password?</button>}
+            </div>
+            <Input id="password" name="password" type="password" autoComplete={mode === 'sign-up' ? 'new-password' : 'current-password'} minLength={8} required />
+            {mode === 'sign-up' && <p className="text-xs text-muted-foreground">Use at least 8 characters.</p>}
+          </div>
+        )}
         {error && <p role="alert" aria-live="assertive" className="rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">{error}</p>}
         {success && <p role="status" aria-live="polite" className="flex items-center gap-2 rounded-lg border border-emerald-600/20 bg-emerald-50 px-3 py-2 text-sm text-emerald-800"><CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />{success}</p>}
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
-          {isPending ? (mode === 'sign-up' ? 'Creating account...' : 'Signing in...') : mode === 'sign-up' ? 'Create my account' : 'Sign in'}
+          {isPending
+            ? mode === 'sign-up' ? 'Creating account...' : mode === 'forgot-password' ? 'Sending reset link...' : 'Signing in...'
+            : mode === 'sign-up' ? 'Create my account' : mode === 'forgot-password' ? 'Send reset link' : 'Sign in'}
         </Button>
+        {mode === 'forgot-password' && <button type="button" onClick={() => { setMode('sign-in'); setError(''); setSuccess(''); }} className="w-full text-sm font-medium text-muted-foreground hover:text-foreground">Back to sign in</button>}
       </form>
     </div>
   );

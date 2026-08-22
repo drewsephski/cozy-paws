@@ -31,12 +31,14 @@ export function LaunchDraft() {
 
   if (!draft) return <main className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-xl flex-col items-center justify-center px-5 py-20 text-center"><h1 className="text-3xl font-semibold tracking-[-.025em]">We couldn&apos;t find a draft in this browser.</h1><Button asChild className="mt-7" size="lg"><Link href="/">Start a new site <ArrowRight /></Link></Button></main>;
 
+  const businessName = draft.businessName.trim();
+
   return (
     <main className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center px-5 py-10 lg:px-8 lg:py-16">
       <section className="grid w-full overflow-hidden rounded-2xl bg-card shadow-[0_28px_90px_-52px_rgba(6,78,59,.45)] lg:grid-cols-[minmax(0,1.18fr)_minmax(20rem,.82fr)]">
         <div className="flex flex-col justify-center px-6 py-10 sm:px-10 sm:py-14 lg:px-14 lg:py-16">
           <span className="grid size-12 place-items-center rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-400/15 dark:text-emerald-300"><Rocket aria-hidden="true" className="size-6" /></span>
-          <h1 className="mt-7 max-w-xl text-4xl font-semibold tracking-[-.035em] text-balance sm:text-5xl lg:text-6xl">Ready to launch {draft.businessName}?</h1>
+          <h1 className="mt-7 max-w-xl text-4xl font-semibold tracking-[-.035em] text-balance sm:text-5xl lg:text-6xl">Ready to launch {businessName || 'your site'}?</h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">Your site will be published at <strong className="font-semibold text-foreground">{draft.subdomain}.{rootDomain}</strong>.</p>
           <form action={action} className="mt-9">
           {Object.entries(draft).map(([name, value]) => <input key={name} type="hidden" name={name} value={value} />)}
@@ -61,7 +63,7 @@ export function LaunchDraft() {
             <div className="mx-auto grid size-24 place-items-center rounded-full bg-emerald-50 text-emerald-900 shadow-[0_20px_44px_-18px_rgba(0,0,0,.6)]">
               <PetIcon value={draft.icon} className="size-12" />
             </div>
-            <p className="mt-7 text-2xl font-semibold tracking-[-.02em] text-balance">{draft.businessName}</p>
+            <p className="mt-7 text-2xl font-semibold tracking-[-.02em] text-balance">{businessName || 'Your Sitterfolio'}</p>
             {draft.location && <p className="mt-2 text-sm text-emerald-200">{draft.location}</p>}
           </div>
           <div className="relative rounded-xl bg-emerald-900/70 px-4 py-3 text-center text-sm text-emerald-100 ring-1 ring-inset ring-white/10">

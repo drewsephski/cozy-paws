@@ -4,6 +4,40 @@ import { getAppOrigin } from './app-url';
 
 const bounded = (value: string | undefined, length: number) => (value || '').slice(0, length);
 
+export type PasswordResetEmail = { to: string; subject: string; text: string };
+export type PasswordResetEmailSender = (email: PasswordResetEmail) => Promise<void>;
+
+const sendPasswordResetWithResend: PasswordResetEmailSender = async (email) => {
+  if (!process.env.RESEND_API_KEY || !process.env.SITTERFOLIO_FROM_EMAIL) {
+    throw new Error('Email delivery is not configured');
+  }
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const { error } = await resend.emails.send({
+    from: process.env.SITTERFOLIO_FROM_EMAIL,
+    ...email
+  });
+  if (error) throw new Error('resend rejected password reset email');
+};
+
+export async function sendPasswordResetEmail(
+  input: { email: string; url: string },
+  sender: PasswordResetEmailSender = sendPasswordResetWithResend
+) {
+  await sender({
+    to: input.email,
+    subject: 'Reset your Sitterfolio password',
+    text: [
+      'We received a request to reset your Sitterfolio password.',
+      '',
+      `Choose a new password: ${input.url}`,
+      '',
+      'This link expires in 30 minutes and can only be used once.',
+      'If you did not request a password reset, you can safely ignore this email.'
+    ].join('\n')
+  });
+}
+
 export async function sendNewLeadNotification({ profile, lead }: AcceptedLead) {
   if (!profile?.email || !process.env.RESEND_API_KEY || !process.env.SITTERFOLIO_FROM_EMAIL) return;
 
