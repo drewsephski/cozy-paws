@@ -6,7 +6,8 @@ import { siteIntake } from '@/lib/intake';
 import { profiles, type BusinessProfile } from '@/lib/profiles';
 import { getSession } from '@/lib/session';
 import { leadIntake, leadRateLimitKey } from '@/lib/leads';
-import { createPaymentRequestForLead } from '@/lib/payment-requests';
+import { createPaymentRequestForLead, deliverPaymentRequest } from '@/lib/payment-requests';
+import { getAppOrigin } from '@/lib/app-url';
 import { createOrContinueOnboarding } from '@/lib/connected-accounts';
 import { transitionOwnedLead } from '@/lib/lead-management';
 
@@ -168,15 +169,22 @@ export async function updateLeadStatusAction(formData: FormData): Promise<void> 
   revalidatePath('/admin');
 }
 
-export type PaymentRequestState = { error?: string; paymentUrl?: string };
+export type PaymentRequestState = { error?: string; paymentUrl?: string; customerEmail?: string; delivered?: boolean };
 export async function createPaymentRequestAction(_state: PaymentRequestState, formData: FormData): Promise<PaymentRequestState> {
   const user = await requireUser();
   try {
     const dollars = String(formData.get('amount') || '');
     if (!/^\d{1,7}(\.\d{1,2})?$/.test(dollars)) return { error: 'Enter a valid amount.' };
     const payment = await createPaymentRequestForLead(user.id, { leadId: String(formData.get('leadId') || ''), amountCents: Math.round(Number(dollars) * 100), description: String(formData.get('description') || '').trim().slice(0, 200), customerNote: String(formData.get('note') || '').trim().slice(0, 500) });
-    revalidatePath('/admin');
-    return { paymentUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://sitterfolio.com'}/pay/${payment.publicToken}` };
+    const paymentUrl = `${getAppOrigin()}/pay/${payment.publicToken}`;
+    try {
+      await deliverPaymentRequest(payment.id);
+      revalidatePath('/admin');
+      return { paymentUrl, customerEmail: payment.customerEmail || undefined, delivered: true };
+    } catch {
+      revalidatePath('/admin');
+      return { paymentUrl, customerEmail: payment.customerEmail || undefined, error: 'Payment request created, but the email could not be sent.' };
+    }
   } catch (error) { return { error: error instanceof Error ? error.message : 'Unable to create payment request.' }; }
 }
 

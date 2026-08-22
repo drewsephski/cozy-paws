@@ -2,10 +2,11 @@ import { randomBytes } from 'node:crypto';
 import { query, transaction } from './db';
 import { calculatePlatformFeeCents, revenueFromPayments, type PaymentStatus } from './domain/payments';
 import { refreshConnectedAccountReadiness } from './connected-accounts';
+import { sendPaymentRequestNotification, type EmailSender } from './email';
 
-export type PaymentRequest = { id: string; publicToken: string; businessId: string; leadId: string; amountCents: number; platformFeeCents: number; currency: string; description: string; customerNote: string | null; customerEmail: string | null; status: PaymentStatus; refundedAmountCents: number; stripeAccountId: string | null; stripeReady: boolean };
-type PaymentRow = { id: string; public_token: string; business_id: string; lead_id: string; amount_cents: number; platform_fee_cents: number; currency: string; description: string; customer_note: string | null; customer_email: string | null; status: PaymentStatus; refunded_amount_cents: number; stripe_account_id: string | null; stripe_ready: boolean };
-const mapPaymentRequestRow = (row: PaymentRow): PaymentRequest => ({ id: row.id, publicToken: row.public_token, businessId: row.business_id, leadId: row.lead_id, amountCents: row.amount_cents, platformFeeCents: row.platform_fee_cents, currency: row.currency, description: row.description, customerNote: row.customer_note, customerEmail: row.customer_email, status: row.status, refundedAmountCents: row.refunded_amount_cents, stripeAccountId: row.stripe_account_id, stripeReady: row.stripe_ready });
+export type PaymentRequest = { id: string; publicToken: string; businessId: string; leadId: string; amountCents: number; platformFeeCents: number; currency: string; description: string; customerNote: string | null; customerEmail: string | null; status: PaymentStatus; refundedAmountCents: number; stripeAccountId: string | null; stripeReady: boolean; customerNotifiedAt: Date | null };
+type PaymentRow = { id: string; public_token: string; business_id: string; lead_id: string; amount_cents: number; platform_fee_cents: number; currency: string; description: string; customer_note: string | null; customer_email: string | null; status: PaymentStatus; refunded_amount_cents: number; stripe_account_id: string | null; stripe_ready: boolean; customer_notified_at: Date | null };
+const mapPaymentRequestRow = (row: PaymentRow): PaymentRequest => ({ id: row.id, publicToken: row.public_token, businessId: row.business_id, leadId: row.lead_id, amountCents: row.amount_cents, platformFeeCents: row.platform_fee_cents, currency: row.currency, description: row.description, customerNote: row.customer_note, customerEmail: row.customer_email, status: row.status, refundedAmountCents: row.refunded_amount_cents, stripeAccountId: row.stripe_account_id, stripeReady: row.stripe_ready, customerNotifiedAt: row.customer_notified_at });
 
 export async function getPaymentRequest(publicToken: string) { const result = await query<PaymentRow>(`select pr.*,b.stripe_account_id,b.stripe_ready from payment_request pr join business b on b.id=pr.business_id where pr.public_token=$1`, [publicToken]); return result.rows[0] ? mapPaymentRequestRow(result.rows[0]) : null; }
 
@@ -29,6 +30,19 @@ export async function createPaymentRequestForLead(ownerUserId: string, input: { 
     await client.query(`update lead set status='QUOTED',updated_at=now() where id=$1`, [lead.lead_id]);
     await client.query(`insert into lead_event(lead_id,kind) values($1,'PAYMENT_REQUEST_CREATED')`, [lead.lead_id]);
     return mapPaymentRequestRow(created.rows[0]);
+  });
+}
+
+export async function deliverPaymentRequest(paymentRequestId: string, sender?: EmailSender) {
+  return transaction(async (client) => {
+    const result = await client.query<PaymentRow & { business_name: string; site_email: string | null }>(`select pr.*,b.stripe_account_id,b.stripe_ready,b.name business_name,s.email site_email from payment_request pr join business b on b.id=pr.business_id join lead l on l.id=pr.lead_id join site s on s.id=l.site_id where pr.id=$1 for update`, [paymentRequestId]);
+    const payment = result.rows[0];
+    if (!payment) throw new Error('Payment request not found');
+    if (payment.customer_notified_at) return { delivered: true, payment: mapPaymentRequestRow(payment) };
+    if (!payment.customer_email) throw new Error('Customer email is missing');
+    await sendPaymentRequestNotification({ paymentRequestId: payment.id, publicToken: payment.public_token, businessName: payment.business_name, sitterEmail: payment.site_email, customerEmail: payment.customer_email, description: payment.description, amountCents: payment.amount_cents, customerNote: payment.customer_note }, sender);
+    await client.query(`update payment_request set customer_notified_at=now(),customer_notification_id=$2,updated_at=now() where id=$1`, [payment.id, `payment-request/${payment.id}`]);
+    return { delivered: true, payment: mapPaymentRequestRow({ ...payment, customer_notified_at: new Date() }) };
   });
 }
 

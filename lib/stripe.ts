@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { protocol, rootDomain } from './utils';
+import { getAppOrigin } from './app-url';
 
 let stripe: Stripe | null = null;
 export function getStripe() {
@@ -8,4 +8,4 @@ export function getStripe() {
   stripe ??= new Stripe(key);
   return stripe;
 }
-export function getOrigin() { return process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${rootDomain}`; }
+export const getOrigin = getAppOrigin;
