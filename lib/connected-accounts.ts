@@ -1,6 +1,51 @@
+import Stripe from 'stripe';
 import { query } from './db';
 import { getAppOrigin } from './app-url';
 import { getStripe } from './stripe';
+
+export function statementDescriptorForBusiness(name: string) {
+  const normalized = name
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9 .-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const descriptor = (normalized.length >= 5 ? normalized : `${normalized} PET CARE`.trim()).slice(0, 22).trim();
+
+  return {
+    descriptor,
+    prefix: descriptor.slice(0, 10).trim(),
+  };
+}
+
+export function buildConnectedAccountParams(business: { id: string; name: string; email: string }): Stripe.V2.Core.AccountCreateParams {
+  const statementDescriptor = statementDescriptorForBusiness(business.name);
+
+  return {
+    contact_email: business.email,
+    display_name: business.name,
+    identity: { country: 'US' },
+    dashboard: 'full',
+    defaults: {
+      profile: {
+        business_url: getAppOrigin(),
+        doing_business_as: business.name,
+        product_description: 'Independent pet sitting and pet-care services.',
+      },
+      responsibilities: { fees_collector: 'stripe', losses_collector: 'stripe' },
+    },
+    configuration: {
+      merchant: {
+        capabilities: { card_payments: { requested: true } },
+        mcc: '7299',
+        statement_descriptor: statementDescriptor,
+      },
+    },
+    metadata: { sitterfolio_business_id: business.id },
+    include: ['configuration.merchant', 'defaults'],
+  };
+}
 
 export async function refreshConnectedAccountReadiness(business: { id: string; stripeAccountId: string | null; stripeReady: boolean }) {
   if (!business.stripeAccountId) return false;
@@ -21,7 +66,7 @@ export async function createOrContinueOnboarding(ownerUserId: string, businessId
   if (!business) throw new Error('Business does not belong to this user');
   let accountId = business.stripe_account_id;
   if (!accountId) {
-    const account = await getStripe().v2.core.accounts.create({ contact_email: business.email, display_name: business.name, identity: { country: 'US' }, dashboard: 'full', defaults: { profile: { business_url: getAppOrigin(), doing_business_as: business.name, product_description: 'Independent pet sitting and pet-care services.' }, responsibilities: { fees_collector: 'stripe', losses_collector: 'stripe' } }, configuration: { merchant: { capabilities: { card_payments: { requested: true } } } }, metadata: { sitterfolio_business_id: business.id }, include: ['configuration.merchant', 'defaults'] });
+    const account = await getStripe().v2.core.accounts.create(buildConnectedAccountParams(business));
     accountId = account.id;
     await query(`update business set stripe_account_id=$2,updated_at=now() where id=$1 and stripe_account_id is null`, [business.id, accountId]);
   }

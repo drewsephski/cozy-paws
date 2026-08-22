@@ -5,9 +5,10 @@ import { profiles } from '@/lib/profiles';
 import { protocol, rootDomain } from '@/lib/utils';
 import { LeadForm } from './lead-form';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { MapPin, CreditCard } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { PetIcon } from '@/components/pet-icon';
 import { AboutSitterfolioDialog } from '@/components/about-sitterfolio-dialog';
+import { PublicPaymentSection } from './public-payment-section';
 
 export async function generateMetadata({
   params
@@ -56,8 +57,8 @@ export default async function SubdomainPage({
           <p className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400"><MapPin className="size-4" aria-hidden="true" />{subdomainData.location || 'Local pet care'}</p>
           <h1 className="max-w-2xl text-5xl font-semibold tracking-tight sm:text-7xl">{subdomainData.businessName || `${subdomain}'s care`}</h1>
           <p className="mt-6 max-w-xl text-xl leading-8 text-muted-foreground">{subdomainData.tagline || 'Pet care from someone local.'}</p>
-          {subdomainData.paymentLinkUrl && <a href={subdomainData.paymentLinkUrl} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 font-medium text-white shadow-sm transition hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600/50"><CreditCard className="size-4" aria-hidden="true" /> Pay securely</a>}
           {(subdomainData.services || []).length > 0 && <div className="mt-10"><p className="mb-3 text-sm font-medium">Services</p><div className="flex flex-wrap gap-3">{(subdomainData.services || []).map((service) => <span key={service} className="rounded-full bg-emerald-50 px-4 py-2 text-sm text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">{service}</span>)}</div></div>}
+          <PublicPaymentSection paymentLinkUrl={subdomainData.paymentLinkUrl} />
         </section>
         <section className="rounded-2xl border border-border bg-card p-4 shadow-xl shadow-black/10 sm:p-5">
           <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400">Ask about availability</p>
