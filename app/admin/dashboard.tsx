@@ -41,7 +41,7 @@ const onboardingSteps = [
   { name: 'tagline', title: 'How would you describe your care?', helper: 'Write one sentence about the care clients can expect from you.', placeholder: 'Reliable visits for dogs and cats in Oak Park.', required: true },
   { name: 'location', title: 'Where do you care for pets?', helper: 'Name the neighborhood, city, or area you serve.', placeholder: 'Oak Park and nearby neighborhoods', required: true },
   { name: 'services', title: 'Which services do you offer?', helper: 'Separate each service with a comma. You can add up to eight.', placeholder: 'Dog walking, Drop-in visits, Overnight stays', required: true },
-  { name: 'email', title: 'Where should pet owners email you?', helper: 'Clients will use this address to reply to you.', placeholder: 'hello@example.com', type: 'email', required: true },
+  { name: 'email', title: 'Where should pet owners email you?', helper: 'Clients can reply here, and new inquiry alerts will be sent to this address.', placeholder: 'hello@example.com', type: 'email', required: true },
   { name: 'phone', title: 'Do you want to share a phone number?', helper: 'Optional. Leave this blank if you prefer email.', placeholder: '(555) 123-4567', type: 'tel', required: false },
   { name: 'profileImageUrl', title: 'Add a profile photo', helper: 'Use a clear, recent photo of yourself.', placeholder: '', required: false }
 ] as const;

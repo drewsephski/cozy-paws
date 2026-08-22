@@ -2,11 +2,12 @@ import { headers } from 'next/headers';
 import { profiles } from './profiles';
 import { redis } from './redis';
 import { createLeadIntake } from './lead-intake';
+import { sendNewLeadNotification } from './email';
 
 const maySubmit = async (key: string) =>
   Boolean(await redis.set(`lead-rate:${key}`, Date.now(), { nx: true, ex: 30 }));
 
-export const leadIntake = createLeadIntake(profiles, maySubmit);
+export const leadIntake = createLeadIntake(profiles, maySubmit, sendNewLeadNotification);
 
 export async function leadRateLimitKey(subdomain: string) {
   const requestHeaders = await headers();

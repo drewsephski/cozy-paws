@@ -18,10 +18,16 @@ export type LeadSubmission = {
 };
 
 export type LeadRateLimiter = (key: string) => Promise<boolean>;
+export type AcceptedLead = {
+  subdomain: string;
+  profile: Awaited<ReturnType<ProfileOwnership['get']>>;
+  lead: import('./profile-ownership').Lead;
+};
+export type LeadNotifier = (accepted: AcceptedLead) => Promise<void>;
 
 const readText = (value: unknown) => typeof value === 'string' ? value.trim() : '';
 
-export function createLeadIntake(profiles: ProfileOwnership, maySubmit: LeadRateLimiter) {
+export function createLeadIntake(profiles: ProfileOwnership, maySubmit: LeadRateLimiter, notify?: LeadNotifier) {
   return {
     async submit(input: LeadSubmission, rateLimitKey: string, createdAt = Date.now()) {
       const subdomain = readText(input.subdomain);
@@ -36,15 +42,19 @@ export function createLeadIntake(profiles: ProfileOwnership, maySubmit: LeadRate
       }
 
       const lead = parsed.data;
-      const savedSubdomain = await profiles.recordLead(subdomain, {
+      const saved = await profiles.recordLead(subdomain, {
         name: lead.name, email: lead.email, dates: lead.dateDetails, message: lead.careDetails,
         serviceRequested: lead.serviceRequested, requestedStartDate: lead.requestedStartDate,
         requestedEndDate: lead.requestedEndDate, petTypes: lead.petTypes, petCount: lead.petCount,
         postalCode: lead.postalCode, source: lead.source, campaign: lead.campaign, status: 'NEW'
       }, createdAt);
-      return savedSubdomain
-        ? { success: true as const, subdomain: savedSubdomain }
-        : { success: false as const, error: 'This site is no longer available.' };
+      if (!saved) return { success: false as const, error: 'This site is no longer available.' };
+      if (notify) {
+        try { await notify(saved); } catch (error) {
+          console.error(JSON.stringify({ event: 'new_lead_notification_failed', reason: error instanceof Error ? error.name : 'unknown' }));
+        }
+      }
+      return { success: true as const, subdomain: saved.subdomain };
     }
   };
 }

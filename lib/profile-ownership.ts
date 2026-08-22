@@ -136,12 +136,13 @@ export function createProfileOwnership(repository: ProfileRepository) {
     ) {
       const profile = await get(subdomain);
       if (!profile) return false;
+      const lead = { ...input, createdAt, id: crypto.randomUUID(), readAt: null };
       const leads = await repository.readLeads(profile.subdomain);
       await repository.writeLeads(
         profile.subdomain,
-        [{ ...input, createdAt, id: crypto.randomUUID(), readAt: null }, ...leads].slice(0, 100)
+        [lead, ...leads].slice(0, 100)
       );
-      return profile.subdomain;
+      return { subdomain: profile.subdomain, profile, lead };
     },
 
     async getOwnedLeads(ownerId: string, subdomain: string) {
