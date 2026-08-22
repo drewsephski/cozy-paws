@@ -12,9 +12,10 @@ export const metadata: Metadata = {
   description: 'Update and share your pet-sitting website.'
 };
 
-export default async function AdminPage() {
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ stripe?: string }> }) {
   const session = await getSession();
   if (!session) redirect('/auth?callbackURL=%2Fadmin');
+  const stripeReturn = (await searchParams).stripe;
 
   const sites = await profiles.listOwned(session.user.id);
   const leads = await profiles.getOwnedLeadsForAllSites(session.user.id);
@@ -23,7 +24,7 @@ export default async function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader dashboard signedIn />
-      <main><AdminDashboard sites={sites} leads={leads} revenue={revenue} paymentSetup={paymentSetup} /></main>
+      <main><AdminDashboard sites={sites} leads={leads} revenue={revenue} paymentSetup={paymentSetup} stripeReturn={stripeReturn} /></main>
     </div>
   );
 }

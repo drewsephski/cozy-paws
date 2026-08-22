@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, ExternalLink, Globe2, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, Loader2, RotateCw } from 'lucide-react';
 import Link from 'next/link';
 import { deleteSubdomainAction, startStripeOnboardingAction } from '@/app/actions';
 import { rootDomain, protocol } from '@/lib/utils';
@@ -278,7 +278,51 @@ function SiteGrid({
   );
 }
 
-export function AdminDashboard({ sites, leads, revenue, paymentSetup }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; revenue: { inquiries: number; qualified: number; paymentRequests: number; booked: number; successfulPayments: number; grossPaidCents: number; generatedRevenueCents: number; sources: { source: string; generatedRevenueCents: number }[]; sites: { subdomain: string; generatedRevenueCents: number }[] }; paymentSetup: { businessId: string; businessName: string; connected: boolean; ready: boolean }[] }) {
+type PaymentSetup = { businessId: string; businessName: string; connected: boolean; ready: boolean; status: 'not_started' | 'action_required' | 'pending' | 'ready' | 'unavailable' };
+
+const paymentSetupContent = {
+  not_started: { title: 'Set up Stripe', detail: 'Add your identity and bank details securely with Stripe.', button: 'Start Stripe setup', icon: CreditCard, tone: 'text-muted-foreground bg-muted' },
+  action_required: { title: 'More information needed', detail: 'Stripe still needs a few details before you can accept payments.', button: 'Finish Stripe setup', icon: CircleAlert, tone: 'text-amber-700 bg-amber-100 dark:text-amber-300 dark:bg-amber-950' },
+  pending: { title: 'Stripe is reviewing your details', detail: 'Nothing else is needed right now. We’ll check again whenever you open this dashboard.', button: 'Review submitted details', icon: Clock3, tone: 'text-blue-700 bg-blue-100 dark:text-blue-300 dark:bg-blue-950' },
+  ready: { title: 'Ready to accept payments', detail: 'Stripe is connected and this business can send payment requests.', button: '', icon: CheckCircle2, tone: 'text-emerald-700 bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950' },
+  unavailable: { title: 'Status could not be refreshed', detail: 'Your Stripe details are safe. Try refreshing this page in a moment.', button: '', icon: RotateCw, tone: 'text-muted-foreground bg-muted' },
+} as const;
+
+function StripeSetup({ businesses, stripeReturn }: { businesses: PaymentSetup[]; stripeReturn?: string }) {
+  const returnedBusiness = businesses.find((business) => business.status !== 'ready') ?? businesses[0];
+  const returnMessage = stripeReturn === 'error'
+    ? 'We could not reopen Stripe setup. Please try again.'
+    : stripeReturn === 'returned' && returnedBusiness?.status === 'pending'
+      ? 'Your details were submitted. Stripe is reviewing them; you do not need to enter them again.'
+      : stripeReturn === 'returned' && returnedBusiness?.status === 'ready'
+        ? 'Stripe is connected. You can now send payment requests.'
+        : stripeReturn === 'returned'
+          ? 'You’re back from Stripe, but a few details still need attention.'
+          : null;
+
+  return (
+    <section className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+      <div className="flex items-start gap-3">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300"><CreditCard className="size-5" aria-hidden="true" /></span>
+        <div><h2 className="font-semibold">Payments with Stripe</h2><p className="mt-1 text-sm leading-6 text-muted-foreground">Stripe securely verifies your identity and bank account. Sitterfolio checks your status automatically—never share banking or tax details with us.</p></div>
+      </div>
+      {returnMessage && <div role="status" className={`mt-4 rounded-xl border px-4 py-3 text-sm ${stripeReturn === 'error' ? 'border-red-200 bg-red-50 text-red-800 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300' : 'border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-900 dark:bg-blue-950/30 dark:text-blue-300'}`}>{returnMessage}</div>}
+      <div className="mt-5 grid gap-3">
+        {businesses.map((business) => {
+          const content = paymentSetupContent[business.status];
+          const Icon = content.icon;
+          return <div key={business.businessId} className="flex flex-col gap-4 rounded-xl border border-border p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3"><span className={`grid size-9 shrink-0 place-items-center rounded-full ${content.tone}`}><Icon className={`size-4 ${business.status === 'unavailable' ? 'animate-spin' : ''}`} aria-hidden="true" /></span><div><p className="font-medium">{business.businessName}</p><p className="mt-0.5 text-sm font-medium">{content.title}</p><p className="mt-1 max-w-2xl text-sm leading-5 text-muted-foreground">{content.detail}</p></div></div>
+            {content.button && <form action={startStripeOnboardingAction} className="shrink-0"><input type="hidden" name="businessId" value={business.businessId} /><Button type="submit" size="sm" variant={business.status === 'pending' ? 'outline' : 'default'}>{content.button}</Button></form>}
+            {business.status === 'unavailable' && <Button asChild size="sm" variant="outline" className="shrink-0"><Link href="/admin">Refresh status</Link></Button>}
+          </div>;
+        })}
+      </div>
+    </section>
+  );
+}
+
+export function AdminDashboard({ sites, leads, revenue, paymentSetup, stripeReturn }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; revenue: { inquiries: number; qualified: number; paymentRequests: number; booked: number; successfulPayments: number; grossPaidCents: number; generatedRevenueCents: number; sources: { source: string; generatedRevenueCents: number }[]; sites: { subdomain: string; generatedRevenueCents: number }[] }; paymentSetup: PaymentSetup[]; stripeReturn?: string }) {
   const [state, action, isPending] = useActionState<DeleteState, FormData>(
     deleteSubdomainAction,
     {}
@@ -292,7 +336,7 @@ export function AdminDashboard({ sites, leads, revenue, paymentSetup }: { sites:
       <DashboardHeader />
       <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><SiteGrid sites={sites} action={action} isPending={isPending} /></section>
       <section className="rounded-2xl border border-emerald-500/20 bg-emerald-50/60 p-6 dark:bg-emerald-950/20"><p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">Generated from your sites</p><p className="mt-2 text-4xl font-semibold tracking-tight">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(revenue.generatedRevenueCents / 100)}</p><p className="mt-2 text-sm text-muted-foreground">Net paid customer volume after refunds · {revenue.inquiries} inquiries · {revenue.paymentRequests} payment requests · {revenue.successfulPayments} successful payments</p><div className="mt-4 flex flex-wrap gap-2">{revenue.sites.map((item) => <span key={item.subdomain} className="rounded-full bg-background/80 px-3 py-1 text-xs">{item.subdomain}: {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(item.generatedRevenueCents/100)} generated</span>)}</div>{revenue.sources.length > 0 && <div className="mt-2 flex flex-wrap gap-2">{revenue.sources.map((item) => <span key={item.source} className="rounded-full bg-background/80 px-3 py-1 text-xs">{item.source}: {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(item.generatedRevenueCents/100)}</span>)}</div>}</section>
-      {paymentSetup.some((business) => !business.ready) && <section className="rounded-2xl border border-border bg-card p-5"><h2 className="font-semibold">Collect payments with Stripe</h2><p className="mt-1 text-sm text-muted-foreground">Stripe setup is only required when you want to request payment.</p><div className="mt-4 flex flex-wrap gap-2">{paymentSetup.filter((business) => !business.ready).map((business) => <form key={business.businessId} action={startStripeOnboardingAction}><input type="hidden" name="businessId" value={business.businessId} /><Button type="submit" size="sm">{business.connected ? `Continue setup for ${business.businessName}` : `Set up ${business.businessName}`}</Button></form>)}</div></section>}
+      {paymentSetup.length > 0 && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
       {sites[0] && <ProfileEditor site={sites[0]} />}
       <section className="space-y-4"><div><h2 className="text-xl font-semibold">Recent inquiries</h2><p className="mt-1 text-sm text-muted-foreground">Messages pet owners sent through your sites.</p></div><LeadInbox leads={leads} /></section>
 

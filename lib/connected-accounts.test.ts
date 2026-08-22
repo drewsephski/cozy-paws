@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { buildConnectedAccountParams, statementDescriptorForBusiness } from './connected-accounts';
+import Stripe from 'stripe';
+import { buildConnectedAccountParams, connectedAccountStatus, statementDescriptorForBusiness } from './connected-accounts';
 
 describe('Stripe connected-account prefill', () => {
   it('classifies pet-care businesses before hosted onboarding', () => {
@@ -7,10 +8,12 @@ describe('Stripe connected-account prefill', () => {
       id: 'business-1',
       name: 'Cozy Paws',
       email: 'sitter@example.com',
+      subdomain: 'cozy-paws',
     });
 
     expect(params.configuration?.merchant?.mcc).toBe('7299');
     expect(params.configuration?.merchant?.statement_descriptor).toEqual({ descriptor: 'COZY PAWS', prefix: 'COZY PAWS' });
+    expect(params.defaults?.profile?.business_url).toContain('cozy-paws.');
     expect(params.defaults?.profile?.product_description).toBe('Independent pet sitting and pet-care services.');
   });
 
@@ -20,5 +23,16 @@ describe('Stripe connected-account prefill', () => {
       prefix: 'LEA S HAPP',
     });
     expect(statementDescriptorForBusiness('P')).toEqual({ descriptor: 'P PET CARE', prefix: 'P PET CARE' });
+  });
+
+  it('distinguishes review from user action and payment readiness', () => {
+    const account = (status: 'active' | 'pending' | 'restricted', awaiting?: 'stripe' | 'user') => ({
+      configuration: { merchant: { capabilities: { card_payments: { status } } } },
+      requirements: { entries: awaiting ? [{ awaiting_action_from: awaiting }] : [] },
+    }) as unknown as Stripe.V2.Core.Account;
+
+    expect(connectedAccountStatus(account('active'))).toBe('ready');
+    expect(connectedAccountStatus(account('pending', 'stripe'))).toBe('pending');
+    expect(connectedAccountStatus(account('restricted', 'user'))).toBe('action_required');
   });
 });

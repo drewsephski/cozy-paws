@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { query, transaction } from './db';
 import { calculatePlatformFeeCents, revenueFromPayments, type PaymentStatus } from './domain/payments';
-import { refreshConnectedAccountReadiness } from './connected-accounts';
+import { getConnectedAccountStatus, refreshConnectedAccountReadiness } from './connected-accounts';
 import { sendPaymentRequestNotification, type EmailSender } from './email';
 
 export type PaymentRequest = { id: string; publicToken: string; businessId: string; leadId: string; amountCents: number; platformFeeCents: number; currency: string; description: string; customerNote: string | null; customerEmail: string | null; status: PaymentStatus; refundedAmountCents: number; stripeAccountId: string | null; stripeReady: boolean; customerNotifiedAt: Date | null };
@@ -56,5 +56,9 @@ export async function getOwnerRevenue(ownerUserId: string) {
 }
 
 export async function getOwnerPaymentSetup(ownerUserId: string) {
-  return (await query<{ id: string; name: string; stripe_account_id: string | null; stripe_ready: boolean }>(`select id,name,stripe_account_id,stripe_ready from business where owner_user_id=$1 order by created_at`, [ownerUserId])).rows.map((row) => ({ businessId: row.id, businessName: row.name, connected: Boolean(row.stripe_account_id), ready: row.stripe_ready }));
+  const businesses = (await query<{ id: string; name: string; stripe_account_id: string | null; stripe_ready: boolean }>(`select id,name,stripe_account_id,stripe_ready from business where owner_user_id=$1 order by created_at`, [ownerUserId])).rows;
+  return Promise.all(businesses.map(async (business) => {
+    const stripe = await getConnectedAccountStatus({ id: business.id, stripeAccountId: business.stripe_account_id, stripeReady: business.stripe_ready });
+    return { businessId: business.id, businessName: business.name, connected: Boolean(business.stripe_account_id), ...stripe };
+  }));
 }
