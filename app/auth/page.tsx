@@ -3,11 +3,29 @@ import { PawPrint } from 'lucide-react';
 import { AuthForm } from '@/components/auth-form';
 import { SiteHeader } from '@/components/site-header';
 import { getSession } from '@/lib/session';
+import { profiles } from '@/lib/profiles';
+
+function safeCallbackURL(value?: string) {
+  return value?.startsWith('/') && !value.startsWith('//') ? value : '/admin';
+}
 
 export default async function AuthPage({ searchParams }: { searchParams: Promise<{ callbackURL?: string; mode?: string }> }) {
   const session = await getSession();
-  if (session) redirect('/admin');
   const { callbackURL, mode } = await searchParams;
+  const requestedCallback = safeCallbackURL(callbackURL);
+
+  if (session) {
+    const sites = await profiles.listOwned(session.user.id);
+    const hasIncompleteSite = sites.some((site) => site.onboardingCompletedAt === null);
+
+    // Keep authenticated users moving forward. The dashboard renders the
+    // first incomplete onboarding step, while a new user starts at the
+    // address form instead of seeing an empty dashboard.
+    if (hasIncompleteSite) redirect('/admin');
+    if (sites.length === 0) redirect('/');
+    redirect(requestedCallback);
+  }
+
   const isLaunching = callbackURL === '/launch';
 
   return (
