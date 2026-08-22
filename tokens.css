@@ -1,0 +1,48 @@
+/* Hallmark · genre: modern-minimal · macrostructure: Workbench · theme: custom Supabase-inspired Sitterfolio · tone: technical-warm · anchor hue: verdant · enrichment: Tier A product preview · nav: N5 · footer: Ft5
+ * paper: oklch(98.5% 0.006 155) · accent: oklch(68% 0.17 153) · display/body: Geist · axes: light / geometric-sans / green
+ */
+:root {
+  --color-landing-paper: oklch(0.985 0.006 155);
+  --color-landing-paper-raised: oklch(1 0 0);
+  --color-landing-ink: oklch(0.17 0.018 155);
+  --color-landing-muted: oklch(0.48 0.018 155);
+  --color-landing-rule: oklch(0.9 0.012 155);
+  --color-landing-accent: oklch(0.68 0.17 153);
+  --color-landing-accent-strong: oklch(0.42 0.12 153);
+  --color-landing-accent-soft: oklch(0.95 0.045 153);
+  --color-landing-dark: oklch(0.145 0.018 155);
+  --color-landing-dark-raised: oklch(0.19 0.018 155);
+  --color-landing-dark-muted: oklch(0.73 0.018 155);
+  --color-landing-dark-rule: oklch(1 0 0 / 0.11);
+  --color-landing-on-dark: oklch(0.97 0.008 155);
+  --color-landing-focus: oklch(0.68 0.17 153);
+  --font-display: var(--font-geist-sans);
+  --font-body: var(--font-geist-sans);
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --text-display: clamp(2.75rem, 7vw, 5.75rem);
+  --text-display-small: clamp(2.25rem, 5vw, 4rem);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --rule-hair: 1px;
+  --radius-control: 0.5rem;
+  --radius-panel: 0.875rem;
+}
+
+.dark {
+  --color-landing-paper: oklch(0.145 0.018 155);
+  --color-landing-paper-raised: oklch(0.19 0.018 155);
+  --color-landing-ink: oklch(0.97 0.008 155);
+  --color-landing-muted: oklch(0.72 0.018 155);
+  --color-landing-rule: oklch(1 0 0 / 0.11);
+  --color-landing-accent-soft: oklch(0.25 0.055 153);
+  --color-landing-accent-strong: oklch(0.78 0.15 153);
+}

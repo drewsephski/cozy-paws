@@ -1,0 +1,14 @@
+{
+  "scannedAt": "2026-08-22",
+  "framework": "Next.js 16 App Router",
+  "fontStack": "Geist via next/font",
+  "palette": "OKLCH custom properties in app/globals.css",
+  "motion": "motion-cut",
+  "spacing": "Tailwind 4px scale",
+  "preserve": [
+    "existing font stack",
+    "existing OKLCH light and dark token model",
+    "existing spacing scale",
+    "existing authentication and draft-builder flows"
+  ]
+}

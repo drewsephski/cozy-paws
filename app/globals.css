@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "../tokens.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -124,6 +125,108 @@
 }
 
 /* Hallmark · pre-emit critique: Philosophy 5 · Hierarchy 5 · Execution 4 · Specificity 4 · Restraint 5 · Variety 4 */
+
+::selection {
+  background: var(--color-landing-accent);
+  color: var(--color-landing-dark);
+}
+
+.landing-shell {
+  background: var(--color-landing-paper);
+  color: var(--color-landing-ink);
+  font-family: var(--font-body);
+}
+
+.landing-grid {
+  background-image:
+    linear-gradient(to right, var(--color-landing-rule) var(--rule-hair), transparent var(--rule-hair)),
+    linear-gradient(to bottom, var(--color-landing-rule) var(--rule-hair), transparent var(--rule-hair));
+  background-size: 4rem 4rem;
+  mask-image: linear-gradient(to bottom, black 35%, transparent 92%);
+  opacity: 0.35;
+}
+
+.landing-display {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  letter-spacing: -0.04em;
+  line-height: 0.96;
+  min-width: 0;
+}
+
+.landing-section-title {
+  font-family: var(--font-display);
+  font-size: var(--text-display-small);
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.landing-panel {
+  background: var(--color-landing-paper-raised);
+  border-color: var(--color-landing-rule);
+  border-radius: var(--radius-panel);
+}
+
+.landing-dark-panel {
+  background: var(--color-landing-dark);
+  color: var(--color-landing-on-dark);
+  border-color: var(--color-landing-dark-rule);
+}
+
+.landing-muted { color: var(--color-landing-muted); }
+.landing-accent { color: var(--color-landing-accent-strong); }
+.landing-rule { border-color: var(--color-landing-rule); }
+.landing-accent-soft { background: var(--color-landing-accent-soft); }
+
+.landing-cta,
+.landing-secondary-cta {
+  align-items: center;
+  border-radius: var(--radius-control);
+  display: inline-flex;
+  font-weight: 600;
+  gap: var(--space-sm);
+  justify-content: center;
+  min-height: 2.75rem;
+  padding-inline: var(--space-md);
+  transition: transform var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+  white-space: nowrap;
+}
+
+.landing-cta {
+  background: var(--color-landing-accent);
+  color: var(--color-landing-dark);
+}
+
+.landing-secondary-cta {
+  border: var(--rule-hair) solid var(--color-landing-rule);
+  background: var(--color-landing-paper-raised);
+  color: var(--color-landing-ink);
+}
+
+.landing-cta:focus-visible,
+.landing-secondary-cta:focus-visible {
+  outline: 3px solid var(--color-landing-focus);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .landing-cta:hover,
+  .landing-secondary-cta:hover { transform: translateY(-2px); }
+  .landing-cta:hover { background: var(--color-landing-accent-strong); color: var(--color-landing-on-dark); }
+  .dark .landing-cta:hover { color: var(--color-landing-dark); }
+  .landing-secondary-cta:hover { border-color: var(--color-landing-accent-strong); }
+}
+
+.landing-cta:active,
+.landing-secondary-cta:active { transform: translateY(0); }
+
+.landing-cta:disabled,
+.landing-secondary-cta:disabled { cursor: not-allowed; opacity: 0.55; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-cta,
+  .landing-secondary-cta { transition-duration: var(--dur-fast); transition-property: opacity, background-color, border-color; }
+}
 
 .emoji-picker-container .epr-body::-webkit-scrollbar {
   width: 8px;

@@ -1,5 +1,6 @@
-import { SubdomainForm } from './subdomain-form';
-import { PawPrint } from 'lucide-react';
+import { HeroStartButton, SubdomainForm } from './subdomain-form';
+import Link from 'next/link';
+import { ArrowRight, Check, Inbox, MapPin, PawPrint } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { getSession } from '@/lib/session';
 
@@ -11,46 +12,66 @@ export const metadata = {
 
 export default async function HomePage() {
   const session = await getSession();
+  const signedIn = Boolean(session);
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <SiteHeader signedIn={Boolean(session)} />
+    <div className="landing-shell min-h-screen">
+      <SiteHeader floating signedIn={signedIn} />
 
-      <main className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center gap-16 px-5 py-16 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:py-24">
-        <section>
-          <p className="mb-6 flex items-center text-sm font-medium text-muted-foreground"><PawPrint aria-hidden="true" className="mr-2 size-4 text-emerald-600 dark:text-emerald-400" strokeWidth={2.25} />One link for your pet-care business</p>
-          <h1 className="max-w-xl text-5xl font-bold tracking-[-.055em] sm:text-6xl lg:text-7xl">Give pet owners a place to find you again.</h1>
-          <p className="mt-6 max-w-lg text-lg leading-8 text-muted-foreground">Put your services, photo, and availability form on one page. Share the link wherever you already talk with clients.</p>
-          <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted-foreground">
-            <span>✓ Your own web address</span><span>✓ No site design needed</span><span>✓ Inquiries in one inbox</span>
+      <main>
+        <section className="relative overflow-hidden border-b landing-rule">
+          <div aria-hidden="true" className="landing-grid pointer-events-none absolute inset-0" />
+          <div className="relative mx-auto grid min-h-[calc(100svh-1rem)] w-full max-w-6xl min-w-0 items-center gap-12 px-5 pb-16 pt-28 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,.95fr)] lg:px-8 lg:pb-24 lg:pt-32">
+            <div className="min-w-0">
+              <p className="mb-6 flex items-center text-sm font-medium landing-muted"><PawPrint aria-hidden="true" className="mr-2 size-4 landing-accent" strokeWidth={2.25} />One link for your pet-care business</p>
+              <h1 className="max-w-xl text-5xl font-bold tracking-[-.04em] sm:text-6xl lg:text-7xl">Give pet owners a place to find you again.</h1>
+              <p className="mt-6 max-w-lg text-lg leading-8 landing-muted">Put your services, photo, and availability form on one page. Share the link wherever you already talk with clients.</p>
+              <div className="mt-8">
+                {signedIn ? <Link href="/admin" className="landing-cta">Open dashboard<ArrowRight aria-hidden="true" className="size-4" /></Link> : <HeroStartButton />}
+              </div>
+              <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm landing-muted">
+                <span className="flex items-center gap-2"><Check aria-hidden="true" className="size-4 landing-accent" />Your own web address</span>
+                <span className="flex items-center gap-2"><Check aria-hidden="true" className="size-4 landing-accent" />No site design needed</span>
+                <span className="flex items-center gap-2"><Check aria-hidden="true" className="size-4 landing-accent" />Inquiries in one inbox</span>
+              </div>
+            </div>
+
+            <section id="site-address" className="landing-panel w-full scroll-mt-24 border p-6 shadow-[0_24px_80px_-40px_rgba(0,0,0,.28)] sm:p-8 md:max-w-2xl md:justify-self-center lg:max-w-none">
+              <div className="mb-8 flex items-start justify-between gap-4"><div><p className="text-sm font-medium landing-muted">Start here</p><h2 className="mt-1 text-2xl font-semibold tracking-tight">Choose your site address</h2></div><div className="landing-accent-soft grid size-9 place-items-center rounded-lg landing-accent"><PawPrint aria-hidden="true" className="size-4" /></div></div>
+              <SubdomainForm />
+              <p className="mt-5 text-center text-xs landing-muted">Build the draft first. Create an account when you publish.</p>
+            </section>
           </div>
         </section>
 
-        <section className="w-full rounded-2xl border border-border bg-card p-6 shadow-[0_24px_80px_-40px_rgba(0,0,0,.28)] sm:p-8 md:max-w-2xl md:justify-self-center lg:max-w-none">
-          <div className="mb-8 flex items-start justify-between gap-4">
-            <div><p className="text-sm font-medium text-muted-foreground">Start here</p><h2 className="mt-1 text-2xl font-semibold tracking-tight">Choose your site address</h2></div>
-            <div className="grid size-8 place-items-center rounded-full border border-border bg-muted/40 text-emerald-700 dark:text-emerald-400"><PawPrint aria-hidden="true" className="size-4" /></div>
+        <section className="border-b landing-rule">
+          <div className="mx-auto grid w-full max-w-6xl gap-10 px-5 py-20 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] lg:px-8 lg:py-28">
+            <div className="min-w-0 lg:sticky lg:top-28 lg:self-start">
+              <h2 className="landing-section-title max-w-[11ch] font-semibold">Everything clients need to come back.</h2>
+              <p className="mt-6 max-w-md leading-7 landing-muted">Sitterfolio turns your pet-care details into a clear, useful destination—without asking you to become a web designer.</p>
+            </div>
+            <div className="divide-y landing-rule border-y landing-rule">
+              {[
+                [PawPrint, 'Show what makes your care yours', 'Add your photo, services, and the details returning clients actually need.'],
+                [MapPin, 'Share one reliable address', 'Use the same link in follow-ups, email signatures, social profiles, or business cards.'],
+                [Inbox, 'Keep every request together', 'Clients send dates and care details into one sitter dashboard instead of an old message thread.']
+              ].map(([Icon, title, body]) => (
+                <article key={String(title)} className="grid gap-5 py-8 sm:grid-cols-[3rem_minmax(0,1fr)] sm:py-10">
+                  <div className="landing-accent-soft grid size-11 place-items-center rounded-lg landing-accent"><Icon aria-hidden="true" className="size-5" /></div>
+                  <div><h3 className="text-xl font-semibold tracking-[-.02em]">{String(title)}</h3><p className="mt-2 max-w-xl leading-7 landing-muted">{String(body)}</p></div>
+                </article>
+              ))}
+            </div>
           </div>
-          <SubdomainForm />
-          <p className="mt-5 text-center text-xs text-muted-foreground">Build the draft first. Create an account when you publish.</p>
         </section>
+
       </main>
 
-      <section className="border-t border-border/70 bg-muted/20">
-        <div className="mx-auto grid w-full max-w-6xl gap-10 px-5 py-16 lg:grid-cols-[.8fr_1.2fr] lg:px-8 lg:py-24">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400">Keep in touch with clients</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Make it easy for clients to come back</h2>
-          </div>
-          <div className="space-y-5 text-base leading-7 text-muted-foreground">
-            <p>Rover may be where a pet owner first finds you. Sitterfolio gives them a page they can return to when they need care again, with your services, service area, and contact form in one place.</p>
-            <p>Add the link to follow-up messages, your email signature, social profiles, or business cards. A client can send their dates and care details without searching through an old message thread.</p>
-            <p>Use Sitterfolio for relationships you are allowed to manage independently. Follow Rover&apos;s current terms and any agreements that apply to your clients.</p>
-          </div>
+      <footer className="mx-auto grid min-h-[28rem] w-full max-w-6xl grid-rows-[auto_1fr_auto] gap-10 px-5 py-16 lg:px-8 lg:py-20">
+        <p className="landing-section-title max-w-[18ch] font-semibold">Make the next booking easier to begin.</p>
+        <div className="row-start-3 flex flex-col gap-4 border-t pt-5 text-sm landing-muted landing-rule sm:flex-row sm:items-center sm:justify-between">
+          <span>Sitterfolio · Built for independent pet sitters.</span>
+          <span>© {new Date().getFullYear()}</span>
         </div>
-      </section>
-
-      <footer className="mx-auto flex w-full max-w-6xl items-center justify-between border-t border-border/70 px-5 py-6 text-xs text-muted-foreground lg:px-8">
-        <span>Built for independent pet sitters.</span><span>© {new Date().getFullYear()} Sitterfolio</span>
       </footer>
     </div>
   );
