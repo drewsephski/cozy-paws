@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { rootDomain } from '@/lib/utils';
+import { rootDomain } from './lib/utils';
 
 function extractSubdomain(request: NextRequest): string | null {
   const url = request.url;
@@ -42,6 +42,18 @@ function extractSubdomain(request: NextRequest): string | null {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const hostname = request.nextUrl.hostname;
+  const rootDomainFormatted = rootDomain.split(':')[0];
+
+  // Authentication cookies are host-bound. Keep the marketing and auth flows
+  // on one canonical host so a session created on www is available when the
+  // user reaches the protected dashboard or launch route.
+  if (hostname === `www.${rootDomainFormatted}`) {
+    const canonicalURL = request.nextUrl.clone();
+    canonicalURL.hostname = rootDomainFormatted;
+    return NextResponse.redirect(canonicalURL, 308);
+  }
+
   const subdomain = extractSubdomain(request);
 
   if (subdomain) {
