@@ -149,7 +149,7 @@ function EmojiPickerFooter({
             </>
           ) : (
             <span className="text-muted-foreground ml-1.5 flex h-7 items-center truncate text-xs">
-              Select an emoji…
+              Select an emoji...
             </span>
           )
         }

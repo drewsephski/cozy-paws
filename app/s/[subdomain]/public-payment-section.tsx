@@ -12,7 +12,7 @@ function StripeCheckoutButton() {
       disabled={pending}
       className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 font-medium text-white shadow-sm transition hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600/50 disabled:cursor-wait disabled:opacity-70"
     >
-      {pending ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" />Opening Stripe…</> : <><CreditCard className="size-4" aria-hidden="true" />Continue to Stripe</>}
+      {pending ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" />Opening Stripe...</> : <><CreditCard className="size-4" aria-hidden="true" />Continue to Stripe</>}
     </button>
   );
 }

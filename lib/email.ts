@@ -63,7 +63,7 @@ export async function sendNewLeadNotification({ profile, lead, conversationToken
     from: process.env.SITTERFOLIO_FROM_EMAIL,
     to: profile.email,
     replyTo: lead.email,
-    subject: `New inquiry from ${customerName} — ${businessName}`,
+    subject: `New inquiry from ${customerName}  -  ${businessName}`,
     html: renderSitterfolioEmail({
       preview: `${customerName} sent a new inquiry to ${businessName}.`,
       title: `New inquiry from ${customerName}`,
@@ -180,7 +180,7 @@ export async function sendPaymentRequestNotification(input: { paymentRequestId: 
     from: process.env.SITTERFOLIO_FROM_EMAIL || '',
     to: input.customerEmail,
     replyTo: input.sitterEmail || undefined,
-    subject: `Payment request from ${input.businessName} — ${amount}`,
+    subject: `Payment request from ${input.businessName}  -  ${amount}`,
     idempotencyKey: `payment-request/${input.paymentRequestId}`,
     html: renderSitterfolioEmail({
       preview: `${input.businessName} sent a payment request for ${amount}.`,

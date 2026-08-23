@@ -40,11 +40,11 @@ export function PaymentResultCard({ confirmed, message, returnHref }: { confirme
           {confirmed ? <Check strokeWidth={2.25} /> : <LoaderCircle />}
         </div>
         <p className={styles.eyebrow}>{confirmed ? 'Payment complete' : 'Secure payment'}</p>
-        <h1>{confirmed ? 'Payment confirmed' : 'Processing payment…'}</h1>
+        <h1>{confirmed ? 'Payment confirmed' : 'Processing payment...'}</h1>
         <p className={styles.message}>{message}</p>
         {returnHref ? (
           <Link href={returnHref} className={styles.returnLink}>
-            Return to the sitter’s site <span aria-hidden="true">→</span>
+            Return to the sitter&apos;s site <span aria-hidden="true">→</span>
           </Link>
         ) : null}
         {confirmed ? <p className={styles.receiptNote}>Processed securely by Stripe.</p> : null}

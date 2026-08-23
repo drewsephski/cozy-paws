@@ -29,7 +29,7 @@ export default async function CustomerConversationPage({ params }: { params: Pro
         <div className="border-b border-border pb-5"><h1 className="text-2xl font-semibold tracking-tight">Your request to {conversation.sitterName}</h1><p className="mt-2 text-sm text-muted-foreground">{conversation.serviceRequested || 'Pet care'}{dates ? ` · ${dates}` : ''}</p></div>
         <div className="mt-6"><ConversationMessages messages={conversation.messages} /></div>
         <ConversationReplyForm participant="CUSTOMER" conversationToken={token} />
-        <p className="mt-4 text-xs leading-5 text-muted-foreground">We’ll email you when {conversation.sitterName} replies. Keep this private link to return without an account.</p>
+        <p className="mt-4 text-xs leading-5 text-muted-foreground">We&apos;ll email you when {conversation.sitterName} replies. Keep this private link to return without an account.</p>
       </section>
     </div>
   </main>;

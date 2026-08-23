@@ -127,7 +127,7 @@ function ProfileOnboarding({ site }: { site: SiteProfile }) {
   return (
     <div className="mx-auto w-full max-w-7xl px-5 py-8 lg:px-8 lg:py-12">
       <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div><p className="text-xs font-medium uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400">Your site setup</p><h1 className="mt-2 text-2xl font-semibold tracking-tight">A few details, then you’re live.</h1></div>
+        <div><p className="text-xs font-medium uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400">Your site setup</p><h1 className="mt-2 text-2xl font-semibold tracking-tight">A few details, then you&apos;re live.</h1></div>
         <p className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-600" aria-hidden="true" />Saved after every step</p>
       </div>
       <Stepper value={step.name} onValueChange={goToStep} activationMode="manual" className="gap-10">
@@ -172,7 +172,7 @@ function ProfileOnboarding({ site }: { site: SiteProfile }) {
               {state.error && <p role="alert" className="mt-3 text-sm text-destructive">{state.error}</p>}
               <div className="mt-7 flex items-center gap-3">
                 {stepIndex > 0 && <Button type="button" variant="ghost" size="lg" onClick={() => setStepIndex((current) => current - 1)}><ArrowLeft aria-hidden="true" />Back</Button>}
-                <Button type="submit" size="lg" disabled={isSaving || (step.name === 'identity' && !values.sitterName.trim() && !values.businessName.trim())}>{isSaving ? <><Loader2 className="animate-spin" aria-hidden="true" />Saving…</> : stepIndex === onboardingSteps.length - 1 ? <>Finish my site <ArrowRight aria-hidden="true" /></> : <>Save and continue <ArrowRight aria-hidden="true" /></>}</Button>
+                <Button type="submit" size="lg" disabled={isSaving || (step.name === 'identity' && !values.sitterName.trim() && !values.businessName.trim())}>{isSaving ? <><Loader2 className="animate-spin" aria-hidden="true" />Saving...</> : stepIndex === onboardingSteps.length - 1 ? <>Finish my site <ArrowRight aria-hidden="true" /></> : <>Save and continue <ArrowRight aria-hidden="true" /></>}</Button>
               </div>
               <p className="mt-7 text-xs text-muted-foreground"><kbd className="mr-2 rounded border border-border bg-muted px-2 py-1 font-sans">Enter</kbd>Press Enter to continue</p>
             </form>
@@ -258,7 +258,7 @@ function ProfileEditor({ site }: { site: SiteProfile }) {
             {state.error || (showSaved ? 'Your public site is up to date.' : 'Changes saved.')}
           </p>
           <Button type="submit" size="sm" disabled={isSaving} className={`min-w-28 overflow-hidden transition-colors ${showSaved ? 'bg-emerald-600 text-white hover:bg-emerald-600' : ''}`}>
-            {isSaving ? <><Loader2 aria-hidden="true" className="animate-spin" />Saving…</> : showSaved ? <><span className="grid size-5 animate-in place-items-center rounded-full bg-white/20 zoom-in-50 duration-300"><Check aria-hidden="true" className="size-3.5 stroke-[3]" /></span>Saved</> : 'Save changes'}
+            {isSaving ? <><Loader2 aria-hidden="true" className="animate-spin" />Saving...</> : showSaved ? <><span className="grid size-5 animate-in place-items-center rounded-full bg-white/20 zoom-in-50 duration-300"><Check aria-hidden="true" className="size-3.5 stroke-[3]" /></span>Saved</> : 'Save changes'}
           </Button>
         </div>
       </form>
@@ -324,7 +324,7 @@ type PaymentSetup = { businessId: string; businessName: string; connected: boole
 const paymentSetupContent = {
   not_started: { title: 'Set up Stripe', detail: 'Add your identity and bank details securely with Stripe.', button: 'Start Stripe setup', icon: CreditCard, tone: 'text-muted-foreground bg-muted' },
   action_required: { title: 'More information needed', detail: 'Stripe needs a few details to activate or keep your payment account in good standing.', button: 'Finish Stripe setup', icon: CircleAlert, tone: 'text-amber-700 bg-amber-100 dark:text-amber-300 dark:bg-amber-950' },
-  pending: { title: 'Stripe is reviewing your details', detail: 'Nothing else is needed right now. We’ll check again whenever you open this dashboard.', button: '', icon: Clock3, tone: 'text-blue-700 bg-blue-100 dark:text-blue-300 dark:bg-blue-950' },
+  pending: { title: 'Stripe is reviewing your details', detail: "Nothing else is needed right now. We'll check again whenever you open this dashboard.", button: '', icon: Clock3, tone: 'text-blue-700 bg-blue-100 dark:text-blue-300 dark:bg-blue-950' },
   ready: { title: 'Ready to accept payments', detail: 'Stripe is connected. Pet owners can choose an amount on your public site, and you can also send payment requests from inquiries.', button: '', icon: CheckCircle2, tone: 'text-emerald-700 bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950' },
   reconnect_required: { title: 'Reconnect Stripe', detail: 'This payment account belongs to a different Stripe sandbox. Reconnect it to continue with the current Sitterfolio sandbox.', button: 'Reconnect Stripe', icon: CircleAlert, tone: 'text-amber-700 bg-amber-100 dark:text-amber-300 dark:bg-amber-950' },
   unavailable: { title: 'Status could not be refreshed', detail: 'Your Stripe details are safe. Try refreshing this page in a moment.', button: '', icon: RotateCw, tone: 'text-muted-foreground bg-muted' },
@@ -333,7 +333,7 @@ const paymentSetupContent = {
 function StripeOnboardingButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return <Button type="submit" size="sm" disabled={pending} aria-disabled={pending}>
-    {pending ? <><Loader2 className="animate-spin" aria-hidden="true" />Opening Stripe…</> : label}
+    {pending ? <><Loader2 className="animate-spin" aria-hidden="true" />Opening Stripe...</> : label}
   </Button>;
 }
 
@@ -351,7 +351,7 @@ function StripeBusinessStatus({ business }: { business: PaymentSetup }) {
       <span className={`grid size-9 shrink-0 place-items-center rounded-full ${content.tone}`}><Icon className={`size-4 ${isRefreshing ? 'animate-spin' : ''}`} aria-hidden="true" /></span>
       <div>
         <p className="font-medium">{business.businessName}</p>
-        <p className="mt-0.5 text-sm font-medium">{isRefreshing ? 'Checking Stripe status…' : content.title}</p>
+        <p className="mt-0.5 text-sm font-medium">{isRefreshing ? 'Checking Stripe status...' : content.title}</p>
         <p className="mt-1 max-w-2xl text-sm leading-5 text-muted-foreground">{content.detail}</p>
         {refreshState.error ? <div aria-live="polite" className="mt-1 text-xs text-destructive">{refreshState.error}</div> : null}
       </div>
@@ -360,7 +360,7 @@ function StripeBusinessStatus({ business }: { business: PaymentSetup }) {
       <div className="flex flex-wrap gap-2 sm:justify-end">
         {content.button && <form action={startStripeOnboardingAction}><input type="hidden" name="businessId" value={business.businessId} /><StripeOnboardingButton label={content.button} /></form>}
         {canManage && <Button asChild size="sm" variant="outline"><a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer">Manage in Stripe <ExternalLink aria-hidden="true" /></a></Button>}
-        {canRefresh && <form action={refreshAction}><input type="hidden" name="businessId" value={business.businessId} /><Button type="submit" size="sm" variant="outline" disabled={isRefreshing}>{isRefreshing ? <><Loader2 className="animate-spin" aria-hidden="true" />Checking…</> : <><RotateCw aria-hidden="true" />Refresh status</>}</Button></form>}
+        {canRefresh && <form action={refreshAction}><input type="hidden" name="businessId" value={business.businessId} /><Button type="submit" size="sm" variant="outline" disabled={isRefreshing}>{isRefreshing ? <><Loader2 className="animate-spin" aria-hidden="true" />Checking...</> : <><RotateCw aria-hidden="true" />Refresh status</>}</Button></form>}
       </div>
       <div aria-live="polite" className="text-xs text-muted-foreground sm:text-right">
         {refreshState.refreshedAt && !refreshState.error ? 'Status refreshed just now.' : null}
@@ -379,7 +379,7 @@ function StripeSetup({ businesses, stripeReturn }: { businesses: PaymentSetup[];
       : stripeReturn === 'returned' && returnedBusiness?.status === 'ready'
         ? 'Stripe is connected. You can now send payment requests.'
         : stripeReturn === 'returned'
-          ? 'You’re back from Stripe, but a few details still need attention.'
+          ? "You're back from Stripe, but a few details still need attention."
           : null;
 
   return (

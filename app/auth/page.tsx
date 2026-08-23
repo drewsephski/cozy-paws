@@ -4,6 +4,9 @@ import { AuthForm } from '@/components/auth-form';
 import { SiteHeader } from '@/components/site-header';
 import { getSession } from '@/lib/session';
 import { profiles } from '@/lib/profiles';
+import { privatePageMetadata } from '@/lib/seo';
+
+export const metadata = privatePageMetadata;
 
 function safeCallbackURL(value?: string) {
   return value?.startsWith('/') && !value.startsWith('//') ? value : '/admin';

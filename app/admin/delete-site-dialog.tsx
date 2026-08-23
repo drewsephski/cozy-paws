@@ -62,7 +62,7 @@ export function DeleteSiteDialog({
             <input type="hidden" name="subdomain" value={subdomain} />
             <Button type="submit" variant="destructive" disabled={isPending} className={`group/delete w-full transition-transform duration-150 active:scale-95 sm:w-auto ${isPending ? 'animate-pulse' : ''}`}>
               {isPending ? <Loader2 aria-hidden="true" className="animate-spin" /> : <Trash2 aria-hidden="true" className="transition-transform duration-200 group-hover/delete:translate-y-0.5 group-hover/delete:rotate-6" />}
-              {isPending ? 'Deleting…' : 'Delete site'}
+              {isPending ? 'Deleting...' : 'Delete site'}
             </Button>
           </form>
         </DialogFooter>

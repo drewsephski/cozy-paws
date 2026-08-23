@@ -20,7 +20,7 @@ export function SignOutButton() {
       }}
       className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
     >
-      {isPending ? 'Signing out…' : 'Sign out'}
+      {isPending ? 'Signing out...' : 'Sign out'}
     </button>
   );
 }

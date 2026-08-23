@@ -27,8 +27,16 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${subdomain}.${rootDomain}`,
-    description: subdomainData.tagline || `Pet care from ${subdomainData.sitterName || subdomainData.businessName || subdomain}.`
+    title: `${subdomainData.businessName || subdomainData.sitterName || subdomain} | Pet care in ${subdomainData.location || 'your area'}`,
+    description: subdomainData.tagline || `View pet-care services and ask ${subdomainData.sitterName || subdomainData.businessName || subdomain} about availability.`,
+    alternates: { canonical: `${protocol}://${subdomain}.${rootDomain}` },
+    openGraph: {
+      title: subdomainData.businessName || subdomainData.sitterName || `${subdomain}'s pet care`,
+      description: subdomainData.tagline || `Pet care in ${subdomainData.location || 'your area'}.`,
+      url: `${protocol}://${subdomain}.${rootDomain}`,
+      type: 'website',
+      images: subdomainData.profileImageUrl ? [{ url: subdomainData.profileImageUrl, alt: `${subdomainData.sitterName || subdomainData.businessName || subdomain} pet sitter` }] : undefined
+    }
   };
 }
 
@@ -48,9 +56,19 @@ export default async function SubdomainPage({
   }
   const sitterDisplayName = subdomainData.sitterName || subdomainData.businessName || `${subdomain}'s care`;
   const publicPaymentsEnabled = await getPublicPaymentAvailability(subdomain);
+  const structuredData = {
+    '@context': 'https://schema.org', '@type': 'LocalBusiness',
+    name: subdomainData.businessName || subdomainData.sitterName || `${subdomain}'s pet care`,
+    description: subdomainData.tagline || undefined,
+    url: `${protocol}://${subdomain}.${rootDomain}`,
+    image: subdomainData.profileImageUrl || undefined,
+    areaServed: subdomainData.location || undefined,
+    knowsAbout: subdomainData.services?.length ? subdomainData.services : undefined
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
       <header className="border-b border-border/70">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <AboutSitterfolioDialog businessName={subdomainData.businessName || subdomainData.sitterName || `${subdomain}'s pet care`} />

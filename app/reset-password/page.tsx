@@ -2,6 +2,9 @@ import { PawPrint } from 'lucide-react';
 import { Suspense } from 'react';
 import { ResetPasswordForm } from '@/components/reset-password-form';
 import { SiteHeader } from '@/components/site-header';
+import { privatePageMetadata } from '@/lib/seo';
+
+export const metadata = privatePageMetadata;
 
 export default function ResetPasswordPage() {
   return (

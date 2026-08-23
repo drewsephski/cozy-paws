@@ -14,7 +14,7 @@ export function LeadSubmissionConfirmation({ sitterName, state }: { sitterName: 
         </div>
         <p className="text-[11px] font-semibold uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-300">Request sent</p>
         <h2 className="mt-1.5 text-xl font-semibold tracking-tight">Your conversation with {sitterName} has started.</h2>
-        <p className="mt-2 text-sm leading-5 text-emerald-800 dark:text-emerald-200">We’ll email you when {sitterName} replies. No account needed.</p>
+        <p className="mt-2 text-sm leading-5 text-emerald-800 dark:text-emerald-200">We&apos;ll email you when {sitterName} replies. No account needed.</p>
       </div>
       {token ? <div className="mt-5 border-t border-emerald-200 pt-4 dark:border-emerald-800">
         <ConversationMessages messages={[{ id: 'initial-request', sender: 'CUSTOMER', body: initialMessage, createdAt: state.createdAt || 0 }]} />

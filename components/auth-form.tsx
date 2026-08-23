@@ -88,7 +88,7 @@ export function AuthForm({ initialMode = 'sign-in' }: { initialMode?: Mode }) {
       {mode === 'forgot-password' && (
         <div className="mt-6">
           <h2 className="text-lg font-semibold">Reset your password</h2>
-          <p className="mt-1 text-sm leading-6 text-muted-foreground">Enter your account email and we’ll send you a secure reset link.</p>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">Enter your account email and we&apos;ll send you a secure reset link.</p>
         </div>
       )}
 

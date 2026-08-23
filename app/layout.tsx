@@ -3,6 +3,7 @@ import { Geist } from 'next/font/google';
 import Script from 'next/script';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
+import { getAppOrigin } from '@/lib/app-url';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -10,12 +11,13 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getAppOrigin()),
   title: {
     default: 'Sitterfolio | Website for Pet Sitters',
     template: '%s | Sitterfolio'
   },
   description:
-    'Create a pet-sitting site with your services, service area, and a form clients can use to ask about availability.',
+    'Build a simple website for your pet-sitting business. Publish your services and service area, then collect availability requests in one inbox.',
   icons: {
     icon: '/brand/sitterfolio-paw.png',
     shortcut: '/brand/sitterfolio-paw.png',
@@ -24,21 +26,24 @@ export const metadata: Metadata = {
   keywords: [
     'website for pet sitters',
     'pet sitter contact page',
-    'take Rover clients direct',
+    'pet sitter portfolio',
+    'pet sitter availability form',
     'pet sitting website',
     'independent pet sitter website'
   ],
   openGraph: {
     title: 'Sitterfolio | Website for Pet Sitters',
-    description:
-      'A shareable website with services, service areas, and availability requests for independent pet sitters.',
-    type: 'website'
+    description: 'Build a pet-sitting website with your services, service area, and a form for availability requests.',
+    type: 'website',
+    url: '/',
+    siteName: 'Sitterfolio',
+    images: [{ url: '/brand/sitterfolio-logo.png', alt: 'Sitterfolio' }]
   },
   twitter: {
     card: 'summary',
     title: 'Sitterfolio | Website for Pet Sitters',
     description:
-      'Create a pet-sitting site and give clients one link to ask about availability.'
+      'Build a pet-sitting website and give clients one link to ask about availability.'
   }
 };
 

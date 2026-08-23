@@ -3,6 +3,9 @@ import { SiteHeader } from '@/components/site-header';
 import { profiles } from '@/lib/profiles';
 import { OnboardingComplete } from '../dashboard';
 import { getSession } from '@/lib/session';
+import { privatePageMetadata } from '@/lib/seo';
+
+export const metadata = privatePageMetadata;
 
 export default async function OnboardingCompletePage({
   searchParams

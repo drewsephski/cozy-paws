@@ -10,7 +10,8 @@ import { getOwnerConversationMessages } from '@/lib/conversations';
 
 export const metadata: Metadata = {
   title: `Sitter dashboard | ${rootDomain}`,
-  description: 'Update and share your pet-sitting website.'
+  description: 'Update and share your pet-sitting website.',
+  robots: { index: false, follow: false }
 };
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ stripe?: string }> }) {

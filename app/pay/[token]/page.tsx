@@ -1,5 +1,8 @@
 import { notFound } from 'next/navigation';
 import { getPaymentRequest } from '@/lib/payment-requests';
+import { privatePageMetadata } from '@/lib/seo';
+
+export const metadata = privatePageMetadata;
 
 export default async function PayPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params; const payment = await getPaymentRequest(token); if (!payment) notFound();
