@@ -5,7 +5,7 @@ const { queryMock, retrieveAccountMock } = vi.hoisted(() => ({ queryMock: vi.fn(
 vi.mock('./db', () => ({ query: queryMock }));
 vi.mock('./stripe', () => ({ getStripe: () => ({ v2: { core: { accounts: { retrieve: retrieveAccountMock } } } }) }));
 
-import { buildConnectedAccountParams, connectedAccountStatus, isConnectedAccountStatusEvent, processConnectedAccountStatusEvent, statementDescriptorForBusiness } from './connected-accounts';
+import { buildConnectedAccountParams, connectedAccountStatus, getConnectedAccountStatus, isConnectedAccountStatusEvent, processConnectedAccountStatusEvent, statementDescriptorForBusiness } from './connected-accounts';
 
 describe('Stripe connected-account prefill', () => {
   beforeEach(() => {
@@ -50,6 +50,16 @@ describe('Stripe connected-account prefill', () => {
     expect(isConnectedAccountStatusEvent('v2.core.account[requirements].updated')).toBe(true);
     expect(isConnectedAccountStatusEvent('v2.core.account[configuration.merchant].capability_status_updated')).toBe(true);
     expect(isConnectedAccountStatusEvent('v2.core.account[identity].updated')).toBe(false);
+  });
+
+  it('tells the dashboard to reconnect an account the current platform cannot access', async () => {
+    retrieveAccountMock.mockRejectedValue({ type: 'StripePermissionError', code: 'forbidden', statusCode: 403 });
+
+    await expect(getConnectedAccountStatus({
+      id: 'business-1',
+      stripeAccountId: 'acct_stale',
+      stripeReady: false,
+    })).resolves.toEqual({ status: 'reconnect_required', ready: false });
   });
 
   it('reconciles an account event into durable readiness and records the event', async () => {

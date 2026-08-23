@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   },
   description:
     'Create a pet-sitting site with your services, service area, and a form clients can use to ask about availability.',
+  icons: {
+    icon: '/brand/sitterfolio-paw.png',
+    shortcut: '/brand/sitterfolio-paw.png',
+    apple: '/brand/sitterfolio-paw.png'
+  },
   keywords: [
     'website for pet sitters',
     'pet sitter contact page',

@@ -8,7 +8,7 @@ vi.mock('./connected-accounts', () => ({
   refreshConnectedAccountReadiness: vi.fn(),
 }));
 
-import { getOwnerPaymentSetup } from './payment-requests';
+import { getOwnerPaymentSetup, refreshOwnerPaymentSetup } from './payment-requests';
 
 describe('owner Stripe payment setup', () => {
   beforeEach(() => {
@@ -28,5 +28,19 @@ describe('owner Stripe payment setup', () => {
       ready: false,
     }]);
     expect(statusMock).toHaveBeenCalledWith({ id: 'business-1', stripeAccountId: 'acct_1', stripeReady: false });
+  });
+
+  it('refreshes only an authenticated owner business', async () => {
+    queryMock.mockResolvedValue({ rows: [{ id: 'business-1', name: 'Phoenix', stripe_account_id: 'acct_1', stripe_ready: false }] });
+    statusMock.mockResolvedValue({ status: 'ready', ready: true });
+
+    await expect(refreshOwnerPaymentSetup('user-1', 'business-1')).resolves.toEqual({
+      businessId: 'business-1',
+      businessName: 'Phoenix',
+      connected: true,
+      status: 'ready',
+      ready: true,
+    });
+    expect(queryMock).toHaveBeenCalledWith(expect.stringContaining('owner_user_id=$2'), ['business-1', 'user-1']);
   });
 });

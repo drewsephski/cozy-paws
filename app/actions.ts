@@ -6,7 +6,8 @@ import { siteIntake } from '@/lib/intake';
 import { profiles, type BusinessProfile } from '@/lib/profiles';
 import { getSession } from '@/lib/session';
 import { leadIntake, leadRateLimitKey } from '@/lib/leads';
-import { createPaymentRequestForLead, deliverPaymentRequest } from '@/lib/payment-requests';
+import { createPaymentRequestForLead, deliverPaymentRequest, refreshOwnerPaymentSetup } from '@/lib/payment-requests';
+import type { ConnectedAccountStatus } from '@/lib/connected-accounts';
 import { getAppOrigin } from '@/lib/app-url';
 import { createOrContinueOnboarding } from '@/lib/connected-accounts';
 import { transitionOwnedLead } from '@/lib/lead-management';
@@ -192,6 +193,18 @@ export async function startStripeOnboardingAction(formData: FormData): Promise<n
   const user = await requireUser();
   const url = await createOrContinueOnboarding(user.id, String(formData.get('businessId') || ''));
   redirect(url);
+}
+
+export type RefreshStripeStatusState = { status?: ConnectedAccountStatus; ready?: boolean; refreshedAt?: number; error?: string };
+export async function refreshStripeStatusAction(_state: RefreshStripeStatusState, formData: FormData): Promise<RefreshStripeStatusState> {
+  const user = await requireUser();
+  try {
+    const setup = await refreshOwnerPaymentSetup(user.id, String(formData.get('businessId') || ''));
+    revalidatePath('/admin');
+    return { status: setup.status, ready: setup.ready, refreshedAt: Date.now() };
+  } catch {
+    return { error: 'Stripe status could not be refreshed. Try again in a moment.', refreshedAt: Date.now() };
+  }
 }
 
 type DeleteState = { error?: string; success?: string };

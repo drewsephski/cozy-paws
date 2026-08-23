@@ -3,7 +3,13 @@ import { query } from './db';
 import { getAppOrigin, getPublicSiteUrl } from './app-url';
 import { getStripe } from './stripe';
 
-export type ConnectedAccountStatus = 'not_started' | 'action_required' | 'pending' | 'ready' | 'unavailable';
+export type ConnectedAccountStatus = 'not_started' | 'action_required' | 'pending' | 'ready' | 'reconnect_required' | 'unavailable';
+
+function isInaccessibleConnectedAccountError(error: unknown) {
+  if (!error || typeof error !== 'object') return false;
+  const stripeError = error as { code?: string; statusCode?: number };
+  return stripeError.code === 'forbidden' || stripeError.code === 'resource_missing' || stripeError.statusCode === 403 || stripeError.statusCode === 404;
+}
 
 export function connectedAccountStatus(account: Stripe.V2.Core.Account): Exclude<ConnectedAccountStatus, 'not_started' | 'unavailable'> {
   const capabilityStatus = account.configuration?.merchant?.capabilities?.card_payments?.status;
@@ -73,6 +79,7 @@ export async function getConnectedAccountStatus(business: { id: string; stripeAc
   try {
     return await reconcileConnectedAccountStatus({ ...business, stripeAccountId: business.stripeAccountId });
   } catch (error) {
+    if (isInaccessibleConnectedAccountError(error)) return { status: 'reconnect_required' as const, ready: false };
     console.error('Unable to verify Stripe connected-account status', { businessId: business.id, error: error instanceof Error ? error.message : 'Unknown Stripe error' });
     return { status: 'unavailable' as const, ready: false };
   }
@@ -87,12 +94,28 @@ export async function createOrContinueOnboarding(ownerUserId: string, businessId
   const business = result.rows[0];
   if (!business) throw new Error('Business does not belong to this user');
   let accountId = business.stripe_account_id;
-  if (!accountId) {
+  const createAccount = async () => {
     const account = await getStripe().v2.core.accounts.create(buildConnectedAccountParams(business), { idempotencyKey: `sitterfolio-connected-account-${business.id}` });
-    accountId = account.id;
+    return account.id;
+  };
+  if (!accountId) {
+    accountId = await createAccount();
     await query(`update business set stripe_account_id=$2,updated_at=now() where id=$1 and stripe_account_id is null`, [business.id, accountId]);
     const canonical = await query<{ stripe_account_id: string }>(`select stripe_account_id from business where id=$1 and owner_user_id=$2`, [business.id, ownerUserId]);
     accountId = canonical.rows[0]?.stripe_account_id ?? accountId;
+  } else {
+    try {
+      await getStripe().v2.core.accounts.retrieve(accountId, { include: ['configuration.merchant'] });
+    } catch (error) {
+      if (!isInaccessibleConnectedAccountError(error)) throw error;
+      const payments = await query<{ count: string }>(`select count(*)::text count from payment_request where business_id=$1`, [business.id]);
+      if (Number(payments.rows[0]?.count ?? 0) > 0) throw new Error('Contact support before reconnecting this Stripe account because it has payment history.');
+      const staleAccountId = accountId;
+      const replacementAccountId = await createAccount();
+      const replaced = await query<{ stripe_account_id: string }>(`update business set stripe_account_id=$2,stripe_ready=false,updated_at=now() where id=$1 and owner_user_id=$3 and stripe_account_id=$4 returning stripe_account_id`, [business.id, replacementAccountId, ownerUserId, staleAccountId]);
+      if (!replaced.rows[0]) throw new Error('Stripe connection changed while reconnecting. Refresh and try again.');
+      accountId = replaced.rows[0].stripe_account_id;
+    }
   }
   const link = await getStripe().v2.core.accountLinks.create({ account: accountId, use_case: { type: 'account_onboarding', account_onboarding: { configurations: ['merchant'], collection_options: { fields: 'eventually_due' }, refresh_url: `${getAppOrigin()}/stripe/onboarding/refresh?businessId=${encodeURIComponent(business.id)}`, return_url: `${getAppOrigin()}/admin?stripe=returned` } } });
   return link.url;

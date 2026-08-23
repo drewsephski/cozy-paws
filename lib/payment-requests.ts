@@ -62,3 +62,10 @@ export async function getOwnerPaymentSetup(ownerUserId: string) {
     return { businessId: business.id, businessName: business.name, connected: Boolean(business.stripe_account_id), ...stripe };
   }));
 }
+
+export async function refreshOwnerPaymentSetup(ownerUserId: string, businessId: string) {
+  const business = (await query<{ id: string; name: string; stripe_account_id: string | null; stripe_ready: boolean }>(`select id,name,stripe_account_id,stripe_ready from business where id=$1 and owner_user_id=$2`, [businessId, ownerUserId])).rows[0];
+  if (!business) throw new Error('Business does not belong to this user');
+  const stripe = await getConnectedAccountStatus({ id: business.id, stripeAccountId: business.stripe_account_id, stripeReady: business.stripe_ready });
+  return { businessId: business.id, businessName: business.name, connected: Boolean(business.stripe_account_id), ...stripe };
+}
