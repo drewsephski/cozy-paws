@@ -3,18 +3,13 @@ import type { PoolClient } from 'pg';
 import { transaction } from './db';
 import { applyPaymentSignal, calculateApplicationFeeRefundTargetCents, type PaymentState, type PaymentStatus } from './domain/payments';
 import { getStripe } from './stripe';
+import { maybeProcessPublicPaymentEvent } from './public-payment-webhooks';
+import { checkoutEventOutcome } from './stripe-checkout-outcome';
+export { checkoutEventOutcome } from './stripe-checkout-outcome';
 
 type Row = { id: string; lead_id: string; amount_cents: number; platform_fee_cents: number; currency: string; status: PaymentStatus; refunded_amount_cents: number; application_fee_refunded_cents: number; stripe_checkout_session_id: string | null; stripe_payment_intent_id: string | null; stripe_charge_id: string | null; stripe_application_fee_id: string | null; stripe_account_id: string };
 const objectId = (value: string | { id: string } | null) => typeof value === 'string' ? value : value?.id ?? null;
 const toState = (row: Row): PaymentState => ({ requestId: row.id, connectedAccountId: row.stripe_account_id, amountCents: row.amount_cents, currency: row.currency, status: row.status, refundedAmountCents: row.refunded_amount_cents, checkoutSessionId: row.stripe_checkout_session_id, paymentIntentId: row.stripe_payment_intent_id, chargeId: row.stripe_charge_id });
-
-export function checkoutEventOutcome(type: string, session: Pick<Stripe.Checkout.Session, 'status' | 'payment_status'>): 'paid' | 'pending' | 'failed' {
-  if (session.status !== 'complete') throw new Error('Checkout Session is not complete');
-  if (type === 'checkout.session.async_payment_failed') return 'failed';
-  if (session.payment_status === 'paid') return 'paid';
-  if (type === 'checkout.session.completed' && session.payment_status === 'unpaid') return 'pending';
-  throw new Error('Checkout Session payment state is inconsistent with its event');
-}
 
 async function stripeObjects(accountId: string, intentValue: string | Stripe.PaymentIntent | null, chargeValue: string | Stripe.Charge | null) {
   let intent = typeof intentValue === 'object' && intentValue ? intentValue : null;
@@ -53,6 +48,7 @@ export async function processStripeEvent(event: Stripe.Event) {
   const handled = [...checkoutEvents, 'charge.refunded', 'charge.dispute.created', 'charge.dispute.closed'].includes(event.type);
   if (!handled) { await transaction(async (client) => { await client.query(`insert into stripe_webhook_event(event_id,event_type) values($1,$2) on conflict do nothing`, [event.id, event.type]); }); return; }
   if (!accountId) throw new Error('Expected a connected-account Stripe event');
+  if (await maybeProcessPublicPaymentEvent(event, accountId)) return;
 
   let objects; let signal; let paidAt: Date | null = null;
   if (checkoutEvents.includes(event.type)) {

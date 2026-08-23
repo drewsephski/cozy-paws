@@ -196,7 +196,6 @@ function ProfileField({ label, name, defaultValue, placeholder, type = 'text', c
 function ProfileEditor({ site }: { site: SiteProfile }) {
   const [state, saveAction, isSaving] = useActionState<SaveProfileState, FormData>(saveProfileAction, {});
   const [showSaved, setShowSaved] = useState(false);
-  const hasPaymentLink = Boolean(site.paymentLinkUrl);
 
   useEffect(() => {
     if (!state.success || !state.savedAt) return;
@@ -218,32 +217,6 @@ function ProfileEditor({ site }: { site: SiteProfile }) {
           <ServicesField defaultValue={site.services || []} />
           <ProfileField label="Phone" name="phone" type="tel" defaultValue={site.phone || ''} placeholder="(555) 123-4567" />
           <ProfileField label="Email" name="email" type="email" defaultValue={site.email || ''} placeholder="hello@example.com" />
-          <div className="sm:col-span-2">
-            <div className="mb-2 flex flex-wrap items-end justify-between gap-2">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground">Public payment button (optional)</p>
-                <p className="mt-1 text-sm font-medium">Stripe Payment Link</p>
-              </div>
-              <Button asChild type="button" size="sm" variant="outline">
-                <a href="https://dashboard.stripe.com/payment-links/create" target="_blank" rel="noopener noreferrer">
-                  {hasPaymentLink ? 'Manage in Stripe' : 'Create link in Stripe'} <ExternalLink aria-hidden="true" />
-                </a>
-              </Button>
-            </div>
-            {!hasPaymentLink && (
-              <div className="mb-3 rounded-xl border border-violet-200 bg-violet-50/70 p-4 dark:border-violet-900 dark:bg-violet-950/25">
-                <p className="text-sm font-medium text-violet-950 dark:text-violet-100">Connecting Stripe does not create a Payment Link automatically.</p>
-                <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm leading-6 text-violet-900/80 dark:text-violet-200/80">
-                  <li>Open Stripe and choose what this reusable link should charge.</li>
-                  <li>Create the link, then copy the <span className="font-medium">buy.stripe.com</span> URL.</li>
-                  <li>Paste it below and save. A secure payment button will appear on your public site.</li>
-                </ol>
-              </div>
-            )}
-            <label htmlFor="paymentLinkUrl" className="sr-only">Stripe Payment Link URL</label>
-            <input id="paymentLinkUrl" name="paymentLinkUrl" type="url" defaultValue={site.paymentLinkUrl || ''} placeholder="https://buy.stripe.com/..." className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none transition focus:border-emerald-500/70 focus:ring-4 focus:ring-emerald-500/10" />
-            <p className="mt-1.5 text-xs leading-5 text-muted-foreground">This is for a reusable payment button on your public site. Payment requests you send from an inquiry are created automatically and do not need this link.</p>
-          </div>
           <div className="sm:col-span-2">
             <p className="mb-1.5 text-xs font-medium text-muted-foreground">Profile photo</p>
             <ProfileImageUpload subdomain={site.subdomain} currentImageUrl={site.profileImageUrl} />
@@ -321,7 +294,7 @@ const paymentSetupContent = {
   not_started: { title: 'Set up Stripe', detail: 'Add your identity and bank details securely with Stripe.', button: 'Start Stripe setup', icon: CreditCard, tone: 'text-muted-foreground bg-muted' },
   action_required: { title: 'More information needed', detail: 'Stripe needs a few details to activate or keep your payment account in good standing.', button: 'Finish Stripe setup', icon: CircleAlert, tone: 'text-amber-700 bg-amber-100 dark:text-amber-300 dark:bg-amber-950' },
   pending: { title: 'Stripe is reviewing your details', detail: 'Nothing else is needed right now. We’ll check again whenever you open this dashboard.', button: '', icon: Clock3, tone: 'text-blue-700 bg-blue-100 dark:text-blue-300 dark:bg-blue-950' },
-  ready: { title: 'Ready to accept payments', detail: 'Stripe is connected and this business can send payment requests.', button: '', icon: CheckCircle2, tone: 'text-emerald-700 bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950' },
+  ready: { title: 'Ready to accept payments', detail: 'Stripe is connected. Pet owners can choose an amount on your public site, and you can also send payment requests from inquiries.', button: '', icon: CheckCircle2, tone: 'text-emerald-700 bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950' },
   reconnect_required: { title: 'Reconnect Stripe', detail: 'This payment account belongs to a different Stripe sandbox. Reconnect it to continue with the current Sitterfolio sandbox.', button: 'Reconnect Stripe', icon: CircleAlert, tone: 'text-amber-700 bg-amber-100 dark:text-amber-300 dark:bg-amber-950' },
   unavailable: { title: 'Status could not be refreshed', detail: 'Your Stripe details are safe. Try refreshing this page in a moment.', button: '', icon: RotateCw, tone: 'text-muted-foreground bg-muted' },
 } as const;

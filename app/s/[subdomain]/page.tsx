@@ -9,6 +9,7 @@ import { MapPin } from 'lucide-react';
 import { PetIcon } from '@/components/pet-icon';
 import { AboutSitterfolioDialog } from '@/components/about-sitterfolio-dialog';
 import { PublicPaymentSection } from './public-payment-section';
+import { getPublicPaymentAvailability } from '@/lib/public-payments';
 
 export async function generateMetadata({
   params
@@ -41,6 +42,7 @@ export default async function SubdomainPage({
   if (!subdomainData) {
     notFound();
   }
+  const publicPaymentsEnabled = await getPublicPaymentAvailability(subdomain);
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
@@ -59,7 +61,7 @@ export default async function SubdomainPage({
           {subdomainData.sitterName && subdomainData.businessName && <p className="mt-3 text-lg font-medium text-emerald-700 dark:text-emerald-400">{subdomainData.businessName}</p>}
           <p className="mt-6 max-w-xl text-xl leading-8 text-muted-foreground">{subdomainData.tagline || 'Pet care from someone local.'}</p>
           {(subdomainData.services || []).length > 0 && <div className="mt-10"><p className="mb-3 text-sm font-medium">Services</p><div className="flex flex-wrap gap-3">{(subdomainData.services || []).map((service) => <span key={service} className="rounded-full bg-emerald-50 px-4 py-2 text-sm text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">{service}</span>)}</div></div>}
-          <PublicPaymentSection paymentLinkUrl={subdomainData.paymentLinkUrl} />
+          <PublicPaymentSection subdomain={subdomain} enabled={publicPaymentsEnabled} />
         </section>
         <section className="rounded-2xl border border-border bg-card p-4 shadow-xl shadow-black/10 sm:p-5">
           <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400">Ask about availability</p>
