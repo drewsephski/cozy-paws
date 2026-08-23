@@ -6,6 +6,7 @@ import { createBookingAction, transitionBookingAction, type CreateBookingState, 
 import type { Booking } from '@/lib/bookings';
 import { allowedBookingTransitions, type BookingStatus } from '@/lib/domain/bookings';
 import type { ClientHousehold } from '@/lib/client-households';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
@@ -80,7 +81,17 @@ export function Bookings({ households, bookings }: { households: ClientHousehold
         </div>
         {!households.length ? <p className="mt-5 rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Save a qualified inquiry as a client before creating a booking.</p> : (
           <form action={action} className="mt-5 space-y-4">
-            <label className="block"><span className="mb-1.5 block text-sm font-medium">Client household</span><select name="householdId" value={householdId} onChange={(event) => setHouseholdId(event.target.value)} className="h-11 w-full rounded-lg border border-input bg-background px-3">{households.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
+            <div>
+              <label htmlFor="booking-household" className="mb-1.5 block text-sm font-medium">Client household</label>
+              <Select name="householdId" value={householdId} onValueChange={setHouseholdId}>
+                <SelectTrigger id="booking-household" aria-label="Client household">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {households.map((item) => <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
             <fieldset><legend className="text-sm font-medium">Pets</legend><div className="mt-2 grid gap-2 sm:grid-cols-2">{household?.pets.map((pet) => <label key={pet.id} className="flex min-h-11 items-center gap-2 rounded-lg border border-input px-3 text-sm"><input type="checkbox" name="petIds" value={pet.id} /><PawPrint className="size-4 text-emerald-600" aria-hidden="true" />{pet.name}</label>)}</div></fieldset>
             <div className="grid gap-4 sm:grid-cols-2"><label><span className="mb-1.5 block text-sm font-medium">Start date</span><input required type="date" name="startDate" className="h-11 w-full rounded-lg border border-input bg-background px-3" /></label><label><span className="mb-1.5 block text-sm font-medium">End date</span><input required type="date" name="endDate" className="h-11 w-full rounded-lg border border-input bg-background px-3" /></label></div>
             <label className="block"><span className="mb-1.5 block text-sm font-medium">Agreed total</span><div className="relative"><span className="absolute left-3 top-2.5 text-muted-foreground">$</span><input required name="amount" inputMode="decimal" placeholder="240.00" className="h-11 w-full rounded-lg border border-input bg-background pl-7 pr-3" /></div></label>
