@@ -3,10 +3,20 @@ import { query, transaction } from './db';
 import { redisProfileRepository as legacy } from './redis-profile-repository';
 
 type ProfileRow = { owner_id: string; subdomain: string; emoji: string; created_at: Date; sitter_name: string | null; business_name: string | null; tagline: string | null; location: string | null; services: string[]; phone: string | null; email: string | null; profile_image_url: string | null; onboarding_completed_at: Date | null; payment_link_url: string | null };
-type LeadRow = { id: string; customer_name: string; customer_email: string; service_requested: string; requested_start_date: string | null; requested_end_date: string | null; date_details: string; pet_types: string[]; pet_count: number | null; postal_code: string; care_details: string; source: string; campaign: string | null; status: Lead['status']; read_at: Date | null; created_at: Date };
+type LeadRow = { id: string; customer_name: string; customer_email: string; service_requested: string; requested_start_date: Date | string | null; requested_end_date: Date | string | null; date_details: string; pet_types: string[]; pet_count: number | null; postal_code: string; care_details: string; source: string; campaign: string | null; status: Lead['status']; read_at: Date | null; created_at: Date };
 
 const mapProfile = (row: ProfileRow): BusinessProfile => ({ ownerId: row.owner_id, emoji: row.emoji, createdAt: row.created_at.getTime(), sitterName: row.sitter_name ?? undefined, businessName: row.business_name ?? undefined, tagline: row.tagline ?? undefined, location: row.location ?? undefined, services: row.services, phone: row.phone ?? undefined, email: row.email ?? undefined, profileImageUrl: row.profile_image_url ?? undefined, onboardingCompletedAt: row.onboarding_completed_at?.getTime() ?? null, paymentLinkUrl: row.payment_link_url ?? undefined });
-const mapLead = (row: LeadRow): Lead => ({ id: row.id, name: row.customer_name, email: row.customer_email, dates: row.date_details, message: row.care_details, createdAt: row.created_at.getTime(), readAt: row.read_at?.getTime() ?? null, serviceRequested: row.service_requested, requestedStartDate: row.requested_start_date, requestedEndDate: row.requested_end_date, petTypes: row.pet_types, petCount: row.pet_count, postalCode: row.postal_code, source: row.source, campaign: row.campaign, status: row.status ?? 'NEW' });
+
+export function normalizePostgresCalendarDate(value: Date | string | null) {
+  if (!value) return null;
+  if (typeof value === 'string') return value.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || value;
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, '0');
+  const day = String(value.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+const mapLead = (row: LeadRow): Lead => ({ id: row.id, name: row.customer_name, email: row.customer_email, dates: row.date_details, message: row.care_details, createdAt: row.created_at.getTime(), readAt: row.read_at?.getTime() ?? null, serviceRequested: row.service_requested, requestedStartDate: normalizePostgresCalendarDate(row.requested_start_date), requestedEndDate: normalizePostgresCalendarDate(row.requested_end_date), petTypes: row.pet_types, petCount: row.pet_count, postalCode: row.postal_code, source: row.source, campaign: row.campaign, status: row.status ?? 'NEW' });
 
 async function readPostgresProfile(subdomain: string) {
   const result = await query<ProfileRow>(`select b.owner_user_id owner_id, s.subdomain, s.emoji, s.created_at, s.sitter_name, s.business_name, s.tagline, s.location, s.services, s.phone, s.email, s.profile_image_url, s.onboarding_completed_at, b.payment_link_url from site s join business b on b.id=s.business_id where s.subdomain=$1 and s.deleted_at is null`, [subdomain]);
