@@ -322,15 +322,18 @@ function StripeBusinessStatus({ business }: { business: PaymentSetup }) {
         <p className="font-medium">{business.businessName}</p>
         <p className="mt-0.5 text-sm font-medium">{isRefreshing ? 'Checking Stripe status…' : content.title}</p>
         <p className="mt-1 max-w-2xl text-sm leading-5 text-muted-foreground">{content.detail}</p>
-        <div aria-live="polite" className="mt-1 text-xs text-muted-foreground">
-          {refreshState.error ? <span className="text-destructive">{refreshState.error}</span> : refreshState.refreshedAt ? 'Status refreshed just now.' : null}
-        </div>
+        {refreshState.error ? <div aria-live="polite" className="mt-1 text-xs text-destructive">{refreshState.error}</div> : null}
       </div>
     </div>
-    <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end">
-      {content.button && <form action={startStripeOnboardingAction}><input type="hidden" name="businessId" value={business.businessId} /><StripeOnboardingButton label={content.button} /></form>}
-      {canManage && <Button asChild size="sm" variant="outline"><a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer">Manage in Stripe <ExternalLink aria-hidden="true" /></a></Button>}
-      {canRefresh && <form action={refreshAction}><input type="hidden" name="businessId" value={business.businessId} /><Button type="submit" size="sm" variant="outline" disabled={isRefreshing}>{isRefreshing ? <><Loader2 className="animate-spin" aria-hidden="true" />Checking…</> : <><RotateCw aria-hidden="true" />Refresh status</>}</Button></form>}
+    <div className="flex shrink-0 flex-col gap-1 sm:items-end">
+      <div className="flex flex-wrap gap-2 sm:justify-end">
+        {content.button && <form action={startStripeOnboardingAction}><input type="hidden" name="businessId" value={business.businessId} /><StripeOnboardingButton label={content.button} /></form>}
+        {canManage && <Button asChild size="sm" variant="outline"><a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer">Manage in Stripe <ExternalLink aria-hidden="true" /></a></Button>}
+        {canRefresh && <form action={refreshAction}><input type="hidden" name="businessId" value={business.businessId} /><Button type="submit" size="sm" variant="outline" disabled={isRefreshing}>{isRefreshing ? <><Loader2 className="animate-spin" aria-hidden="true" />Checking…</> : <><RotateCw aria-hidden="true" />Refresh status</>}</Button></form>}
+      </div>
+      <div aria-live="polite" className="text-xs text-muted-foreground sm:text-right">
+        {refreshState.refreshedAt && !refreshState.error ? 'Status refreshed just now.' : null}
+      </div>
     </div>
   </div>;
 }
