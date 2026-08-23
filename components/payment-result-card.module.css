@@ -1,0 +1,152 @@
+.shell {
+  align-items: center;
+  background:
+    radial-gradient(circle at 50% 22%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 34rem),
+    var(--background);
+  display: flex;
+  min-height: 100svh;
+  overflow: hidden;
+  padding: 2rem 1.25rem;
+}
+
+.card {
+  background: color-mix(in oklab, var(--card) 94%, transparent);
+  border: 1px solid color-mix(in oklab, var(--border) 78%, var(--primary));
+  border-radius: 1.5rem;
+  box-shadow: 0 1.5rem 5rem color-mix(in oklab, var(--foreground) 10%, transparent);
+  isolation: isolate;
+  margin-inline: auto;
+  max-width: 31rem;
+  overflow: hidden;
+  padding: 3.75rem 2rem 2rem;
+  position: relative;
+  text-align: center;
+  width: 100%;
+}
+
+.card::before {
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--primary) 52%, transparent), transparent);
+  content: '';
+  height: 1px;
+  inset: 0 12% auto;
+  position: absolute;
+}
+
+.successMark,
+.pendingMark {
+  align-items: center;
+  border-radius: 999px;
+  display: flex;
+  height: 4rem;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  position: relative;
+  width: 4rem;
+  z-index: 2;
+}
+
+.successMark {
+  animation: seal-in 640ms cubic-bezier(.2, .9, .25, 1.25) both;
+  background: color-mix(in oklab, var(--primary) 18%, var(--card));
+  border: 1px solid color-mix(in oklab, var(--primary) 48%, transparent);
+  box-shadow: 0 0 0 .5rem color-mix(in oklab, var(--primary) 7%, transparent);
+  color: var(--primary);
+}
+
+.pendingMark {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+
+.successMark svg,
+.pendingMark svg { height: 1.55rem; width: 1.55rem; }
+.pendingMark svg { animation: spin 1.2s linear infinite; }
+
+.eyebrow {
+  color: var(--primary);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  margin-bottom: .75rem;
+  text-transform: uppercase;
+}
+
+.card h1 {
+  font-size: clamp(2rem, 8vw, 2.75rem);
+  font-weight: 650;
+  letter-spacing: -.045em;
+  line-height: 1;
+}
+
+.message {
+  color: var(--muted-foreground);
+  font-size: 1rem;
+  line-height: 1.65;
+  margin: 1rem auto 0;
+  max-width: 24rem;
+}
+
+.returnLink {
+  align-items: center;
+  background: var(--foreground);
+  border-radius: 999px;
+  color: var(--background);
+  display: inline-flex;
+  font-size: .875rem;
+  font-weight: 650;
+  gap: .6rem;
+  justify-content: center;
+  margin-top: 1.75rem;
+  min-height: 2.75rem;
+  padding: .65rem 1.25rem;
+  transition: gap 160ms ease, transform 160ms ease;
+}
+
+.returnLink:focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
+
+.receiptNote {
+  color: color-mix(in oklab, var(--muted-foreground) 78%, transparent);
+  font-size: .75rem;
+  margin-top: 1rem;
+}
+
+.confetti { inset: 0; overflow: hidden; pointer-events: none; position: absolute; z-index: 1; }
+.piece,
+.ribbon {
+  animation: confetti-fall 1.65s cubic-bezier(.16, .75, .24, 1) var(--delay) both;
+  background: var(--confetti);
+  left: var(--left);
+  opacity: 0;
+  position: absolute;
+  top: -1rem;
+}
+.piece { border-radius: 2px; height: .48rem; width: .25rem; }
+.ribbon { border-radius: 999px; height: .7rem; width: .14rem; }
+
+@media (hover: hover) and (pointer: fine) {
+  .returnLink:hover { gap: .8rem; transform: translateY(-1px); }
+}
+
+@keyframes confetti-fall {
+  0% { opacity: 0; transform: translate3d(0, -1rem, 0) rotate(0); }
+  12% { opacity: .95; }
+  100% { opacity: 0; transform: translate3d(var(--drift), 15rem, 0) rotate(520deg); }
+}
+
+@keyframes seal-in {
+  from { opacity: 0; transform: scale(.72) rotate(-8deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti { display: none; }
+  .pendingMark svg,
+  .successMark { animation: none; }
+  .returnLink { transition: none; }
+}
+
+@media (max-width: 28rem) {
+  .card { border-radius: 1.25rem; padding: 3.25rem 1.35rem 1.5rem; }
+}
