@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Globe2, Rocket } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Globe2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PetIcon } from '@/components/pet-icon';
 import { launchDraftAction, type LaunchDraftState } from '@/app/actions';
@@ -36,40 +36,37 @@ export function LaunchDraft() {
   const displayName = sitterName || businessName;
 
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center px-5 py-10 lg:px-8 lg:py-16">
-      <section className="grid w-full overflow-hidden rounded-2xl bg-card shadow-[0_28px_90px_-52px_rgba(6,78,59,.45)] lg:grid-cols-[minmax(0,1.18fr)_minmax(20rem,.82fr)]">
-        <div className="flex flex-col justify-center px-6 py-10 sm:px-10 sm:py-14 lg:px-14 lg:py-16">
-          <span className="grid size-12 place-items-center rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-400/15 dark:text-emerald-300"><Rocket aria-hidden="true" className="size-6" /></span>
-          <h1 className="mt-7 max-w-xl text-4xl font-semibold tracking-[-.035em] text-balance sm:text-5xl lg:text-6xl">Ready to launch {displayName || 'your site'}?</h1>
-          <p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">Your site will be published at <strong className="font-semibold text-foreground">{draft.subdomain}.{rootDomain}</strong>.</p>
-          <form action={action} className="mt-9">
+    <main className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-5xl items-center px-5 py-8 lg:px-8 lg:py-12">
+      <section className="grid w-full overflow-hidden rounded-xl border border-border bg-card shadow-[0_20px_60px_-44px_rgba(0,0,0,.35)] md:grid-cols-[minmax(0,1.12fr)_minmax(18rem,.88fr)]">
+        <div className="flex flex-col justify-center px-6 py-8 sm:px-9 sm:py-10 lg:px-12">
+          <h1 className="max-w-xl text-3xl font-semibold tracking-[-.025em] text-balance sm:text-4xl">Ready to launch {displayName || 'your site'}?</h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Publish your site at <strong className="font-medium text-foreground">{draft.subdomain}.{rootDomain}</strong>.</p>
+          <form action={action} className="mt-7">
           {Object.entries(draft).map(([name, value]) => <input key={name} type="hidden" name={name} value={value} />)}
             {state.error && <p role="alert" className="mb-5 max-w-lg rounded-xl bg-destructive/10 px-4 py-3 text-sm leading-6 text-destructive">{state.error}</p>}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Button type="submit" size="lg" disabled={pending} className="h-12 px-6 text-base shadow-[0_12px_28px_-14px_rgba(6,95,70,.75)]">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <Button type="submit" disabled={pending} className="h-10 px-4">
                 {pending ? 'Launching...' : <>Launch my site <ArrowRight /></>}
               </Button>
-              <Button asChild type="button" size="lg" variant="ghost" className="h-12 px-5 text-base"><Link href="/build"><ArrowLeft />Keep editing</Link></Button>
+              <Button asChild type="button" variant="ghost" className="h-10 px-4"><Link href="/build"><ArrowLeft />Keep editing</Link></Button>
             </div>
           </form>
         </div>
 
-        <div className="relative flex min-h-[22rem] flex-col justify-between overflow-hidden bg-emerald-950 p-7 text-emerald-50 sm:p-10 lg:min-h-[34rem]">
-          <div aria-hidden="true" className="absolute -right-24 -top-24 size-72 rounded-full border border-emerald-300/10" />
-          <div aria-hidden="true" className="absolute -right-10 -top-10 size-44 rounded-full border border-emerald-300/15" />
-          <div className="relative flex items-center gap-2 text-sm font-medium text-emerald-200">
+        <div className="flex min-h-[18rem] flex-col justify-between border-t border-border bg-muted/35 p-6 md:min-h-[24rem] md:border-l md:border-t-0 sm:p-8">
+          <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
             <Globe2 aria-hidden="true" className="size-4" />
-            Your new home on the web
+            Site preview
           </div>
-          <div className="relative py-10 text-center">
-            <div className="mx-auto grid size-24 place-items-center rounded-full bg-emerald-50 text-emerald-900 shadow-[0_20px_44px_-18px_rgba(0,0,0,.6)]">
-              <PetIcon value={draft.icon} className="size-12" />
+          <div className="py-7 text-center">
+            <div className="mx-auto grid size-16 place-items-center rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+              <PetIcon value={draft.icon} className="size-8" />
             </div>
-            <p className="mt-7 text-2xl font-semibold tracking-[-.02em] text-balance">{displayName || 'Your Sitterfolio'}</p>
-            {sitterName && businessName && <p className="mt-1 text-sm text-emerald-200">{businessName}</p>}
-            {draft.location && <p className="mt-2 text-sm text-emerald-200">{draft.location}</p>}
+            <p className="mt-4 text-lg font-semibold tracking-tight text-balance">{displayName || 'Your Sitterfolio'}</p>
+            {sitterName && businessName && <p className="mt-1 text-sm text-muted-foreground">{businessName}</p>}
+            {draft.location && <p className="mt-1 text-sm text-muted-foreground">{draft.location}</p>}
           </div>
-          <div className="relative rounded-xl bg-emerald-900/70 px-4 py-3 text-center text-sm text-emerald-100 ring-1 ring-inset ring-white/10">
+          <div className="truncate rounded-lg border border-border bg-background px-3 py-2.5 text-center text-xs text-muted-foreground">
             {draft.subdomain}.{rootDomain}
           </div>
         </div>
