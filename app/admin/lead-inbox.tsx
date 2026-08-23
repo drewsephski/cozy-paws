@@ -5,6 +5,8 @@ import { createPaymentRequestAction, markLeadReadAction, updateLeadStatusAction,
 import { useActionState } from 'react';
 import type { OwnedLead } from '@/lib/profile-ownership';
 import { canRequestPayment } from '@/lib/domain/leads';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Check, ChevronDown } from 'lucide-react';
 
 type InboxLead = OwnedLead;
 
@@ -16,6 +18,7 @@ function PaymentForm({ lead }: { lead: InboxLead }) {
 
 export function LeadInbox({ leads }: { leads: InboxLead[] }) {
   const [filter, setFilter] = useState('all');
+  const [filterOpen, setFilterOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [copyState, setCopyState] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -23,6 +26,13 @@ export function LeadInbox({ leads }: { leads: InboxLead[] }) {
   const visible = filter === 'all' ? leads : leads.filter((lead) => lead.subdomain === filter);
   const unread = leads.filter((lead) => !lead.readAt).length;
   const unreadBySite = new Map(sites.map(([subdomain]) => [subdomain, leads.filter((lead) => lead.subdomain === subdomain && !lead.readAt).length]));
+  const selectedSite = sites.find(([subdomain]) => subdomain === filter);
+  const filterLabel = selectedSite ? `${selectedSite[1]} (${unreadBySite.get(selectedSite[0]) || 0})` : `All sites (${unread})`;
+
+  function selectSite(value: string) {
+    setFilter(value);
+    setFilterOpen(false);
+  }
 
   async function copyDetails(lead: InboxLead) {
     try {
@@ -49,7 +59,26 @@ export function LeadInbox({ leads }: { leads: InboxLead[] }) {
   return <div className="space-y-4">
     <div className="flex flex-wrap items-center justify-between gap-3">
       <p className="text-sm text-muted-foreground">{unread ? `${unread} unread` : 'All caught up'}</p>
-      <label className="flex items-center gap-2 text-sm"><span className="text-muted-foreground">Site</span><select value={filter} onChange={(event) => setFilter(event.target.value)} className="h-9 rounded-lg border border-input bg-background px-3"><option value="all">All Sites ({unread})</option>{sites.map(([subdomain, name]) => <option key={subdomain} value={subdomain}>{name} ({unreadBySite.get(subdomain) || 0})</option>)}</select></label>
+      <div className="flex items-center gap-2 text-sm">
+        <span id="site-filter-label" className="text-muted-foreground">Site</span>
+        <Popover open={filterOpen} onOpenChange={setFilterOpen}>
+          <PopoverTrigger asChild>
+            <button type="button" aria-labelledby="site-filter-label site-filter-value" aria-haspopup="listbox" aria-expanded={filterOpen} className="flex h-9 min-w-44 items-center justify-between gap-3 rounded-lg border border-input bg-background px-3 text-left font-medium shadow-xs outline-none transition-colors hover:bg-accent focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50">
+              <span id="site-filter-value" className="truncate">{filterLabel}</span>
+              <ChevronDown className={`size-4 shrink-0 text-muted-foreground transition-transform ${filterOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="end" sideOffset={6} collisionPadding={12} className="w-[var(--radix-popover-trigger-width)] min-w-52 p-1.5">
+            <div role="listbox" aria-labelledby="site-filter-label" className="space-y-0.5">
+              <button type="button" role="option" aria-selected={filter === 'all'} onClick={() => selectSite('all')} className="flex w-full items-center justify-between gap-3 rounded-md px-2.5 py-2 text-left text-sm outline-none transition-colors hover:bg-accent focus-visible:bg-accent">
+                <span>All sites <span className="text-muted-foreground">({unread})</span></span>
+                <Check className={`size-4 text-emerald-600 ${filter === 'all' ? 'opacity-100' : 'opacity-0'}`} aria-hidden="true" />
+              </button>
+              {sites.map(([subdomain, name]) => <button key={subdomain} type="button" role="option" aria-selected={filter === subdomain} onClick={() => selectSite(subdomain)} className="flex w-full items-center justify-between gap-3 rounded-md px-2.5 py-2 text-left text-sm outline-none transition-colors hover:bg-accent focus-visible:bg-accent"><span className="truncate">{name} <span className="text-muted-foreground">({unreadBySite.get(subdomain) || 0})</span></span><Check className={`size-4 shrink-0 text-emerald-600 ${filter === subdomain ? 'opacity-100' : 'opacity-0'}`} aria-hidden="true" /></button>)}
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
     </div>
     <div className="space-y-2">{visible.map((lead) => <article key={lead.id} className={`rounded-2xl border bg-card p-4 shadow-sm ${lead.readAt ? 'border-border' : 'border-emerald-500/50'}`}>
       <button type="button" onClick={() => openLead(lead)} className="w-full text-left" aria-expanded={expanded === lead.id}>

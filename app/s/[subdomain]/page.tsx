@@ -46,6 +46,7 @@ export default async function SubdomainPage({
   if (!subdomainData) {
     notFound();
   }
+  const sitterDisplayName = subdomainData.sitterName || subdomainData.businessName || `${subdomain}'s care`;
   const publicPaymentsEnabled = await getPublicPaymentAvailability(subdomain);
 
   return (
@@ -61,7 +62,7 @@ export default async function SubdomainPage({
         <section>
           {subdomainData.profileImageUrl ? <img src={subdomainData.profileImageUrl} alt={`${subdomainData.sitterName || subdomainData.businessName || subdomain}'s profile`} className="mb-8 h-28 w-28 rounded-3xl object-cover shadow-lg ring-4 ring-card" /> : <div className="relative mb-8 grid size-28 place-items-center overflow-hidden rounded-3xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"><NoiseTexture className="opacity-15 dark:opacity-20" frequency={0.65} octaves={5} /><PetIcon value={subdomainData.emoji} className="relative size-14" fallbackClassName="text-6xl" /></div>}
           <p className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400"><MapPin className="size-4" aria-hidden="true" />{subdomainData.location || 'Local pet care'}</p>
-          <h1 className="max-w-2xl text-5xl font-semibold tracking-tight sm:text-7xl">{subdomainData.sitterName || subdomainData.businessName || `${subdomain}'s care`}</h1>
+          <h1 className="max-w-2xl text-5xl font-semibold tracking-tight sm:text-7xl">{sitterDisplayName}</h1>
           {subdomainData.sitterName && subdomainData.businessName && <p className="mt-3 text-lg font-medium text-emerald-700 dark:text-emerald-400">{subdomainData.businessName}</p>}
           <p className="mt-6 max-w-xl text-xl leading-8 text-muted-foreground">{subdomainData.tagline || 'Pet care from someone local.'}</p>
           {(subdomainData.services || []).length > 0 && <div className="mt-10"><p className="mb-3 text-sm font-medium">Services</p><div className="flex flex-wrap gap-3">{(subdomainData.services || []).map((service) => <span key={service} className="rounded-full bg-emerald-50 px-4 py-2 text-sm text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">{service}</span>)}</div></div>}
@@ -70,10 +71,7 @@ export default async function SubdomainPage({
         <section className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-xl shadow-black/10 sm:p-5">
           <NoiseTexture className="opacity-[.035] dark:opacity-[.08]" frequency={0.55} slope={0.2} />
           <div className="relative">
-            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400">Ask about availability</p>
-            <h2 className="text-xl font-semibold">Tell me about your pet</h2>
-            <p className="mt-1.5 text-sm leading-5 text-muted-foreground">Send your dates and care details. I&apos;ll reply by email.</p>
-            <LeadForm subdomain={subdomain} />
+            <LeadForm subdomain={subdomain} sitterName={sitterDisplayName} />
           </div>
         </section>
       </main>
