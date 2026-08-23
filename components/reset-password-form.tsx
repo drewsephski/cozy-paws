@@ -1,13 +1,14 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { CheckCircle2, Loader2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Spokes } from '@/components/ui/spokes';
 
 export function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -77,7 +78,7 @@ export function ResetPasswordForm() {
       </div>
       {error && <p role="alert" aria-live="assertive" className="rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">{error}</p>}
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
+        {isPending && <Spokes className="size-4" aria-hidden="true" />}
         {isPending ? 'Resetting password...' : 'Reset password'}
       </Button>
     </form>

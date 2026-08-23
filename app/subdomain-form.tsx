@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { checkDraftAddressAction, type DraftAddressState } from '@/app/actions';
 import { PetIcon } from '@/components/pet-icon';
 import { Button } from '@/components/ui/button';
+import { Spokes } from '@/components/ui/spokes';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -76,7 +77,7 @@ export function StartSiteDialog({ children }: { children: ReactNode }) {
 
         <div className="flex items-center justify-between gap-3 border-t bg-muted/20 px-6 py-4">
           {step > 1 ? <Button type="button" variant="ghost" onClick={() => setStep((current) => current - 1)}><ArrowLeft aria-hidden="true" />Back</Button> : <span />}
-          {step < 3 ? <Button type="button" onClick={() => setStep((current) => current + 1)} disabled={step === 1 ? cleanSubdomain.length < 3 : !icon}>Next<ArrowRight aria-hidden="true" /></Button> : <Button type="submit" disabled={isPending}>{isPending ? 'Checking address...' : 'Start building'}<ArrowRight aria-hidden="true" /></Button>}
+          {step < 3 ? <Button type="button" onClick={() => setStep((current) => current + 1)} disabled={step === 1 ? cleanSubdomain.length < 3 : !icon}>Next<ArrowRight aria-hidden="true" /></Button> : <Button type="submit" disabled={isPending}>{isPending && <Spokes aria-hidden="true" />}{isPending ? 'Checking address...' : 'Start building'}{!isPending && <ArrowRight aria-hidden="true" />}</Button>}
         </div>
       </form>
     </DialogContent>
@@ -114,6 +115,6 @@ export function SubdomainForm() {
     </div>
 
     <div className="min-h-5" aria-live="polite">{state.error && <p className="text-sm text-destructive">{state.error}</p>}</div>
-    <Button type="submit" className="w-full" disabled={isPending || !icon}>{isPending ? 'Checking your address...' : 'Start building free'}</Button>
+    <Button type="submit" className="w-full" disabled={isPending || !icon}>{isPending && <Spokes aria-hidden="true" />}{isPending ? 'Checking your address...' : 'Start building free'}</Button>
   </form>;
 }

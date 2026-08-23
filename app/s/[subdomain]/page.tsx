@@ -13,6 +13,7 @@ import { getPublicPaymentAvailability } from '@/lib/public-payments';
 import { NoiseTexture } from '@/components/ui/noise-texture';
 import { normalizeServices } from '@/lib/profile-ownership';
 import { PublicInquiryColumn } from './public-inquiry-column';
+import { getConversationReturnToken } from '@/lib/conversation-return';
 
 export async function generateMetadata({
   params
@@ -59,7 +60,10 @@ export default async function SubdomainPage({
   const sitterDisplayName = subdomainData.sitterName || subdomainData.businessName || `${subdomain}'s care`;
   const businessDisplayName = subdomainData.businessName || subdomainData.sitterName || `${subdomain}'s pet care`;
   const services = normalizeServices(subdomainData.services || []);
-  const publicPaymentsEnabled = await getPublicPaymentAvailability(subdomain);
+  const [publicPaymentsEnabled, initialConversationToken] = await Promise.all([
+    getPublicPaymentAvailability(subdomain),
+    getConversationReturnToken(subdomain)
+  ]);
   const structuredData = {
     '@context': 'https://schema.org', '@type': 'LocalBusiness',
     name: businessDisplayName,
@@ -101,7 +105,7 @@ export default async function SubdomainPage({
           </div>
           <PublicPaymentSection subdomain={subdomain} enabled={publicPaymentsEnabled} error={paymentError} />
         </section>
-        <PublicInquiryColumn subdomain={subdomain} sitterName={sitterDisplayName} services={services} submissionToken={randomBytes(24).toString('base64url')} />
+        <PublicInquiryColumn subdomain={subdomain} sitterName={sitterDisplayName} services={services} submissionToken={randomBytes(24).toString('base64url')} initialConversationToken={initialConversationToken ?? undefined} />
       </main>
 
       <footer className="border-t border-border/70">

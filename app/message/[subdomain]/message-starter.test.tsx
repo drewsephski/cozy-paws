@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: vi.fn() }) }));
 vi.mock('@/app/actions', () => ({ createAuthenticatedLeadAction: vi.fn() }));
+vi.mock('@/components/ui/spokes', () => ({ Spokes: () => null }));
 
 import { MessageStarter } from './message-starter';
 

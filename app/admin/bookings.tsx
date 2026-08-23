@@ -8,6 +8,7 @@ import { allowedBookingTransitions, type BookingStatus } from '@/lib/domain/book
 import type { ClientHousehold } from '@/lib/client-households';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DateRangePicker } from '@/components/date-range-picker';
+import { Spokes } from '@/components/ui/spokes';
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
@@ -22,7 +23,7 @@ const transitionLabels: Record<BookingStatus, string> = { DRAFT: 'Save as draft'
 
 function BookingTransitionButton({ bookingId, status }: { bookingId: string; status: BookingStatus }) {
   const [state, action, pending] = useActionState<TransitionBookingState, FormData>(transitionBookingAction, {});
-  return <form action={action}><input type="hidden" name="bookingId" value={bookingId} /><button disabled={pending} name="status" value={status} className={status === 'CANCELLED' ? 'rounded-lg border px-3 py-2 text-sm font-medium disabled:opacity-60' : 'rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60'}>{pending ? 'Updating...' : transitionLabels[status]}</button>{state.error && <p role="alert" className="mt-2 text-sm text-destructive">{state.error}</p>}</form>;
+  return <form action={action}><input type="hidden" name="bookingId" value={bookingId} /><button disabled={pending} name="status" value={status} className={`${status === 'CANCELLED' ? 'border' : 'bg-primary text-primary-foreground'} inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium disabled:opacity-60`}>{pending && <Spokes className="size-4" aria-hidden="true" />}{pending ? 'Updating...' : transitionLabels[status]}</button>{state.error && <p role="alert" className="mt-2 text-sm text-destructive">{state.error}</p>}</form>;
 }
 
 function BookingList({ title, empty, bookings }: { title: string; empty: string; bookings: Booking[] }) {
@@ -99,7 +100,7 @@ export function Bookings({ households, bookings }: { households: ClientHousehold
             <label className="block"><span className="mb-1.5 block text-sm font-medium">Notes <span className="font-normal text-muted-foreground">(optional)</span></span><textarea name="notes" maxLength={2000} rows={3} className="w-full rounded-lg border border-input bg-background px-3 py-2" /></label>
             {state.error && <p role="alert" className="text-sm text-destructive">{state.error}</p>}
             {state.success && <p role="status" className="flex items-center gap-2 text-sm font-medium text-emerald-700 dark:text-emerald-300"><Check className="size-4" aria-hidden="true" />{state.success}</p>}
-            <button disabled={pending} className="h-11 w-full rounded-lg bg-primary px-4 font-medium text-primary-foreground disabled:opacity-60">{pending ? 'Saving...' : 'Save draft booking'}</button>
+            <button disabled={pending} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 font-medium text-primary-foreground disabled:opacity-60">{pending && <Spokes className="size-4" aria-hidden="true" />}{pending ? 'Saving...' : 'Save draft booking'}</button>
           </form>
         )}
       </section>

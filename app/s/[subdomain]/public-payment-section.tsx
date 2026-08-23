@@ -1,7 +1,8 @@
 'use client';
 
-import { CreditCard, Loader2 } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
+import { Spokes } from '@/components/ui/spokes';
 
 function StripeCheckoutButton() {
   const { pending } = useFormStatus();
@@ -12,7 +13,7 @@ function StripeCheckoutButton() {
       disabled={pending}
       className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 text-sm font-semibold text-foreground transition hover:border-emerald-500/60 hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:cursor-wait disabled:opacity-70 dark:hover:bg-emerald-950/30"
     >
-      {pending ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" />Opening Stripe...</> : <><CreditCard className="size-4" aria-hidden="true" />Continue to Stripe</>}
+      {pending ? <><Spokes className="size-4" aria-hidden="true" />Opening Stripe...</> : <><CreditCard className="size-4" aria-hidden="true" />Continue to Stripe</>}
     </button>
   );
 }

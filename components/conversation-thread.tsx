@@ -9,6 +9,7 @@ import {
   type ConversationMessageState
 } from '@/app/actions';
 import type { ConversationMessage } from '@/lib/conversations';
+import { Spokes } from '@/components/ui/spokes';
 
 export function ConversationMessages({ messages }: { messages: ConversationMessage[] }) {
   return <div className="space-y-3" aria-label="Conversation messages">
@@ -48,7 +49,7 @@ export function ConversationReplyForm({ participant, conversationToken, leadId, 
     <label htmlFor={`conversation-message-${participant}`} className="mb-2 block text-xs font-semibold">{participant === 'CUSTOMER' ? 'Add another detail' : 'Reply to this request'}</label>
     <div className="flex items-end gap-2">
       <textarea id={`conversation-message-${participant}`} name="message" required maxLength={2000} rows={2} placeholder="Type a message..." className="min-h-11 flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring/40" />
-      <button disabled={pending} className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground transition hover:bg-primary/90 disabled:cursor-wait disabled:opacity-60" aria-label={pending ? 'Sending message' : 'Send message'}><Send className="size-4" aria-hidden="true" /></button>
+      <button disabled={pending} className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground transition hover:bg-primary/90 disabled:cursor-wait disabled:opacity-60" aria-label={pending ? 'Sending message' : 'Send message'}>{pending ? <Spokes className="size-4" aria-hidden="true" /> : <Send className="size-4" aria-hidden="true" />}</button>
     </div>
     {state.error && <p role="alert" className="mt-2 text-sm text-destructive">{state.error}</p>}
     {state.success && <p role="status" className="mt-2 text-xs text-muted-foreground">Message sent.</p>}

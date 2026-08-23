@@ -11,6 +11,7 @@ type PublicInquiryColumnProps = {
   sitterName: string;
   services: string[];
   submissionToken: string;
+  initialConversationToken?: string;
 };
 
 export function InquiryFollowup({ subdomain, sitterName, conversationToken }: { subdomain: string; sitterName: string; conversationToken?: string }) {
@@ -31,8 +32,8 @@ export function InquiryFollowup({ subdomain, sitterName, conversationToken }: { 
   </aside>;
 }
 
-export function PublicInquiryColumn({ subdomain, sitterName, services, submissionToken }: PublicInquiryColumnProps) {
-  const [conversationToken, setConversationToken] = useState<string>();
+export function PublicInquiryColumn({ subdomain, sitterName, services, submissionToken, initialConversationToken }: PublicInquiryColumnProps) {
+  const [conversationToken, setConversationToken] = useState(initialConversationToken);
 
   return <div className="space-y-4">
     <section className="relative overflow-hidden rounded-2xl bg-card p-5 shadow-[0_1px_2px_rgba(0,0,0,.08),0_24px_60px_-38px_rgba(0,0,0,.45)] sm:p-6">

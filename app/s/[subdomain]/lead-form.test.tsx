@@ -14,6 +14,7 @@ vi.mock('@/components/date-range-picker', () => ({
 vi.mock('@/components/ui/noise-texture', () => ({
   NoiseTexture: () => null
 }));
+vi.mock('@/components/ui/spokes', () => ({ Spokes: () => null }));
 
 import { LeadForm } from './lead-form';
 import { LeadSubmissionConfirmation } from './lead-submission-confirmation';

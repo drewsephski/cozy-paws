@@ -1,7 +1,8 @@
 'use client';
 
-import { AlertTriangle, Loader2, Trash2 } from 'lucide-react';
+import { AlertTriangle, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Spokes } from '@/components/ui/spokes';
 import {
   Dialog,
   DialogClose,
@@ -61,7 +62,7 @@ export function DeleteSiteDialog({
           <form action={action}>
             <input type="hidden" name="subdomain" value={subdomain} />
             <Button type="submit" variant="destructive" disabled={isPending} className={`group/delete w-full transition-transform duration-150 active:scale-95 sm:w-auto ${isPending ? 'animate-pulse' : ''}`}>
-              {isPending ? <Loader2 aria-hidden="true" className="animate-spin" /> : <Trash2 aria-hidden="true" className="transition-transform duration-200 group-hover/delete:translate-y-0.5 group-hover/delete:rotate-6" />}
+              {isPending ? <Spokes aria-hidden="true" /> : <Trash2 aria-hidden="true" className="transition-transform duration-200 group-hover/delete:translate-y-0.5 group-hover/delete:rotate-6" />}
               {isPending ? 'Deleting...' : 'Delete site'}
             </Button>
           </form>

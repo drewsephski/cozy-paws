@@ -12,6 +12,30 @@ export type SiteFilterOption = {
   inquiryCount: number;
 };
 
+export type LeadConversationGroup = {
+  email: string;
+  leads: OwnedLead[];
+};
+
+export function normalizeConversationEmail(email: string) {
+  return email.trim().toLocaleLowerCase('en-US');
+}
+
+export function groupLeadsByEmail(leads: OwnedLead[]): LeadConversationGroup[] {
+  const groups = new Map<string, OwnedLead[]>();
+  for (const lead of leads) {
+    const email = normalizeConversationEmail(lead.email);
+    const group = groups.get(email);
+    if (group) group.push(lead);
+    else groups.set(email, [lead]);
+  }
+
+  return Array.from(groups, ([email, groupedLeads]) => ({
+    email,
+    leads: groupedLeads.sort((a, b) => b.createdAt - a.createdAt)
+  })).sort((a, b) => b.leads[0].createdAt - a.leads[0].createdAt);
+}
+
 export function buildSiteFilterOptions(sites: InboxSite[], leads: OwnedLead[]): SiteFilterOption[] {
   return sites.map((site) => ({
     subdomain: site.subdomain,

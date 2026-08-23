@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildSiteFilterOptions, formatInquiryDate, formatInquiryDateRange } from './lead-inbox-model';
+import { buildSiteFilterOptions, formatInquiryDate, formatInquiryDateRange, groupLeadsByEmail } from './lead-inbox-model';
 
 describe('lead inbox model', () => {
   it('includes owned sites even when all of their inquiries are read', () => {
@@ -42,5 +42,21 @@ describe('lead inbox model', () => {
   it('uses legacy date details only when structured dates are absent', () => {
     expect(formatInquiryDateRange({ dates: 'Weekends in September' })).toBe('Weekends in September');
     expect(formatInquiryDateRange({ dates: '' })).toBe('Dates not provided');
+  });
+
+  it('groups inquiries from the same normalized email into one newest-first conversation', () => {
+    const lead = (id: string, email: string, createdAt: number) => ({
+      id, email, createdAt, subdomain: 'happy-tails', siteName: 'Happy Tails', name: id,
+      dates: '', message: '', readAt: null
+    });
+
+    expect(groupLeadsByEmail([
+      lead('older', ' Owner@Example.com ', 10),
+      lead('other', 'other@example.com', 20),
+      lead('newer', 'owner@example.com', 30)
+    ]).map((conversation) => conversation.leads.map(({ id }) => id))).toEqual([
+      ['newer', 'older'],
+      ['other']
+    ]);
   });
 });

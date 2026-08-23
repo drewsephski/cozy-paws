@@ -4,6 +4,7 @@ import { useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Send } from 'lucide-react';
 import { createAuthenticatedLeadAction, type LeadSubmissionState } from '@/app/actions';
+import { Spokes } from '@/components/ui/spokes';
 
 export function MessageStarter({
   subdomain,
@@ -47,7 +48,7 @@ export function MessageStarter({
       </label>
       {state.error && <p role="alert" className="text-sm text-destructive">{state.error}</p>}
       <button disabled={pending} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-wait disabled:opacity-60">
-        <Send className="size-4" aria-hidden="true" />
+        {pending ? <Spokes className="size-4" aria-hidden="true" /> : <Send className="size-4" aria-hidden="true" />}
         {pending ? 'Starting chat...' : `Message ${sitterName}`}
       </button>
     </form>

@@ -3,7 +3,8 @@
 import { upload } from '@vercel/blob/client';
 import { useState } from 'react';
 import { saveProfileImageAction } from '@/app/actions';
-import { Camera, CheckCircle2, Loader2 } from 'lucide-react';
+import { Camera, CheckCircle2 } from 'lucide-react';
+import { Spokes } from '@/components/ui/spokes';
 import {
   isProfileImageContentType,
   PROFILE_IMAGE_MAX_BYTES,
@@ -58,7 +59,7 @@ export function ProfileImageUpload({ subdomain, currentImageUrl, onUploaded }: {
       )}
       <div className="min-w-0">
         <label className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border border-input bg-background px-3 text-sm font-medium shadow-xs transition-colors hover:bg-muted focus-within:ring-2 focus-within:ring-ring/50">
-          {isUploading ? <Loader2 aria-hidden="true" className="size-4 animate-spin" /> : <Camera aria-hidden="true" className="size-4" />}
+          {isUploading ? <Spokes aria-hidden="true" className="size-4" /> : <Camera aria-hidden="true" className="size-4" />}
           {isUploading ? 'Uploading...' : imageUrl ? 'Change photo' : 'Choose photo'}
           <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => handleChange(event.target.files?.[0])} disabled={isUploading} />
         </label>

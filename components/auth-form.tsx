@@ -1,12 +1,13 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { CheckCircle2, Loader2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Spokes } from '@/components/ui/spokes';
 
 type Mode = 'sign-in' | 'sign-up' | 'forgot-password';
 
@@ -119,7 +120,7 @@ export function AuthForm({ initialMode = 'sign-in' }: { initialMode?: Mode }) {
         {error && <p role="alert" aria-live="assertive" className="rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">{error}</p>}
         {success && <p role="status" aria-live="polite" className="flex items-center gap-2 rounded-lg border border-emerald-600/20 bg-emerald-50 px-3 py-2 text-sm text-emerald-800"><CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />{success}</p>}
         <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
+          {isPending && <Spokes className="size-4" aria-hidden="true" />}
           {isPending
             ? mode === 'sign-up' ? 'Creating account...' : mode === 'forgot-password' ? 'Sending reset link...' : 'Signing in...'
             : mode === 'sign-up' ? 'Create my account' : mode === 'forgot-password' ? 'Send reset link' : 'Sign in'}

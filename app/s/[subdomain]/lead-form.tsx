@@ -4,6 +4,7 @@ import { useActionState, useEffect } from 'react';
 import { createLeadAction, type LeadSubmissionState } from '@/app/actions';
 import { LeadSubmissionConfirmation } from './lead-submission-confirmation';
 import { DateRangePicker } from '@/components/date-range-picker';
+import { Spokes } from '@/components/ui/spokes';
 
 export function LeadForm({ subdomain, sitterName, services = [], submissionToken, onConversationStarted }: { subdomain: string; sitterName: string; services?: string[]; submissionToken: string; onConversationStarted?: (conversationToken: string) => void }) {
   const [state, action, pending] = useActionState<LeadSubmissionState, FormData>(createLeadAction, {});
@@ -29,7 +30,7 @@ export function LeadForm({ subdomain, sitterName, services = [], submissionToken
     <label className="block"><span className="mb-1 block text-xs font-medium">ZIP code</span><input name="postalCode" autoComplete="postal-code" className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label>
     <label className="block"><span className="mb-1 block text-xs font-medium">Pet and care details</span><textarea name="details" placeholder="Pet, routine, and care needed" rows={2} className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label>
     {state.error && <p role="alert" className="text-sm text-destructive">{state.error}</p>}
-        <button disabled={pending} className="h-11 w-full rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60">{pending ? 'Sending request…' : 'Request availability'}</button>
+        <button disabled={pending} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60">{pending && <Spokes className="size-4" aria-hidden="true" />}{pending ? 'Sending request…' : 'Request availability'}</button>
         <p className="text-center text-xs leading-5 text-muted-foreground">No account needed. Your details are shared only with {sitterName}.</p>
       </form>
     </>}

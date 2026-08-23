@@ -6,10 +6,11 @@ import {
   type EmojiPickerListRowProps,
   EmojiPicker as EmojiPickerPrimitive,
 } from "frimousse";
-import { LoaderIcon, SearchIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 import type * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { Spokes } from "@/components/ui/spokes";
 
 function EmojiPicker({
   className,
@@ -102,7 +103,7 @@ function EmojiPickerContent({
         className="absolute inset-0 flex items-center justify-center text-muted-foreground"
         data-slot="emoji-picker-loading"
       >
-        <LoaderIcon className="size-4 animate-spin" />
+        <Spokes className="size-4" aria-hidden="true" />
       </EmojiPickerPrimitive.Loading>
       <EmojiPickerPrimitive.Empty
         className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm"

@@ -4,6 +4,7 @@ import { useActionState } from 'react';
 import { Check, Mail, MapPin, PawPrint, Pencil, Plus, Users } from 'lucide-react';
 import { addClientPetAction, updateClientHouseholdAction, updateClientPetAction, type EditClientState } from '@/app/actions';
 import type { ClientHousehold, ClientPet } from '@/lib/client-households';
+import { Spokes } from '@/components/ui/spokes';
 
 const fieldClass = 'mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm';
 
@@ -41,7 +42,7 @@ function PetEditForm({ householdId, pet }: { householdId: string; pet: ClientPet
         </div>
         <label className="block text-sm font-medium">Care notes <span className="font-normal text-muted-foreground">(optional)</span><textarea maxLength={4000} rows={3} name="careNotes" defaultValue={pet.careNotes} className={fieldClass} /></label>
         <FormResult state={state} />
-        <button disabled={pending} className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60">{pending ? 'Saving...' : 'Save pet'}</button>
+        <button disabled={pending} className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60">{pending && <Spokes className="size-4" aria-hidden="true" />}{pending ? 'Saving...' : 'Save pet'}</button>
       </form>
     </details>
   );
@@ -70,7 +71,7 @@ function HouseholdCard({ household }: { household: ClientHousehold }) {
           </div>
           <label className="block text-sm font-medium">Household care notes <span className="font-normal text-muted-foreground">(optional)</span><textarea maxLength={4000} rows={3} name="careNotes" defaultValue={household.careNotes} className={fieldClass} /></label>
           <FormResult state={householdState} />
-          <button disabled={householdPending} className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60">{householdPending ? 'Saving...' : 'Save client'}</button>
+          <button disabled={householdPending} className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60">{householdPending && <Spokes className="size-4" aria-hidden="true" />}{householdPending ? 'Saving...' : 'Save client'}</button>
         </form>
       </details>
       <div className="mt-4 space-y-2">
@@ -86,7 +87,7 @@ function HouseholdCard({ household }: { household: ClientHousehold }) {
           </div>
           <label className="block text-sm font-medium">Care notes <span className="font-normal text-muted-foreground">(optional)</span><textarea maxLength={4000} rows={3} name="careNotes" className={fieldClass} /></label>
           <FormResult state={petState} />
-          <button disabled={petPending} className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60">{petPending ? 'Adding...' : 'Add pet'}</button>
+          <button disabled={petPending} className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60">{petPending && <Spokes className="size-4" aria-hidden="true" />}{petPending ? 'Adding...' : 'Add pet'}</button>
         </form>
       </details>
     </article>

@@ -3,10 +3,11 @@
 import { useActionState, useEffect, useRef, useState, type ComponentProps } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
+import { Spokes } from '@/components/ui/spokes';
 import { Card, CardContent } from '@/components/ui/card';
 import { Stepper, StepperDescription, StepperIndicator, StepperItem, StepperList, StepperSeparator, StepperTitle, StepperTrigger } from '@/components/ui/stepper';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, ArrowRight, CalendarDays, ChartNoAxesCombined, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, LayoutDashboard, Loader2, MessageCircle, RotateCw, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CalendarDays, ChartNoAxesCombined, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, LayoutDashboard, MessageCircle, RotateCw, Users } from 'lucide-react';
 import Link from 'next/link';
 import { deleteSubdomainAction, refreshStripeStatusAction, startStripeOnboardingAction, type RefreshStripeStatusState } from '@/app/actions';
 import type { ConnectedAccountStatus } from '@/lib/connected-accounts';
@@ -177,7 +178,7 @@ function ProfileOnboarding({ site }: { site: SiteProfile }) {
               {state.error && <p role="alert" className="mt-3 text-sm text-destructive">{state.error}</p>}
               <div className="mt-7 flex items-center gap-3">
                 {stepIndex > 0 && <Button type="button" variant="ghost" size="lg" onClick={() => setStepIndex((current) => current - 1)}><ArrowLeft aria-hidden="true" />Back</Button>}
-                <Button type="submit" size="lg" disabled={isSaving || (step.name === 'identity' && !values.sitterName.trim() && !values.businessName.trim())}>{isSaving ? <><Loader2 className="animate-spin" aria-hidden="true" />Saving...</> : stepIndex === onboardingSteps.length - 1 ? <>Finish my site <ArrowRight aria-hidden="true" /></> : <>Save and continue <ArrowRight aria-hidden="true" /></>}</Button>
+                <Button type="submit" size="lg" disabled={isSaving || (step.name === 'identity' && !values.sitterName.trim() && !values.businessName.trim())}>{isSaving ? <><Spokes aria-hidden="true" />Saving...</> : stepIndex === onboardingSteps.length - 1 ? <>Finish my site <ArrowRight aria-hidden="true" /></> : <>Save and continue <ArrowRight aria-hidden="true" /></>}</Button>
               </div>
               <p className="mt-7 text-xs text-muted-foreground"><kbd className="mr-2 rounded border border-border bg-muted px-2 py-1 font-sans">Enter</kbd>Press Enter to continue</p>
             </form>
@@ -263,7 +264,7 @@ function ProfileEditor({ site }: { site: SiteProfile }) {
             {state.error || (showSaved ? 'Your public site is up to date.' : 'Changes saved.')}
           </p>
           <Button type="submit" size="sm" disabled={isSaving} className={`min-w-28 overflow-hidden transition-colors ${showSaved ? 'bg-emerald-600 text-white hover:bg-emerald-600' : ''}`}>
-            {isSaving ? <><Loader2 aria-hidden="true" className="animate-spin" />Saving...</> : showSaved ? <><span className="grid size-5 animate-in place-items-center rounded-full bg-white/20 zoom-in-50 duration-300"><Check aria-hidden="true" className="size-3.5 stroke-[3]" /></span>Saved</> : 'Save changes'}
+            {isSaving ? <><Spokes aria-hidden="true" />Saving...</> : showSaved ? <><span className="grid size-5 animate-in place-items-center rounded-full bg-white/20 zoom-in-50 duration-300"><Check aria-hidden="true" className="size-3.5 stroke-[3]" /></span>Saved</> : 'Save changes'}
           </Button>
         </div>
       </form>
@@ -338,7 +339,7 @@ const paymentSetupContent = {
 function StripeOnboardingButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return <Button type="submit" size="sm" disabled={pending} aria-disabled={pending}>
-    {pending ? <><Loader2 className="animate-spin" aria-hidden="true" />Opening Stripe...</> : label}
+    {pending ? <><Spokes aria-hidden="true" />Opening Stripe...</> : label}
   </Button>;
 }
 
@@ -353,7 +354,7 @@ function StripeBusinessStatus({ business }: { business: PaymentSetup }) {
 
   return <div className="flex flex-col gap-4 rounded-xl border border-border p-4 sm:flex-row sm:items-center sm:justify-between">
     <div className="flex items-start gap-3">
-      <span className={`grid size-9 shrink-0 place-items-center rounded-full ${content.tone}`}><Icon className={`size-4 ${isRefreshing ? 'animate-spin' : ''}`} aria-hidden="true" /></span>
+      <span className={`grid size-9 shrink-0 place-items-center rounded-full ${content.tone}`}>{isRefreshing ? <Spokes className="size-4" aria-hidden="true" /> : <Icon className="size-4" aria-hidden="true" />}</span>
       <div>
         <p className="font-medium">{business.businessName}</p>
         <p className="mt-0.5 text-sm font-medium">{isRefreshing ? 'Checking Stripe status...' : content.title}</p>
@@ -365,7 +366,7 @@ function StripeBusinessStatus({ business }: { business: PaymentSetup }) {
       <div className="flex flex-wrap gap-2 sm:justify-end">
         {content.button && <form action={startStripeOnboardingAction}><input type="hidden" name="businessId" value={business.businessId} /><StripeOnboardingButton label={content.button} /></form>}
         {canManage && <Button asChild size="sm" variant="outline"><a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer">Manage in Stripe <ExternalLink aria-hidden="true" /></a></Button>}
-        {canRefresh && <form action={refreshAction}><input type="hidden" name="businessId" value={business.businessId} /><Button type="submit" size="sm" variant="outline" disabled={isRefreshing}>{isRefreshing ? <><Loader2 className="animate-spin" aria-hidden="true" />Checking...</> : <><RotateCw aria-hidden="true" />Refresh status</>}</Button></form>}
+        {canRefresh && <form action={refreshAction}><input type="hidden" name="businessId" value={business.businessId} /><Button type="submit" size="sm" variant="outline" disabled={isRefreshing}>{isRefreshing ? <><Spokes aria-hidden="true" />Checking...</> : <><RotateCw aria-hidden="true" />Refresh status</>}</Button></form>}
       </div>
       <div aria-live="polite" className="text-xs text-muted-foreground sm:text-right">
         {refreshState.refreshedAt && !refreshState.error ? 'Status refreshed just now.' : null}

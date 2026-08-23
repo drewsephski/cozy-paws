@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, ChevronDown, Loader2, MapPin, Search, X } from 'lucide-react';
+import { Check, ChevronDown, MapPin, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Spokes } from '@/components/ui/spokes';
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import type { LocationResult } from '@/app/api/locations/search/route';
@@ -147,7 +148,7 @@ export function ServiceAreaField({ defaultValue, className }: { defaultValue: st
         <PopoverAnchor asChild>
           <div className="flex min-w-0 gap-2">
             <div className="relative min-w-0 flex-1"><MapPin className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" /><input id="location-search" value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); void searchLocations(); } }} placeholder={selected.length > 0 ? `${selected.length} area${selected.length === 1 ? '' : 's'} selected` : 'City, neighborhood, or ZIP'} autoComplete="off" className="h-11 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm outline-none transition focus:border-emerald-500/70 focus:ring-4 focus:ring-emerald-500/10" /></div>
-            <Button type="button" variant="outline" size="icon" aria-label="Search locations" onClick={searchLocations} disabled={query.trim().length < 2 || status === 'loading'} className="size-11">{status === 'loading' ? <Loader2 className="animate-spin" aria-hidden="true" /> : <Search aria-hidden="true" />}</Button>
+            <Button type="button" variant="outline" size="icon" aria-label="Search locations" onClick={searchLocations} disabled={query.trim().length < 2 || status === 'loading'} className="size-11">{status === 'loading' ? <Spokes aria-hidden="true" /> : <Search aria-hidden="true" />}</Button>
           </div>
         </PopoverAnchor>
         <PopoverContent align="start" sideOffset={5} collisionPadding={12} className="max-h-[min(22rem,calc(100vh-5rem))] w-[min(26rem,calc(100vw-6rem))] overflow-y-auto overscroll-contain p-1.5 sm:w-[34rem] sm:p-2">

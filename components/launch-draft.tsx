@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Globe2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PetIcon } from '@/components/pet-icon';
+import { Spokes } from '@/components/ui/spokes';
 import { launchDraftAction, type LaunchDraftState } from '@/app/actions';
 import { rootDomain } from '@/lib/utils';
 
@@ -46,7 +47,7 @@ export function LaunchDraft() {
             {state.error && <p role="alert" className="mb-5 max-w-lg rounded-xl bg-destructive/10 px-4 py-3 text-sm leading-6 text-destructive">{state.error}</p>}
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <Button type="submit" disabled={pending} className="h-10 px-4">
-                {pending ? 'Launching...' : <>Launch my site <ArrowRight /></>}
+                {pending ? <><Spokes />Launching...</> : <>Launch my site <ArrowRight /></>}
               </Button>
               <Button asChild type="button" variant="ghost" className="h-10 px-4"><Link href="/build"><ArrowLeft />Keep editing</Link></Button>
             </div>

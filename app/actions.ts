@@ -17,6 +17,7 @@ import { sendConversationMessageNotification } from '@/lib/email';
 import { addOwnedClientPet, createClientHouseholdFromOwnedLead, updateOwnedClientHousehold, updateOwnedClientPet } from '@/lib/client-households';
 import { createOwnedBooking, transitionOwnedBooking } from '@/lib/bookings';
 import { submitAuthenticatedLead } from '@/lib/authenticated-lead-intake';
+import { rememberConversationReturn } from '@/lib/conversation-return';
 
 async function requireUser(callbackURL = '/admin') {
   const session = await getSession();
@@ -142,6 +143,7 @@ export async function createLeadAction(
   );
   if (!result.success) return { error: result.error };
 
+  if (result.conversationToken) await rememberConversationReturn(result.subdomain, result.conversationToken);
   revalidatePath(`/s/${result.subdomain}`);
   revalidatePath('/admin');
   return {
@@ -173,6 +175,7 @@ export async function createAuthenticatedLeadAction(
   );
   if (!result.success) return { error: result.error };
 
+  if (result.conversationToken) await rememberConversationReturn(result.subdomain, result.conversationToken);
   revalidatePath(`/s/${result.subdomain}`);
   revalidatePath('/admin');
   return {
