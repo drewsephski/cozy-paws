@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Check, ChevronDown, Copy, UserRoundPlus } from 'lucide-react';
 import { ConversationMessages, ConversationReplyForm } from '@/components/conversation-thread';
 import type { ConversationMessage } from '@/lib/conversations';
-import { buildSiteFilterOptions, formatInquiryDateRange, formatReceivedDate, type InboxSite } from './lead-inbox-model';
+import { buildSiteFilterOptions, formatInquiryDateRange, formatReceivedDate, groupLeadsByEmail, type InboxSite } from './lead-inbox-model';
 import { Spokes } from '@/components/ui/spokes';
 import { useFormStatus } from 'react-dom';
 
@@ -56,6 +56,7 @@ export function LeadInbox({ sites, leads, conversationMessages, clientLeadIds }:
   const [isPending, startTransition] = useTransition();
   const siteOptions = buildSiteFilterOptions(sites, leads);
   const visible = filter === 'all' ? leads : leads.filter((lead) => lead.subdomain === filter);
+  const conversations = groupLeadsByEmail(visible);
   const unread = leads.filter((lead) => !lead.readAt).length;
   const selectedSite = siteOptions.find((site) => site.subdomain === filter);
   const filterLabel = selectedSite?.name || `All sites (${siteOptions.length})`;
@@ -75,14 +76,19 @@ export function LeadInbox({ sites, leads, conversationMessages, clientLeadIds }:
     }
   }
 
-  function toggleLead(lead: InboxLead) {
+  function toggleLead(lead: InboxLead, groupedLeads: InboxLead[] = [lead]) {
     const isOpening = expanded !== lead.id;
     setExpanded(isOpening ? lead.id : null);
-    if (isOpening && !lead.readAt) {
-      const formData = new FormData();
-      formData.set('subdomain', lead.subdomain);
-      formData.set('leadId', lead.id);
-      startTransition(() => { void markLeadReadAction(formData); });
+    const unreadLeads = groupedLeads.filter((item) => !item.readAt);
+    if (isOpening && unreadLeads.length) {
+      startTransition(() => {
+        for (const unreadLead of unreadLeads) {
+          const formData = new FormData();
+          formData.set('subdomain', unreadLead.subdomain);
+          formData.set('leadId', unreadLead.id);
+          void markLeadReadAction(formData);
+        }
+      });
     }
   }
 
@@ -112,16 +118,20 @@ export function LeadInbox({ sites, leads, conversationMessages, clientLeadIds }:
         </Popover>
       </div>
     </div>
-    <div className="space-y-2">{visible.map((lead) => <article key={lead.id} className={`overflow-hidden rounded-xl bg-card ring-1 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)] transition-colors ${lead.readAt ? 'ring-foreground/12' : 'ring-emerald-500/50'}`}>
-      <button type="button" onClick={() => toggleLead(lead)} className="group flex w-full items-start gap-3 p-4 text-left outline-none transition-colors hover:bg-muted/25 focus-visible:bg-muted/30 sm:p-5" aria-expanded={expanded === lead.id} aria-controls={`inquiry-${lead.id}`}>
+    <div className="space-y-2">{conversations.map(({ email, leads: groupedLeads }) => {
+      const lead = groupedLeads[0];
+      const unreadInConversation = groupedLeads.some((item) => !item.readAt);
+      return <article key={email} className={`overflow-hidden rounded-xl border bg-card shadow-[0_1px_2px_rgba(0,0,0,.04)] transition-colors ${unreadInConversation ? 'border-emerald-500/50' : 'border-border'}`}>
+      <button type="button" onClick={() => toggleLead(lead, groupedLeads)} className="group flex w-full items-center gap-3 px-4 py-3 text-left outline-none transition-colors hover:bg-muted/25 focus-visible:bg-muted/30" aria-expanded={expanded === lead.id} aria-controls={`inquiry-${lead.id}`}>
         <span className="min-w-0 flex-1">
-          <span className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"><span className="font-semibold text-foreground">{lead.name}{!lead.readAt && <span className="ml-2 inline-block size-2 rounded-full bg-emerald-500" aria-label="Unread" />}</span><span className="shrink-0 text-xs text-muted-foreground">{lead.siteName} · Received {formatReceivedDate(lead.createdAt)}</span></span>
-          <span className="mt-2 flex flex-col gap-1 text-sm sm:flex-row sm:items-baseline sm:gap-3"><span className="shrink-0 font-medium text-foreground">{formatInquiryDateRange(lead)}</span>{lead.message && <span className="line-clamp-2 text-muted-foreground sm:truncate">{lead.message}</span>}</span>
+          <span className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"><span className="truncate font-semibold text-foreground">{lead.name}{unreadInConversation && <span className="ml-2 inline-block size-2 rounded-full bg-emerald-500" aria-label="Unread" />}{groupedLeads.length > 1 && <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">{groupedLeads.length} requests</span>}</span><span className="shrink-0 text-xs text-muted-foreground">{lead.siteName} · {formatReceivedDate(lead.createdAt)}</span></span>
+          <span className="mt-1 flex min-w-0 items-baseline gap-3 text-sm"><span className="shrink-0 font-medium text-foreground">{formatInquiryDateRange(lead)}</span>{lead.message && <span className="truncate text-muted-foreground">{lead.message}</span>}</span>
         </span>
-        <ChevronDown className={`mt-0.5 size-5 shrink-0 text-muted-foreground transition-transform group-hover:text-foreground ${expanded === lead.id ? 'rotate-180' : ''}`} aria-hidden="true" />
+        <ChevronDown className={`size-4 shrink-0 text-muted-foreground transition-transform group-hover:text-foreground ${expanded === lead.id ? 'rotate-180' : ''}`} aria-hidden="true" />
       </button>
       {expanded === lead.id && <div id={`inquiry-${lead.id}`} className="border-t border-border px-4 pb-4 pt-4 text-sm sm:px-5 sm:pb-5"><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><a href={`mailto:${lead.email}`} className="min-w-0 truncate font-medium underline underline-offset-4">{lead.email}</a><div className="flex shrink-0 items-center gap-2"><button type="button" onClick={() => void copyDetails(lead)} className="underline underline-offset-4">{copyState === lead.id ? 'Copied' : 'Copy details'}</button><span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium">{lead.status || 'NEW'}</span></div></div><dl className="mt-4 grid gap-4 rounded-xl border border-border/70 bg-muted/20 p-4 sm:grid-cols-2 lg:grid-cols-[0.9fr_1.5fr_1fr_0.75fr]"><div><dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Service</dt><dd className="mt-1 font-medium">{lead.serviceRequested || 'Not specified'}</dd></div><div><dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Care dates</dt><dd className="mt-1 font-medium">{formatInquiryDateRange(lead)}</dd></div><div><dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Pets</dt><dd className="mt-1 font-medium">{lead.petCount ? `${lead.petCount} ` : ''}{lead.petTypes?.join(', ') || 'Not specified'}</dd></div><div><dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">ZIP code</dt><dd className="mt-1 font-medium">{lead.postalCode || 'Not provided'}</dd></div></dl><div className="mt-5 rounded-xl bg-muted/30 p-4"><ConversationMessages messages={[{ id: `lead-${lead.id}`, sender: 'CUSTOMER', body: lead.message || lead.serviceRequested || 'Availability request', createdAt: lead.createdAt }, ...(conversationMessages[lead.id] || [])]} />{canReopenLead(lead.status) ? <p className="mt-4 text-xs text-muted-foreground">This conversation is closed. Reopen it before replying.</p> : lead.id in conversationMessages ? <ConversationReplyForm participant="SITTER" leadId={lead.id} /> : <p className="mt-4 text-xs text-muted-foreground">This older request continues by email.</p>}</div>{(lead.status === 'NEW' || !lead.status) && <form action={updateLeadStatusAction} className="mt-4 flex flex-wrap gap-2"><input type="hidden" name="leadId" value={lead.id} /><LeadStatusButton value="QUALIFIED" primary>Qualify inquiry</LeadStatusButton><LeadStatusButton value="DECLINED">Decline</LeadStatusButton><LeadStatusButton value="SPAM">Spam</LeadStatusButton></form>}{canReopenLead(lead.status) && <form action={updateLeadStatusAction} className="mt-4"><input type="hidden" name="leadId" value={lead.id} /><LeadStatusButton value="NEW">Reopen conversation</LeadStatusButton></form>}{canSaveClientFromLead(lead.status) && <SaveClientForm leadId={lead.id} saved={clientLeadIds.includes(lead.id)} />}{canRequestPayment(lead.status) && <PaymentForm lead={lead} />}</div>}
-    </article>)}</div>
+    </article>;
+    })}</div>
     {isPending && <p className="text-xs text-muted-foreground" role="status">Updating inbox...</p>}
   </div>;
 }

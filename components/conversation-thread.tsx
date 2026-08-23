@@ -12,13 +12,14 @@ import type { ConversationMessage } from '@/lib/conversations';
 import { Spokes } from '@/components/ui/spokes';
 
 export function ConversationMessages({ messages }: { messages: ConversationMessage[] }) {
-  return <div className="space-y-3" aria-label="Conversation messages">
+  const time = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  return <div className="space-y-2.5" aria-label="Conversation messages">
     {messages.map((message) => {
       const customer = message.sender === 'CUSTOMER';
       return <div key={message.id} className={`flex ${customer ? 'justify-start' : 'justify-end'}`}>
-        <div className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm shadow-sm ${customer ? 'rounded-bl-md border border-border bg-background' : 'rounded-br-md bg-emerald-600 text-white dark:bg-emerald-500 dark:text-emerald-950'}`}>
-          <p className="whitespace-pre-wrap leading-6">{message.body}</p>
-          <p className={`mt-1.5 text-[10px] font-medium uppercase tracking-wide ${customer ? 'text-muted-foreground' : 'text-emerald-50/80 dark:text-emerald-950/70'}`}>{customer ? 'Pet owner' : 'Pet sitter'}</p>
+        <div className={`max-w-[88%] rounded-xl border px-3 py-2 text-sm shadow-xs ${customer ? 'rounded-bl-sm border-border bg-background' : 'rounded-br-sm border-emerald-700/20 bg-emerald-600 text-white dark:bg-emerald-500 dark:text-emerald-950'}`}>
+          <p className="whitespace-pre-wrap leading-5">{message.body}</p>
+          <p className={`mt-1 flex items-center justify-between gap-4 text-[10px] font-medium ${customer ? 'text-muted-foreground' : 'text-emerald-50/80 dark:text-emerald-950/70'}`}><span>{customer ? 'Pet owner' : 'You'}</span><time dateTime={new Date(message.createdAt).toISOString()}>{time.format(message.createdAt)}</time></p>
         </div>
       </div>;
     })}
