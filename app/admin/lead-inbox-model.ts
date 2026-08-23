@@ -21,7 +21,30 @@ export function buildSiteFilterOptions(sites: InboxSite[], leads: OwnedLead[]): 
 }
 
 export function formatInquiryDate(value: string) {
-  const date = new Date(`${value}T00:00:00`);
+  const calendarDate = value.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || value;
+  const date = new Date(`${calendarDate}T00:00:00`);
   if (Number.isNaN(date.getTime())) return value;
   return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
+}
+
+type InquiryDates = Pick<OwnedLead, 'dates' | 'requestedStartDate' | 'requestedEndDate'>;
+
+export function formatInquiryDateRange(lead: InquiryDates) {
+  const { requestedStartDate: start, requestedEndDate: end } = lead;
+  if (!start) return lead.dates?.trim() || 'Dates not provided';
+  if (!end || end === start) return formatInquiryDate(start);
+
+  const startDate = start.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || start;
+  const endDate = end.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || end;
+  const startYear = startDate.slice(0, 4);
+  const endYear = endDate.slice(0, 4);
+  const startLabel = new Intl.DateTimeFormat('en-US', {
+    month: 'short', day: 'numeric', ...(startYear === endYear ? {} : { year: 'numeric' as const })
+  }).format(new Date(`${startDate}T00:00:00`));
+
+  return `${startLabel} – ${formatInquiryDate(endDate)}`;
+}
+
+export function formatReceivedDate(value: number) {
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(value));
 }

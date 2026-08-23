@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildSiteFilterOptions, formatInquiryDate } from './lead-inbox-model';
+import { buildSiteFilterOptions, formatInquiryDate, formatInquiryDateRange } from './lead-inbox-model';
 
 describe('lead inbox model', () => {
   it('includes owned sites even when all of their inquiries are read', () => {
@@ -29,5 +29,18 @@ describe('lead inbox model', () => {
 
   it('formats stored calendar dates without exposing timestamps', () => {
     expect(formatInquiryDate('2026-08-13')).toBe('Aug 13, 2026');
+  });
+
+  it('prefers structured dates and formats a same-year range for the inquiry summary', () => {
+    expect(formatInquiryDateRange({
+      requestedStartDate: '2026-07-28T00:00:00.000Z',
+      requestedEndDate: '2026-08-13T00:00:00.000Z',
+      dates: ''
+    })).toBe('Jul 28 – Aug 13, 2026');
+  });
+
+  it('uses legacy date details only when structured dates are absent', () => {
+    expect(formatInquiryDateRange({ dates: 'Weekends in September' })).toBe('Weekends in September');
+    expect(formatInquiryDateRange({ dates: '' })).toBe('Dates not provided');
   });
 });
