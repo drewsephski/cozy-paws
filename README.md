@@ -11,6 +11,8 @@ CONFIRM_FINANCIAL_MIGRATION=yes pnpm db:backfill:revenue
 
 Do not run it against preview or production until database isolation and the rollback expectations in `docs/adr/0001-postgres-inquiry-to-revenue.md` are verified. Existing Redis Site and Lead records are backfilled lazily and remain available as a temporary compatibility source.
 
+Before deploying the asynchronous Checkout retry handling, apply `migrations/2026-08-23-stripe-checkout-retry.sql` to the isolated target database.
+
 Sitterfolio is a simple, shareable online home for independent pet sitters. It helps a sitter turn the essentials of their business—who they are, where they work, what they offer, and how to reach them—into one polished page they can send to pet owners.
 
 The product is designed for the moment when a sitter needs a professional web presence without spending time designing or maintaining a full website. A sitter chooses a memorable address, adds their profile details and photo, and gets a public page where prospective clients can learn about their care and ask about availability.

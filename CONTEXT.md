@@ -37,7 +37,7 @@ User → Business → Site → Lead → Payment request
               └── Connected Stripe account
 ```
 
-`migrations/auth.sql` creates Better Auth tables. `migrations/2026-08-21-add-auth-session.sql` adds the session change. `migrations/2026-08-21-inquiry-to-revenue.sql` creates the Business/Site/Lead/Lead-event/Payment-request/Stripe-webhook tables and constraints. There is no ORM migration runner; these are manually applied SQL migrations.
+`migrations/auth.sql` creates Better Auth tables. `migrations/2026-08-21-add-auth-session.sql` adds the session change. `migrations/2026-08-21-inquiry-to-revenue.sql` creates the Business/Site/Lead/Lead-event/Payment-request/Stripe-webhook tables and constraints. `migrations/2026-08-23-stripe-checkout-retry.sql` adds the durable Checkout retry generation used after asynchronous payment failure. There is no ORM migration runner; these are manually applied SQL migrations.
 
 `lib/profiles.ts` exposes the ownership service. `lib/profile-ownership.ts` handles normalization and owner checks. `lib/postgres-profile-repository.ts` is active and joins through Business ownership. `lib/redis-profile-repository.ts` is legacy compatibility only. If a record is absent in PostgreSQL, the PostgreSQL repository can lazily read its Redis record and migrate it. Redis remains for compatibility, rate limits, and caches; new financial state must not be written there. Do not delete legacy Redis data casually.
 

@@ -65,7 +65,7 @@ export async function processStripeEvent(event: Stripe.Event) {
         if ((await client.query(`select event_id from stripe_webhook_event where event_id=$1`, [event.id])).rowCount) return;
         const row = await lockedRow(client, requestId);
         if (row.stripe_account_id !== accountId || row.stripe_checkout_session_id !== session.id) throw new Error('Checkout Session does not match the canonical payment request');
-        if (outcome === 'failed' && row.status === 'OPEN') await client.query(`update payment_request set stripe_checkout_session_id=null,updated_at=now() where id=$1`, [row.id]);
+        if (outcome === 'failed' && row.status === 'OPEN') await client.query(`update payment_request set stripe_checkout_session_id=null,stripe_checkout_retry_generation=stripe_checkout_retry_generation+1,updated_at=now() where id=$1`, [row.id]);
         await client.query(`insert into stripe_webhook_event(event_id,event_type) values($1,$2)`, [event.id, event.type]);
       });
       return;

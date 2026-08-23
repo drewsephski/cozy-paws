@@ -71,4 +71,17 @@ describe('Stripe connected-account prefill', () => {
     expect(queryMock).toHaveBeenCalledWith(expect.stringContaining('update business set stripe_ready'), ['business-1', true]);
     expect(queryMock).toHaveBeenCalledWith(expect.stringContaining('insert into stripe_webhook_event'), ['evt_1', 'v2.core.account[configuration.merchant].capability_status_updated']);
   });
+
+  it('propagates provider failures without acknowledging the account event', async () => {
+    queryMock.mockResolvedValueOnce({ rows: [{ id: 'business-1', stripe_account_id: 'acct_1', stripe_ready: false }] });
+    retrieveAccountMock.mockRejectedValue(new Error('Stripe unavailable'));
+
+    await expect(processConnectedAccountStatusEvent({
+      id: 'evt_2',
+      type: 'v2.core.account[requirements].updated',
+      related_object: { id: 'acct_1', type: 'v2.core.account' },
+    })).rejects.toThrow('Stripe unavailable');
+
+    expect(queryMock).not.toHaveBeenCalledWith(expect.stringContaining('insert into stripe_webhook_event'), expect.anything());
+  });
 });

@@ -3,7 +3,7 @@ import { transaction } from './db';
 import { getAppOrigin } from './app-url';
 import { getStripe } from './stripe';
 
-export type CheckoutRow = { id: string; public_token: string; amount_cents: number; platform_fee_cents: number; description: string; customer_email: string | null; currency: string; status: string; stripe_checkout_session_id: string | null; stripe_account_id: string | null };
+export type CheckoutRow = { id: string; public_token: string; amount_cents: number; platform_fee_cents: number; description: string; customer_email: string | null; currency: string; status: string; stripe_checkout_session_id: string | null; stripe_checkout_retry_generation: number; stripe_account_id: string | null };
 export type CheckoutSnapshot = { id: string; status: string | null; paymentStatus: string; url: string | null; clientReferenceId: string | null; paymentRequestId: string | null; amountTotal: number | null; currency: string | null };
 
 export function checkoutLifecycleDecision(row: Pick<CheckoutRow, 'id' | 'amount_cents' | 'currency'>, session: CheckoutSnapshot): 'reuse' | 'paid' | 'replace' {
@@ -27,6 +27,11 @@ export function assertConnectedAccountCanAcceptPayments(account: Stripe.V2.Core.
   }
 }
 
+export function checkoutCreationIdempotencyKey(row: Pick<CheckoutRow, 'id' | 'stripe_checkout_retry_generation'>) {
+  const suffix = row.stripe_checkout_retry_generation ? `-retry-${row.stripe_checkout_retry_generation}` : '';
+  return `sitterfolio-checkout-${row.id}${suffix}`;
+}
+
 export async function createOrReuseCheckoutSession(publicToken: string) {
   return transaction(async (client) => {
     await client.query('select pg_advisory_xact_lock(hashtext($1))', [publicToken]);
@@ -41,7 +46,7 @@ export async function createOrReuseCheckoutSession(publicToken: string) {
       await client.query(`update payment_request set stripe_checkout_session_id=$2,updated_at=now() where id=$1`, [row.id, session.id]);
       return { kind: 'open' as const, sessionId: session.id, url: session.url };
     };
-    if (!row.stripe_checkout_session_id) return create(`sitterfolio-checkout-${row.id}`);
+    if (!row.stripe_checkout_session_id) return create(checkoutCreationIdempotencyKey(row));
     const existing = await getStripe().checkout.sessions.retrieve(row.stripe_checkout_session_id, {}, { stripeAccount: row.stripe_account_id });
     const decision = checkoutLifecycleDecision(row, snapshot(existing));
     if (decision === 'reuse') return { kind: 'open' as const, sessionId: existing.id, url: existing.url! };

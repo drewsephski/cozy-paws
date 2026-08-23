@@ -93,6 +93,7 @@ create table if not exists payment_request (
   refunded_amount_cents integer not null default 0 check (refunded_amount_cents >= 0 and refunded_amount_cents <= amount_cents),
   application_fee_refunded_cents integer not null default 0 check (application_fee_refunded_cents >= 0 and application_fee_refunded_cents <= platform_fee_cents),
   stripe_checkout_session_id text unique,
+  stripe_checkout_retry_generation integer not null default 0 check (stripe_checkout_retry_generation >= 0),
   stripe_payment_intent_id text,
   stripe_charge_id text unique,
   stripe_application_fee_id text unique,
