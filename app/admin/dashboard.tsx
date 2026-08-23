@@ -1,9 +1,10 @@
 'use client';
 
-import { useActionState, useEffect, useRef, useState } from 'react';
+import { useActionState, useEffect, useRef, useState, type ComponentProps } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Stepper, StepperDescription, StepperIndicator, StepperItem, StepperList, StepperSeparator, StepperTitle, StepperTrigger } from '@/components/ui/stepper';
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, Loader2, RotateCw } from 'lucide-react';
 import Link from 'next/link';
 import { deleteSubdomainAction, refreshStripeStatusAction, startStripeOnboardingAction, type RefreshStripeStatusState } from '@/app/actions';
@@ -17,6 +18,7 @@ import { DeleteSiteDialog } from './delete-site-dialog';
 import { PetIcon } from '@/components/pet-icon';
 import { ServiceAreaField, ServicesField, SuggestionField } from './profile-select-fields';
 import { LeadInbox } from './lead-inbox';
+import { BusinessPulse, type RevenueSnapshot } from './business-pulse';
 
 type SiteProfile = {
   subdomain: string;
@@ -40,13 +42,10 @@ type DeleteState = {
 };
 
 const onboardingSteps = [
-  { name: 'identity', title: 'Who will pet owners be contacting?', helper: 'Add your name, a business name, or both. At least one is required.', placeholder: '', required: true },
-  { name: 'tagline', title: 'How would you describe your care?', helper: 'Write one sentence about the care clients can expect from you.', placeholder: 'Reliable visits for dogs and cats in Oak Park.', required: true },
-  { name: 'location', title: 'Where do you care for pets?', helper: 'Name the neighborhood, city, or area you serve.', placeholder: 'Oak Park and nearby neighborhoods', required: true },
-  { name: 'services', title: 'Which services do you offer?', helper: 'Separate each service with a comma. You can add up to eight.', placeholder: 'Dog walking, Drop-in visits, Overnight stays', required: true },
-  { name: 'email', title: 'Where should pet owners email you?', helper: 'Clients can reply here, and new inquiry alerts will be sent to this address.', placeholder: 'hello@example.com', type: 'email', required: true },
-  { name: 'phone', title: 'Do you want to share a phone number?', helper: 'Optional. Leave this blank if you prefer email.', placeholder: '(555) 123-4567', type: 'tel', required: false },
-  { name: 'profileImageUrl', title: 'Add a profile photo', helper: 'Use a clear, recent photo of yourself.', placeholder: '', required: false }
+  { name: 'identity', label: 'About you', description: 'Name and business', title: 'Start with the name clients will remember', helper: 'This is the first thing pet owners see. Add your name, a business name, or both.' },
+  { name: 'care', label: 'Your care', description: 'Area and services', title: 'Tell pet owners how you can help', helper: 'A short introduction, your service area, and a few clear services are enough to launch.' },
+  { name: 'contact', label: 'Contact', description: 'Where replies go', title: 'Choose how clients reach you', helper: 'Inquiry alerts go to your email. A public phone number is optional.' },
+  { name: 'photo', label: 'Photo', description: 'Build recognition', title: 'Put a friendly face to your care', helper: 'A clear, recent photo helps new clients feel like they already know you. You can also add one later.' }
 ] as const;
 
 function SitePreview({ site, values }: { site: SiteProfile; values: Record<string, string> }) {
@@ -97,12 +96,9 @@ export function OnboardingComplete({ site }: { site: SiteProfile }) {
 function ProfileOnboarding({ site }: { site: SiteProfile }) {
   const [stepIndex, setStepIndex] = useState(() => {
     if (!site.sitterName && !site.businessName) return 0;
-    if (!site.tagline) return 1;
-    if (!site.location) return 2;
-    if (!site.services?.length) return 3;
-    if (!site.email) return 4;
-    if (!site.phone) return 5;
-    return 6;
+    if (!site.tagline || !site.location || !site.services?.length) return 1;
+    if (!site.email) return 2;
+    return 3;
   });
   const [values, setValues] = useState<Record<string, string>>({
     sitterName: site.sitterName || '', businessName: site.businessName || '', tagline: site.tagline || '', location: site.location || '',
@@ -112,6 +108,15 @@ function ProfileOnboarding({ site }: { site: SiteProfile }) {
   const handledSave = useRef<number | undefined>(undefined);
   const step = onboardingSteps[stepIndex];
 
+  const goToStep = (name: string) => {
+    const nextIndex = onboardingSteps.findIndex((item) => item.name === name);
+    if (nextIndex >= 0 && nextIndex <= stepIndex) setStepIndex(nextIndex);
+  };
+
+  const updateValue = (name: string, value: string) => {
+    setValues((current) => ({ ...current, [name]: value }));
+  };
+
   useEffect(() => {
     if (!state.success || !state.savedAt || handledSave.current === state.savedAt) return;
     handledSave.current = state.savedAt;
@@ -120,41 +125,71 @@ function ProfileOnboarding({ site }: { site: SiteProfile }) {
 
   return (
     <div className="mx-auto w-full max-w-7xl px-5 py-8 lg:px-8 lg:py-12">
-      <div className="mb-8 lg:max-w-[calc(100%-28rem)]">
-        <div className="flex items-end justify-between gap-4"><h1 className="text-lg font-semibold">Build your Sitterfolio</h1><span className="text-sm text-muted-foreground">{stepIndex + 1} of {onboardingSteps.length}</span></div>
-        <div className="mt-4 grid grid-cols-7 gap-2" aria-label={`Step ${stepIndex + 1} of ${onboardingSteps.length}`}>{onboardingSteps.map((item, index) => <span key={item.name} className={`h-1.5 rounded-full transition-colors ${index <= stepIndex ? 'bg-primary' : 'bg-muted'}`} />)}</div>
-        <p className="mt-5 flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-600" aria-hidden="true" />Your site is saved as you go.</p>
+      <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div><p className="text-xs font-medium uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400">Your site setup</p><h1 className="mt-2 text-2xl font-semibold tracking-tight">A few details, then you’re live.</h1></div>
+        <p className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-600" aria-hidden="true" />Saved after every step</p>
       </div>
-      <div className="grid items-start gap-10 border-t border-border pt-10 lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-16">
-        <main className="flex min-h-[470px] flex-col justify-center py-4">
-          <div className="max-w-3xl">
-            <h2 className="text-4xl font-semibold tracking-[-.045em] sm:text-5xl lg:text-6xl">{step.title}</h2>
-            <p className="mt-5 text-lg leading-8 text-muted-foreground">{step.helper}</p>
-            <form action={stepIndex === onboardingSteps.length - 1 ? completeOnboardingAction : saveAction} className="mt-9">
+      <Stepper value={step.name} onValueChange={goToStep} activationMode="manual" className="gap-10">
+        <StepperList className="w-full overflow-x-auto pb-2" aria-label="Site setup progress">
+          {onboardingSteps.map((item, index) => (
+            <StepperItem key={item.name} value={item.name} completed={index < stepIndex} disabled={index > stepIndex} className="min-w-[9rem]">
+              <StepperTrigger className="group flex min-w-0 items-center gap-3 text-left disabled:cursor-default">
+                <StepperIndicator className="grid size-9 shrink-0 place-items-center rounded-full border border-border bg-background text-sm font-semibold text-muted-foreground transition-colors group-data-[state=active]:border-emerald-600 group-data-[state=active]:bg-emerald-600 group-data-[state=active]:text-white group-data-[state=completed]:border-emerald-600 group-data-[state=completed]:bg-emerald-50 group-data-[state=completed]:text-emerald-700 dark:group-data-[state=completed]:bg-emerald-950">{index + 1}</StepperIndicator>
+                <span className="hidden min-w-0 md:block"><StepperTitle className="block text-sm font-medium text-foreground">{item.label}</StepperTitle><StepperDescription className="mt-0.5 block text-xs text-muted-foreground">{item.description}</StepperDescription></span>
+              </StepperTrigger>
+              {index < onboardingSteps.length - 1 && <StepperSeparator className="mx-3 h-px flex-1 bg-border data-[state=completed]:bg-emerald-500" />}
+            </StepperItem>
+          ))}
+        </StepperList>
+        <div className="grid items-start gap-10 border-t border-border pt-10 lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-16">
+          <main className="flex min-h-[470px] flex-col justify-center py-4">
+            <div className="max-w-3xl">
+              <p className="mb-4 text-sm font-medium text-emerald-700 dark:text-emerald-400">Step {stepIndex + 1} of {onboardingSteps.length} · {step.label}</p>
+              <h2 className="text-4xl font-semibold tracking-[-.045em] sm:text-5xl lg:text-6xl">{step.title}</h2>
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">{step.helper}</p>
+              <form action={stepIndex === onboardingSteps.length - 1 ? completeOnboardingAction : saveAction} className="mt-9">
               <input type="hidden" name="subdomain" value={site.subdomain} />
-              {step.name === 'profileImageUrl' ? (
+              {step.name === 'photo' ? (
                 <div className="rounded-xl border border-border bg-muted/20 p-5"><ProfileImageUpload subdomain={site.subdomain} currentImageUrl={values.profileImageUrl} onUploaded={(url) => setValues((current) => ({ ...current, profileImageUrl: url }))} /></div>
               ) : step.name === 'identity' ? (
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <div><label htmlFor="sitterName" className="mb-2 block text-sm font-medium">Your name</label><input autoFocus id="sitterName" name="sitterName" value={values.sitterName} onChange={(event) => setValues((current) => ({ ...current, sitterName: event.target.value }))} placeholder="Jamie" className="h-16 w-full rounded-xl border border-input bg-background px-5 text-lg shadow-sm outline-none transition focus:border-ring focus:ring-4 focus:ring-ring/15" /></div>
-                  <div><label htmlFor="businessName" className="mb-2 block text-sm font-medium">Business name <span className="font-normal text-muted-foreground">(optional)</span></label><input id="businessName" name="businessName" value={values.businessName} onChange={(event) => setValues((current) => ({ ...current, businessName: event.target.value }))} placeholder="Happy Tails Pet Care" className="h-16 w-full rounded-xl border border-input bg-background px-5 text-lg shadow-sm outline-none transition focus:border-ring focus:ring-4 focus:ring-ring/15" /></div>
+                  <OnboardingField autoFocus label="Your name" name="sitterName" value={values.sitterName} onChange={updateValue} placeholder="Jamie" />
+                  <OnboardingField label="Business name" optional name="businessName" value={values.businessName} onChange={updateValue} placeholder="Happy Tails Pet Care" />
+                </div>
+              ) : step.name === 'care' ? (
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <OnboardingField autoFocus className="sm:col-span-2" label="One-sentence introduction" name="tagline" value={values.tagline} onChange={updateValue} placeholder="Reliable visits for dogs and cats in Oak Park." maxLength={160} />
+                  <OnboardingField label="Service area" name="location" value={values.location} onChange={updateValue} placeholder="Oak Park and nearby neighborhoods" />
+                  <OnboardingField label="Services" name="services" value={values.services} onChange={updateValue} placeholder="Dog walking, drop-ins, overnight stays" hint="Separate services with commas." />
                 </div>
               ) : (
-                <input autoFocus id={step.name} name={step.name} type={'type' in step ? step.type : 'text'} required={step.required} value={values[step.name]} onChange={(event) => setValues((current) => ({ ...current, [step.name]: event.target.value }))} placeholder={step.placeholder} className="h-16 w-full rounded-xl border border-input bg-background px-5 text-lg shadow-sm outline-none transition focus:border-ring focus:ring-4 focus:ring-ring/15" />
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <OnboardingField autoFocus label="Email" name="email" type="email" value={values.email} onChange={updateValue} placeholder="hello@example.com" />
+                  <OnboardingField label="Phone" optional name="phone" type="tel" value={values.phone} onChange={updateValue} placeholder="(555) 123-4567" />
+                </div>
               )}
               {state.error && <p role="alert" className="mt-3 text-sm text-destructive">{state.error}</p>}
               <div className="mt-7 flex items-center gap-3">
                 {stepIndex > 0 && <Button type="button" variant="ghost" size="lg" onClick={() => setStepIndex((current) => current - 1)}><ArrowLeft aria-hidden="true" />Back</Button>}
-                <Button type="submit" size="lg" disabled={isSaving || (step.name === 'identity' && !values.sitterName.trim() && !values.businessName.trim())}>{isSaving ? <><Loader2 className="animate-spin" aria-hidden="true" />Saving…</> : stepIndex === onboardingSteps.length - 1 ? <>Finish my site <ArrowRight aria-hidden="true" /></> : <>Continue <ArrowRight aria-hidden="true" /></>}</Button>
+                <Button type="submit" size="lg" disabled={isSaving || (step.name === 'identity' && !values.sitterName.trim() && !values.businessName.trim())}>{isSaving ? <><Loader2 className="animate-spin" aria-hidden="true" />Saving…</> : stepIndex === onboardingSteps.length - 1 ? <>Finish my site <ArrowRight aria-hidden="true" /></> : <>Save and continue <ArrowRight aria-hidden="true" /></>}</Button>
               </div>
               <p className="mt-7 text-xs text-muted-foreground"><kbd className="mr-2 rounded border border-border bg-muted px-2 py-1 font-sans">Enter</kbd>Press Enter to continue</p>
             </form>
-          </div>
-        </main>
-        <SitePreview site={site} values={values} />
-      </div>
+            </div>
+          </main>
+          <SitePreview site={site} values={values} />
+        </div>
+      </Stepper>
     </div>
   );
+}
+
+function OnboardingField({ label, optional = false, name, value, onChange, hint, className, ...inputProps }: { label: string; optional?: boolean; name: string; value: string; onChange: (name: string, value: string) => void; hint?: string; className?: string } & Omit<ComponentProps<'input'>, 'name' | 'value' | 'onChange'>) {
+  return <div className={className}>
+    <label htmlFor={name} className="mb-2 block text-sm font-medium">{label}{optional && <span className="ml-1 font-normal text-muted-foreground">(optional)</span>}</label>
+    <input id={name} name={name} value={value} required={!optional} onChange={(event) => onChange(name, event.target.value)} className="h-14 w-full rounded-xl border border-input bg-background px-4 text-base shadow-sm outline-none transition focus:border-emerald-500/70 focus:ring-4 focus:ring-emerald-500/10" {...inputProps} />
+    {hint && <p className="mt-2 text-xs text-muted-foreground">{hint}</p>}
+  </div>;
 }
 
 function DashboardHeader() {
@@ -368,7 +403,7 @@ function StripeSetup({ businesses, stripeReturn }: { businesses: PaymentSetup[];
   );
 }
 
-export function AdminDashboard({ sites, leads, revenue, paymentSetup, stripeReturn }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; revenue: { inquiries: number; qualified: number; paymentRequests: number; booked: number; successfulPayments: number; grossPaidCents: number; generatedRevenueCents: number; sources: { source: string; generatedRevenueCents: number }[]; sites: { subdomain: string; generatedRevenueCents: number }[] }; paymentSetup: PaymentSetup[]; stripeReturn?: string }) {
+export function AdminDashboard({ sites, leads, revenue, paymentSetup, stripeReturn }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; revenue: RevenueSnapshot; paymentSetup: PaymentSetup[]; stripeReturn?: string }) {
   const [state, action, isPending] = useActionState<DeleteState, FormData>(
     deleteSubdomainAction,
     {}
@@ -380,8 +415,8 @@ export function AdminDashboard({ sites, leads, revenue, paymentSetup, stripeRetu
   return (
     <div className="relative mx-auto w-full max-w-6xl space-y-12 px-5 pb-12 pt-8 lg:px-8 lg:pb-16 lg:pt-12">
       <DashboardHeader />
+      <BusinessPulse revenue={revenue} />
       <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><SiteGrid sites={sites} action={action} isPending={isPending} /></section>
-      <section className="rounded-2xl border border-emerald-500/20 bg-emerald-50/60 p-6 dark:bg-emerald-950/20"><p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">Generated from your sites</p><p className="mt-2 text-4xl font-semibold tracking-tight">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(revenue.generatedRevenueCents / 100)}</p><p className="mt-2 text-sm text-muted-foreground">Net paid customer volume after refunds · {revenue.inquiries} inquiries · {revenue.paymentRequests} payment requests · {revenue.successfulPayments} successful payments</p><div className="mt-4 flex flex-wrap gap-2">{revenue.sites.map((item) => <span key={item.subdomain} className="rounded-full bg-background/80 px-3 py-1 text-xs">{item.subdomain}: {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(item.generatedRevenueCents/100)} generated</span>)}</div>{revenue.sources.length > 0 && <div className="mt-2 flex flex-wrap gap-2">{revenue.sources.map((item) => <span key={item.source} className="rounded-full bg-background/80 px-3 py-1 text-xs">{item.source}: {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(item.generatedRevenueCents/100)}</span>)}</div>}</section>
       {paymentSetup.some((business) => business.status !== 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
       {sites[0] && <ProfileEditor site={sites[0]} />}
       <section className="space-y-4"><div><h2 className="text-xl font-semibold">Recent inquiries</h2><p className="mt-1 text-sm text-muted-foreground">Messages pet owners sent through your sites.</p></div><LeadInbox leads={leads} /></section>
