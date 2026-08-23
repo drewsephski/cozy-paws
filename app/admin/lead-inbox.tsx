@@ -102,7 +102,7 @@ export function LeadInbox({ sites, leads, conversationMessages, clientLeadIds }:
         </Popover>
       </div>
     </div>
-    <div className="space-y-2">{visible.map((lead) => <article key={lead.id} className={`overflow-hidden rounded-2xl border bg-card shadow-sm transition-colors ${lead.readAt ? 'border-border' : 'border-emerald-500/50'}`}>
+    <div className="space-y-2">{visible.map((lead) => <article key={lead.id} className={`overflow-hidden rounded-xl bg-card ring-1 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)] transition-colors ${lead.readAt ? 'ring-foreground/12' : 'ring-emerald-500/50'}`}>
       <button type="button" onClick={() => toggleLead(lead)} className="group flex w-full items-start gap-3 p-4 text-left outline-none transition-colors hover:bg-muted/25 focus-visible:bg-muted/30 sm:p-5" aria-expanded={expanded === lead.id} aria-controls={`inquiry-${lead.id}`}>
         <span className="min-w-0 flex-1">
           <span className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"><span className="font-semibold text-foreground">{lead.name}{!lead.readAt && <span className="ml-2 inline-block size-2 rounded-full bg-emerald-500" aria-label="Unread" />}</span><span className="shrink-0 text-xs text-muted-foreground">{lead.siteName} · Received {formatReceivedDate(lead.createdAt)}</span></span>

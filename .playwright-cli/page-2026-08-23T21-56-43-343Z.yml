@@ -1,0 +1,109 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "Sitterfolio" [ref=e5] [cursor=pointer]:
+          - /url: /
+        - navigation "Primary navigation" [ref=e6]:
+          - link "Sign in" [ref=e7] [cursor=pointer]:
+            - /url: /auth
+          - button "Use dark mode" [ref=e8]
+    - main [ref=e9]:
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - paragraph [ref=e13]: A simple website for your pet-sitting business
+          - heading "Get the details before you say yes." [level=1] [ref=e19]
+          - paragraph [ref=e20]: Publish your services, service area, and photo on one page. Pet owners can send their dates and care details before you start the conversation.
+          - button "Start building free" [ref=e22]
+          - generic [ref=e25]:
+            - generic [ref=e26]: A shareable web address
+            - generic [ref=e29]: No site design needed
+            - generic [ref=e32]: Inquiries in one inbox
+        - generic [ref=e36]:
+          - generic [ref=e38]:
+            - paragraph [ref=e39]: Start here
+            - heading "Choose your site address" [level=2] [ref=e40]
+          - generic [ref=e47]:
+            - generic [ref=e48]:
+              - generic [ref=e49]: Your site address
+              - generic [ref=e50]:
+                - textbox "Your site address" [ref=e51]:
+                  - /placeholder: happy-tails
+                - generic [ref=e52]: .localhost:3000
+            - generic [ref=e53]:
+              - generic [ref=e54]: Choose a pet
+              - radiogroup "Pet icon" [ref=e55]:
+                - radio "Dog" [ref=e56]
+                - radio "Cat" [ref=e62]
+                - radio "Rabbit" [ref=e67]
+                - radio "Bird" [ref=e74]
+                - radio "Fish" [ref=e80]
+                - radio "Turtle" [ref=e88]
+                - radio "Small pet" [ref=e95]
+                - radio "Squirrel" [ref=e102]
+              - paragraph [ref=e108]: Pick an icon for your draft. You can replace it with a photo later.
+            - button "Start building free" [disabled]
+          - paragraph [ref=e110]: Build the draft first. Create an account when you publish.
+      - generic [ref=e112]:
+        - generic [ref=e113]:
+          - heading "Your pet-sitting details, in one reliable place." [level=2] [ref=e114]
+          - paragraph [ref=e115]: Sitterfolio gives independent pet sitters a focused business page and a better way to collect new requests. You fill in the details. The page is built for you.
+        - generic [ref=e116]:
+          - article [ref=e117]:
+            - generic [ref=e124]:
+              - heading "Explain the care you offer" [level=3] [ref=e125]
+              - paragraph [ref=e126]: Add your photo, services, service area, and a short introduction in your own words.
+          - article [ref=e127]:
+            - generic [ref=e132]:
+              - heading "Share one reliable address" [level=3] [ref=e133]
+              - paragraph [ref=e134]: Use the same link in follow-ups, email signatures, social profiles, or business cards.
+          - article [ref=e135]:
+            - generic [ref=e140]:
+              - heading "Keep every request together" [level=3] [ref=e141]
+              - paragraph [ref=e142]: Clients send dates and care details into one sitter dashboard instead of an old message thread.
+      - generic [ref=e144]:
+        - generic [ref=e145]:
+          - paragraph [ref=e146]: How Sitterfolio works
+          - heading "Build the page. Share the link. Reply from your dashboard." [level=2] [ref=e147]
+        - generic [ref=e148]:
+          - article [ref=e149]:
+            - generic [ref=e150]:
+              - heading "1. Choose your address" [level=3] [ref=e154]
+              - paragraph [ref=e155]: Pick a memorable Sitterfolio address, then add your name, services, service area, and contact details.
+          - article [ref=e156]:
+            - generic [ref=e157]:
+              - heading "2. Share it with pet owners" [level=3] [ref=e161]
+              - paragraph [ref=e162]: Add the link to your social profiles, email signature, business card, or client follow-up messages.
+          - article [ref=e163]:
+            - generic [ref=e164]:
+              - heading "3. Review each request" [level=3] [ref=e168]
+              - paragraph [ref=e169]: See the requested service, dates, pets, and care notes together before you reply.
+      - generic [ref=e171]:
+        - generic [ref=e172]:
+          - paragraph [ref=e173]: Common questions
+          - heading "What pet sitters ask before building a site." [level=2] [ref=e174]
+        - generic [ref=e175]:
+          - article [ref=e176]:
+            - heading [level=3] [ref=e177]:
+              - button "What can I put on my pet-sitting website?" [expanded] [ref=e178]
+            - paragraph [ref=e185]: Your page can include your name or business name, photo, service area, services, contact details, and an availability request form.
+          - article [ref=e186]:
+            - heading [level=3] [ref=e187]:
+              - button "Do I need to know how to design a website?" [ref=e188]
+            - paragraph [ref=e193]: No. The builder asks for your business details one step at a time and turns them into a finished page.
+          - article [ref=e194]:
+            - heading [level=3] [ref=e195]:
+              - button "How do pet owners contact me?" [ref=e196]
+            - paragraph [ref=e201]: They send an availability request from your page. You receive their dates, service request, pet details, and message in your dashboard.
+          - article [ref=e202]:
+            - heading [level=3] [ref=e203]:
+              - button "Does Sitterfolio confirm bookings for me?" [ref=e204]
+            - paragraph [ref=e209]: No. You decide whether you are available and confirm care directly with the pet owner. Sitterfolio keeps the request and conversation organized.
+    - contentinfo [ref=e210]:
+      - generic [ref=e211]:
+        - paragraph [ref=e212]: Give your pet-care business a home online.
+        - button "Start building free" [ref=e214]
+      - generic [ref=e217]:
+        - generic [ref=e218]: Sitterfolio · Built for independent pet sitters.
+        - generic [ref=e219]: © 2026
+  - button "Open Next.js Dev Tools" [ref=e225] [cursor=pointer]

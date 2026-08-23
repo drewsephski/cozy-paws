@@ -29,7 +29,7 @@ export function MessagesInbox({ leads, conversationMessages }: { leads: OwnedLea
 
   if (!conversations.length) return <div className="rounded-2xl border border-dashed border-border p-10 text-center"><MessageCircle className="mx-auto size-8 text-muted-foreground" aria-hidden="true" /><p className="mt-4 font-medium">No messages yet</p><p className="mt-1 text-sm text-muted-foreground">New pet-owner conversations will appear here.</p></div>;
 
-  return <div className="grid min-h-[34rem] overflow-hidden rounded-2xl border border-border bg-card shadow-sm md:grid-cols-[minmax(15rem,0.8fr)_minmax(0,1.6fr)]">
+  return <div className="grid min-h-[34rem] overflow-hidden rounded-xl bg-card ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)] md:grid-cols-[minmax(15rem,0.8fr)_minmax(0,1.6fr)]">
     <aside className="border-b border-border md:border-b-0 md:border-r" aria-label="Conversations">
       <div className="border-b border-border px-4 py-3"><p className="text-sm font-semibold">All conversations</p><p className="text-xs text-muted-foreground">{conversations.length} {conversations.length === 1 ? 'thread' : 'threads'}</p></div>
       <div className="max-h-72 overflow-y-auto md:max-h-[30rem]">

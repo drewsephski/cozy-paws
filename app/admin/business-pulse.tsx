@@ -73,7 +73,7 @@ export function BusinessPulse({ revenue }: { revenue: RevenueSnapshot }) {
         <Stat><div className="flex items-center justify-between"><StatLabel>Customers booked</StatLabel><StatIndicator variant="icon" color="success"><BadgeCheck className="size-4" aria-hidden="true" /></StatIndicator></div><StatValue>{revenue.booked}</StatValue><StatDescription>Inquiries completed through an attributed payment.</StatDescription></Stat>
       </div>
 
-      <div className="grid gap-4 rounded-2xl border bg-card p-5 shadow-sm lg:grid-cols-[1.25fr_.75fr] lg:p-6">
+      <div className="grid gap-4 rounded-xl bg-card p-5 ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)] lg:grid-cols-[1.25fr_.75fr] lg:p-6">
         <div>
           <div className="flex items-center justify-between"><h3 className="text-sm font-semibold">Care journey</h3><span className="text-xs text-muted-foreground">All time</span></div>
           <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-2" aria-label="Inquiry funnel">

@@ -1,0 +1,3 @@
+[     978ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[    1087ms] [LOG] [HMR] connected @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[    1604ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477

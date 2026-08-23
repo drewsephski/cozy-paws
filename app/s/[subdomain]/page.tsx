@@ -87,7 +87,7 @@ export default async function SubdomainPage({
           <PublicPaymentSection subdomain={subdomain} enabled={publicPaymentsEnabled} error={paymentError} />
         </section>
         <div className="space-y-4">
-          <section className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-xl shadow-black/10 sm:p-5">
+          <section className="relative overflow-hidden rounded-xl bg-card p-4 ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_18px_50px_-36px_rgba(0,0,0,.4)] sm:p-5">
             <NoiseTexture className="opacity-[.035] dark:opacity-[.08]" frequency={0.55} slope={0.2} />
             <div className="relative">
               <LeadForm subdomain={subdomain} sitterName={sitterDisplayName} />

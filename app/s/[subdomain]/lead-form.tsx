@@ -3,6 +3,7 @@
 import { useActionState } from 'react';
 import { createLeadAction, type LeadSubmissionState } from '@/app/actions';
 import { LeadSubmissionConfirmation } from './lead-submission-confirmation';
+import { DateRangePicker } from '@/components/date-range-picker';
 
 export function LeadForm({ subdomain, sitterName }: { subdomain: string; sitterName: string }) {
   const [state, action, pending] = useActionState<LeadSubmissionState, FormData>(createLeadAction, {});
@@ -17,7 +18,7 @@ export function LeadForm({ subdomain, sitterName }: { subdomain: string; sitterN
     <label className="block"><span className="mb-1 block text-xs font-medium">Your name</span><input name="name" required autoComplete="name" className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label>
     <label className="block"><span className="mb-1 block text-xs font-medium">Email</span><input name="email" type="email" required autoComplete="email" className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label>
     <label className="block"><span className="mb-1 block text-xs font-medium">Service needed</span><input name="service" placeholder="Overnight care, walks, drop-ins..." className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label>
-    <div className="grid grid-cols-2 gap-3"><label className="block"><span className="mb-1 block text-xs font-medium">Start date</span><input name="startDate" type="date" className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label><label className="block"><span className="mb-1 block text-xs font-medium">End date</span><input name="endDate" type="date" className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label></div>
+    <DateRangePicker compact />
     <div className="grid grid-cols-[1fr_6rem] gap-3"><label className="block"><span className="mb-1 block text-xs font-medium">Pet types</span><input name="petTypes" placeholder="Dog, cat" className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label><label className="block"><span className="mb-1 block text-xs font-medium">Count</span><input name="petCount" type="number" min="1" max="50" className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label></div>
     <label className="block"><span className="mb-1 block text-xs font-medium">ZIP code</span><input name="postalCode" autoComplete="postal-code" className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label>
     <label className="block"><span className="mb-1 block text-xs font-medium">Pet and care details</span><textarea name="details" placeholder="Pet, routine, and care needed" rows={2} className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label>

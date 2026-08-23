@@ -94,7 +94,7 @@ export function DraftBuilder({ signedIn }: { signedIn: boolean }) {
             {!signedIn && <Button type="button" variant="link" className="mt-4 px-0" onClick={() => router.push('/auth?mode=sign-up&callbackURL=%2Flaunch')}>Skip to sign up</Button>}
           </div>
         </main>
-        <aside className="overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_70px_-48px_rgba(0,0,0,.3)] lg:sticky lg:top-24">
+        <aside className="overflow-hidden rounded-xl bg-card ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_18px_50px_-36px_rgba(0,0,0,.35)] lg:sticky lg:top-24">
           <div className="border-b border-border bg-muted/40 px-4 py-3 text-center text-xs text-muted-foreground">{draft.subdomain}.{rootDomain}</div>
           <div className="min-h-[440px] p-7 text-center sm:p-9">
             <div className="mx-auto grid size-20 place-items-center rounded-full bg-emerald-50 text-emerald-800"><PetIcon value={draft.icon} className="size-10" /></div>

@@ -37,7 +37,7 @@ export function LaunchDraft() {
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-5xl items-center px-5 py-8 lg:px-8 lg:py-12">
-      <section className="grid w-full overflow-hidden rounded-xl border border-border bg-card shadow-[0_20px_60px_-44px_rgba(0,0,0,.35)] md:grid-cols-[minmax(0,1.12fr)_minmax(18rem,.88fr)]">
+      <section className="grid w-full overflow-hidden rounded-xl bg-card ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_18px_50px_-36px_rgba(0,0,0,.35)] md:grid-cols-[minmax(0,1.12fr)_minmax(18rem,.88fr)]">
         <div className="flex flex-col justify-center px-6 py-8 sm:px-9 sm:py-10 lg:px-12">
           <h1 className="max-w-xl text-3xl font-semibold tracking-[-.025em] text-balance sm:text-4xl">Ready to launch {displayName || 'your site'}?</h1>
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Publish your site at <strong className="font-medium text-foreground">{draft.subdomain}.{rootDomain}</strong>.</p>

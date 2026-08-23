@@ -7,6 +7,7 @@ import type { Booking } from '@/lib/bookings';
 import { allowedBookingTransitions, type BookingStatus } from '@/lib/domain/bookings';
 import type { ClientHousehold } from '@/lib/client-households';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DateRangePicker } from '@/components/date-range-picker';
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
@@ -31,7 +32,7 @@ function BookingList({ title, empty, bookings }: { title: string; empty: string;
       {!bookings.length ? <p className="mt-3 rounded-xl border border-dashed p-5 text-sm text-muted-foreground">{empty}</p> : (
         <div className="mt-3 space-y-3">
           {bookings.map((booking) => (
-            <article key={booking.id} className="rounded-xl border border-border bg-card p-4 shadow-sm">
+            <article key={booking.id} className="rounded-xl bg-card p-4 ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)]">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="font-semibold">{dateLabel(booking.startDate, booking.endDate)}</p>
@@ -74,7 +75,7 @@ export function Bookings({ households, bookings }: { households: ClientHousehold
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+      <section className="rounded-xl bg-card p-5 ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)] sm:p-6">
         <div className="flex items-start gap-3">
           <span className="grid size-10 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"><CalendarDays className="size-5" aria-hidden="true" /></span>
           <div><h3 className="font-semibold">Create a booking</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">Choose a saved household, its pets, care dates, and agreed total.</p></div>
@@ -93,7 +94,7 @@ export function Bookings({ households, bookings }: { households: ClientHousehold
               </Select>
             </div>
             <fieldset><legend className="text-sm font-medium">Pets</legend><div className="mt-2 grid gap-2 sm:grid-cols-2">{household?.pets.map((pet) => <label key={pet.id} className="flex min-h-11 items-center gap-2 rounded-lg border border-input px-3 text-sm"><input type="checkbox" name="petIds" value={pet.id} /><PawPrint className="size-4 text-emerald-600" aria-hidden="true" />{pet.name}</label>)}</div></fieldset>
-            <div className="grid gap-4 sm:grid-cols-2"><label><span className="mb-1.5 block text-sm font-medium">Start date</span><input required type="date" name="startDate" className="h-11 w-full rounded-lg border border-input bg-background px-3" /></label><label><span className="mb-1.5 block text-sm font-medium">End date</span><input required type="date" name="endDate" className="h-11 w-full rounded-lg border border-input bg-background px-3" /></label></div>
+            <DateRangePicker required />
             <label className="block"><span className="mb-1.5 block text-sm font-medium">Agreed total</span><div className="relative"><span className="absolute left-3 top-2.5 text-muted-foreground">$</span><input required name="amount" inputMode="decimal" placeholder="240.00" className="h-11 w-full rounded-lg border border-input bg-background pl-7 pr-3" /></div></label>
             <label className="block"><span className="mb-1.5 block text-sm font-medium">Notes <span className="font-normal text-muted-foreground">(optional)</span></span><textarea name="notes" maxLength={2000} rows={3} className="w-full rounded-lg border border-input bg-background px-3 py-2" /></label>
             {state.error && <p role="alert" className="text-sm text-destructive">{state.error}</p>}

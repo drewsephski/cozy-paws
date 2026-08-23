@@ -25,7 +25,7 @@ export default async function CustomerConversationPage({ params }: { params: Pro
         <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"><MessageCircle className="size-5" aria-hidden="true" /></span><div><p className="font-semibold">{conversation.businessName}</p><p className="text-xs text-muted-foreground">Private conversation</p></div></div>
         <Link href={`/s/${conversation.subdomain}`} className="text-sm font-medium underline underline-offset-4">View site</Link>
       </header>
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-7">
+      <section className="rounded-xl bg-card p-5 ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)] sm:p-7">
         <div className="border-b border-border pb-5"><h1 className="text-2xl font-semibold tracking-tight">Your request to {conversation.sitterName}</h1><p className="mt-2 text-sm text-muted-foreground">{conversation.serviceRequested || 'Pet care'}{dates ? ` · ${dates}` : ''}</p></div>
         <div className="mt-6"><ConversationMessages messages={conversation.messages} /></div>
         <ConversationReplyForm participant="CUSTOMER" conversationToken={token} />

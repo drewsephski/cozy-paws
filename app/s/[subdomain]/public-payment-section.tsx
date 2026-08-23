@@ -21,7 +21,7 @@ export function PublicPaymentSection({ subdomain, enabled, error = false }: { su
   if (!enabled) return error ? <p role="alert" className="mt-10 max-w-xl rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">Payments are temporarily unavailable for this business. Please contact the sitter or try again later.</p> : null;
 
   return (
-    <section className="mt-10 max-w-xl rounded-2xl border border-emerald-500/20 bg-emerald-50/60 p-5 dark:bg-emerald-950/20">
+    <section className="mt-10 max-w-xl rounded-xl bg-emerald-50/60 p-5 ring-1 ring-emerald-600/20 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.25)] dark:bg-emerald-950/20">
       <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">Make a payment</p>
       <p className="mt-1 text-sm leading-6 text-muted-foreground">Choose the amount, then pay securely through Stripe.</p>
       {error && <p role="alert" className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">We couldn&apos;t open Stripe Checkout. Check the amount or wait a moment, then try again.</p>}

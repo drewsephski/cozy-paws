@@ -57,7 +57,7 @@ const onboardingSteps = [
 function SitePreview({ site, values }: { site: SiteProfile; values: Record<string, string> }) {
   const services = values.services.split(',').map((service) => service.trim()).filter(Boolean);
   return (
-    <aside className="overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_70px_-48px_rgba(0,0,0,.3)] lg:sticky lg:top-24">
+    <aside className="overflow-hidden rounded-xl bg-card ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_18px_50px_-36px_rgba(0,0,0,.35)] lg:sticky lg:top-24">
       <div className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3">
         <span className="size-2.5 rounded-full bg-red-400" /><span className="size-2.5 rounded-full bg-amber-400" /><span className="size-2.5 rounded-full bg-emerald-500" />
         <div className="ml-2 min-w-0 flex-1 truncate rounded-full bg-background px-4 py-2 text-center text-xs text-muted-foreground">{site.subdomain}.{rootDomain}</div>
@@ -243,7 +243,7 @@ function ProfileEditor({ site }: { site: SiteProfile }) {
   return (
     <section className="space-y-3">
       <div><h2 className="text-xl font-semibold">Edit what pet owners see</h2><p className="mt-1 text-sm text-muted-foreground">Keep the essentials current. Changes appear after you save.</p></div>
-      <form action={saveAction} className="rounded-xl border border-border bg-card shadow-sm">
+      <form action={saveAction} className="rounded-xl bg-card ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)]">
         <input type="hidden" name="subdomain" value={site.subdomain} />
         <div className="grid gap-4 p-5 sm:grid-cols-2">
           <SuggestionField label="Your name" name="sitterName" defaultValue={site.sitterName || ''} placeholder="Jamie" suggestions={profileSuggestions.sitterName} hint="The name pet owners will see first." />
@@ -388,7 +388,7 @@ function StripeSetup({ businesses, stripeReturn }: { businesses: PaymentSetup[];
           : null;
 
   return (
-    <section className={`rounded-2xl border border-border bg-card ${isReady ? 'p-5 sm:p-6' : 'p-4 sm:p-5'}`}>
+    <section className={`rounded-xl bg-card ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)] ${isReady ? 'p-5 sm:p-6' : 'p-4 sm:p-5'}`}>
       <div className="flex items-start gap-3">
         <span className={`grid shrink-0 place-items-center rounded-full bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 ${isReady ? 'size-10' : 'size-9'}`}><CreditCard className={isReady ? 'size-5' : 'size-4'} aria-hidden="true" /></span>
         <div>

@@ -1,0 +1,64 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - button "Squid's Pet Care" [ref=e5]
+        - button "Use dark mode" [ref=e14]
+    - main [ref=e15]:
+      - generic [ref=e16]:
+        - paragraph [ref=e23]: Your neighborhood
+        - heading "Squid's Pet Care" [level=1] [ref=e27]
+        - paragraph [ref=e28]: Thoughtful care for pets at home.
+        - generic [ref=e29]:
+          - paragraph [ref=e30]: Services
+          - generic [ref=e31]:
+            - generic [ref=e32]: Dog walking
+            - generic [ref=e33]: Drop-in visits
+            - generic [ref=e34]: Overnight stays
+      - generic [ref=e35]:
+        - generic [ref=e38]:
+          - paragraph [ref=e39]: Ask about availability
+          - heading "Tell me about your pet" [level=2] [ref=e40]
+          - paragraph [ref=e41]: Send your dates and care details. I'll reply by email.
+          - generic [ref=e42]:
+            - generic [ref=e43]:
+              - generic [ref=e44]: Your name
+              - textbox "Your name" [ref=e45]
+            - generic [ref=e46]:
+              - generic [ref=e47]: Email
+              - textbox "Email" [ref=e48]
+            - generic [ref=e49]:
+              - generic [ref=e50]: Service needed
+              - textbox "Service needed" [ref=e51]:
+                - /placeholder: Overnight care, walks, drop-ins...
+            - generic [ref=e52]:
+              - generic [ref=e53]: Care dates
+              - 'button "Care dates: Aug 24 – Aug 28, 2026" [active] [ref=e229]':
+                - generic [ref=e58]: Aug 24 – Aug 28, 2026
+            - generic [ref=e61]:
+              - generic [ref=e62]:
+                - generic [ref=e63]: Pet types
+                - textbox "Pet types" [ref=e64]:
+                  - /placeholder: Dog, cat
+              - generic [ref=e65]:
+                - generic [ref=e66]: Count
+                - spinbutton "Count" [ref=e67]
+            - generic [ref=e68]:
+              - generic [ref=e69]: ZIP code
+              - textbox "ZIP code" [ref=e70]
+            - generic [ref=e71]:
+              - generic [ref=e72]: Pet and care details
+              - textbox "Pet and care details" [ref=e73]:
+                - /placeholder: Pet, routine, and care needed
+            - button "Send availability request" [ref=e74]
+        - complementary [ref=e75]:
+          - generic [ref=e79]:
+            - paragraph [ref=e80]: Rather chat with Squid's Pet Care directly?
+            - paragraph [ref=e81]: Create an account to message in Sitterfolio.
+          - link "Start chat" [ref=e82] [cursor=pointer]:
+            - /url: /auth?mode=sign-up&callbackURL=%2Fmessage%2Fdrew
+    - contentinfo [ref=e85]:
+      - link "Site by Sitterfolio" [ref=e87] [cursor=pointer]:
+        - /url: http://localhost:3000
+  - button "Open Next.js Dev Tools" [ref=e93] [cursor=pointer]
+  - alert [ref=e97]

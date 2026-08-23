@@ -51,7 +51,7 @@ function HouseholdCard({ household }: { household: ClientHousehold }) {
   const [householdState, householdAction, householdPending] = useActionState<EditClientState, FormData>(updateClientHouseholdAction, {});
   const [petState, petAction, petPending] = useActionState<EditClientState, FormData>(addClientPetAction, {});
   return (
-    <article className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <article className="rounded-xl bg-card p-5 ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)]">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h3 className="truncate text-lg font-semibold">{household.name}</h3>

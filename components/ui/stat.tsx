@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 function Stat({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div data-slot="stat" className={cn('relative grid gap-3 rounded-2xl border bg-card p-5 text-card-foreground shadow-sm', className)} {...props} />;
+  return <div data-slot="stat" className={cn('relative grid gap-3 rounded-xl bg-card p-5 text-card-foreground ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)]', className)} {...props} />;
 }
 
 function StatLabel({ className, ...props }: React.ComponentProps<'p'>) {
