@@ -4,21 +4,21 @@ This document onboards coding agents to the current repository. Treat source cod
 
 ## Product and vocabulary
 
-Sitterfolio gives an independent pet sitter a public website at an address such as `happy-tails.sitterfolio.com`. A sitter creates a profile, publishes services and contact details, receives availability inquiries, reviews them in a private dashboard, and can turn a qualified inquiry into a payment request. It is a direct-business presence and lead-to-revenue tool, not a marketplace or scheduling system.
+Sitterfolio gives an independent pet sitter a public website at an address such as `happy-tails.sitterfolio.com`. A sitter creates a profile, publishes services and contact details, receives availability inquiries, reviews and replies to them in a private dashboard, and can turn a qualified inquiry into a payment request. It is a direct-business presence and lead-to-revenue tool, not a marketplace or scheduling system.
 
-Use these domain terms: a **Site** is the public business profile; a **Profile** is its sitter identity and care details; a **Business** is the operating/legal pet-care business owned by one authenticated **User**; a **Lead** is an availability request; a **Payment request** is a customer-facing fixed-cent amount associated with a Lead; **Generated revenue** is paid customer volume net of refunds, not Sitterfolio's application-fee revenue. Avoid `tenant`, `contact record`, `invoice`, and `booking` for these concepts.
+Use these domain terms: a **Site** is the public business profile; a **Profile** is its sitter identity and care details; a **Business** is the operating/legal pet-care business owned by one authenticated **User**; a **Lead** is an availability request; a **Conversation** is the one-to-one message history attached to a Lead, beginning with the original request; a **Payment request** is a customer-facing fixed-cent amount associated with a Lead; **Generated revenue** is paid customer volume net of refunds, not Sitterfolio's application-fee revenue. Avoid `tenant`, `contact record`, `invoice`, and `booking` for these concepts.
 
 ## User flow
 
 1. `/` explains the product and collects a normalized Site address.
 2. Site creation requires authentication; `/build` and `/launch` lead to `/admin`.
 3. The dashboard saves sitter/business identity, tagline, service area, services, email, optional phone, and optional profile image.
-4. `/s/[subdomain]` renders the public Site and its availability form. The form records name, email, service, dates, pet details, postal code, care details, source, and campaign.
-5. The dashboard inbox lists Leads across the owner's Sites. Valid lifecycle transitions are `NEW → QUALIFIED → QUOTED → BOOKED`, with decline/spam terminal paths where allowed.
+4. `/s/[subdomain]` renders the public Site and its availability form. The form records name, email, service, dates, pet details, postal code, care details, source, and campaign, then starts the Lead's Conversation.
+5. The dashboard inbox lists Leads across the owner's Sites. Pet owners return to a Conversation through a private account-free link; authenticated sitters reply from the owning Business dashboard. Valid lifecycle transitions are `NEW → QUALIFIED → QUOTED → BOOKED`, with decline/spam terminal paths where allowed.
 6. A qualified or quoted Lead can receive one open Payment request after Stripe connected-account readiness is confirmed.
 7. `/pay/[token]` creates or reuses an idempotent Stripe Checkout Session. A Stripe-ready public Site also lets a pet owner choose an amount for a direct public payment without the sitter creating a Product or Payment Link. Signed Stripe webhooks reconcile payment, refund, and dispute facts into PostgreSQL; only a successful Lead-attributed payment moves a quoted Lead to `BOOKED`.
 
-Sitterfolio does not choose a sitter, schedule care, confirm availability, send autonomous campaigns, or replace the sitter's client relationship. Customer-entered public Site payments are separate from the internal Lead-attributed Payment request flow.
+Sitterfolio does not choose a sitter, schedule care, confirm availability, provide general-purpose social chat, send autonomous campaigns, or replace the sitter's client relationship. Customer-entered public Site payments are separate from the internal Lead-attributed Payment request flow.
 
 ## Runtime and routes
 

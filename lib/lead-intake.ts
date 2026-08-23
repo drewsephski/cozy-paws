@@ -22,12 +22,14 @@ export type AcceptedLead = {
   subdomain: string;
   profile: Awaited<ReturnType<ProfileOwnership['get']>>;
   lead: import('./profile-ownership').Lead;
+  conversationToken?: string;
 };
 export type LeadNotifier = (accepted: AcceptedLead) => Promise<void>;
+export type ConversationStarter = (leadId: string) => Promise<string>;
 
 const readText = (value: unknown) => typeof value === 'string' ? value.trim() : '';
 
-export function createLeadIntake(profiles: ProfileOwnership, maySubmit: LeadRateLimiter, notify?: LeadNotifier) {
+export function createLeadIntake(profiles: ProfileOwnership, maySubmit: LeadRateLimiter, notify?: LeadNotifier, startConversation?: ConversationStarter) {
   return {
     async submit(input: LeadSubmission, rateLimitKey: string, createdAt = Date.now()) {
       const subdomain = readText(input.subdomain);
@@ -49,12 +51,14 @@ export function createLeadIntake(profiles: ProfileOwnership, maySubmit: LeadRate
         postalCode: lead.postalCode, source: lead.source, campaign: lead.campaign, status: 'NEW'
       }, createdAt);
       if (!saved) return { success: false as const, error: 'This site is no longer available.' };
+      const conversationToken = startConversation ? await startConversation(saved.lead.id) : undefined;
+      const accepted = { ...saved, conversationToken };
       if (notify) {
-        try { await notify(saved); } catch (error) {
+        try { await notify(accepted); } catch (error) {
           console.error(JSON.stringify({ event: 'new_lead_notification_failed', reason: error instanceof Error ? error.name : 'unknown' }));
         }
       }
-      return { success: true as const, subdomain: saved.subdomain };
+      return { success: true as const, subdomain: saved.subdomain, lead: saved.lead, conversationToken };
     }
   };
 }

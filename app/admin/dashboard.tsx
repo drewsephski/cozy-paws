@@ -399,7 +399,7 @@ function StripeSetup({ businesses, stripeReturn }: { businesses: PaymentSetup[];
   );
 }
 
-export function AdminDashboard({ sites, leads, revenue, paymentSetup, stripeReturn }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; revenue: RevenueSnapshot; paymentSetup: PaymentSetup[]; stripeReturn?: string }) {
+export function AdminDashboard({ sites, leads, conversationMessages, revenue, paymentSetup, stripeReturn }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; conversationMessages: Record<string, import('@/lib/conversations').ConversationMessage[]>; revenue: RevenueSnapshot; paymentSetup: PaymentSetup[]; stripeReturn?: string }) {
   const [state, action, isPending] = useActionState<DeleteState, FormData>(
     deleteSubdomainAction,
     {}
@@ -417,7 +417,7 @@ export function AdminDashboard({ sites, leads, revenue, paymentSetup, stripeRetu
           <TabsTrigger value="stats"><ChartNoAxesCombined className="size-4" aria-hidden="true" />Stats</TabsTrigger>
         </TabsList>
         <TabsContent value="dashboard" forceMount className="space-y-12 pt-8 data-[state=inactive]:hidden">
-          <section className="space-y-4"><div><h2 className="text-xl font-semibold">Recent inquiries</h2><p className="mt-1 text-sm text-muted-foreground">Messages pet owners sent through your sites.</p></div><LeadInbox leads={leads} /></section>
+          <section className="space-y-4"><div><h2 className="text-xl font-semibold">Requests</h2><p className="mt-1 text-sm text-muted-foreground">Read and reply to pet owners in one place.</p></div><LeadInbox leads={leads} conversationMessages={conversationMessages} /></section>
           <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><SiteGrid sites={sites} action={action} isPending={isPending} /></section>
           {paymentSetup.some((business) => business.status !== 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
           {sites[0] && <ProfileEditor site={sites[0]} />}

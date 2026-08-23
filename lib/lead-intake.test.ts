@@ -47,6 +47,21 @@ describe('lead intake', () => {
     expect(await profiles.getOwnedLeads('owner-1', 'happy-tails')).toHaveLength(1);
   });
 
+  it('starts the customer conversation after the Lead is persisted', async () => {
+    const profiles = createProfileOwnership(new MemoryProfileRepository());
+    await profiles.create('owner-1', 'happy-tails', { emoji: 'dog', createdAt: 100, email: 'sitter@example.com' });
+    let persistedLeadId = '';
+    const intake = createLeadIntake(profiles, async () => true, undefined, async (leadId) => {
+      persistedLeadId = leadId;
+      return 'private-conversation-token';
+    });
+
+    const result = await intake.submit({ subdomain: 'happy-tails', name: 'Sam', email: 'sam@example.com', dates: '', message: 'Two dogs' }, 'ip:1', 200);
+
+    expect(persistedLeadId).toMatch(/[a-f0-9-]{36}/);
+    expect(result).toMatchObject({ success: true, conversationToken: 'private-conversation-token', lead: { message: 'Two dogs' } });
+  });
+
   it('does not notify invalid or rate-limited submissions', async () => {
     const profiles = createProfileOwnership(new MemoryProfileRepository());
     await profiles.create('owner-1', 'happy-tails', { emoji: 'dog', createdAt: 100, email: 'sitter@example.com' });

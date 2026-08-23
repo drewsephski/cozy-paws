@@ -6,6 +6,7 @@ import { SiteHeader } from '@/components/site-header';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import { getOwnerPaymentSetup, getOwnerRevenue } from '@/lib/payment-requests';
+import { getOwnerConversationMessages } from '@/lib/conversations';
 
 export const metadata: Metadata = {
   title: `Sitter dashboard | ${rootDomain}`,
@@ -19,12 +20,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
   const sites = await profiles.listOwned(session.user.id);
   const leads = await profiles.getOwnedLeadsForAllSites(session.user.id);
-  const [revenue, paymentSetup] = await Promise.all([getOwnerRevenue(session.user.id), getOwnerPaymentSetup(session.user.id)]);
+  const [revenue, paymentSetup, conversationMessages] = await Promise.all([getOwnerRevenue(session.user.id), getOwnerPaymentSetup(session.user.id), getOwnerConversationMessages(session.user.id)]);
 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader dashboard signedIn />
-      <main><AdminDashboard sites={sites} leads={leads} revenue={revenue} paymentSetup={paymentSetup} stripeReturn={stripeReturn} /></main>
+      <main><AdminDashboard sites={sites} leads={leads} conversationMessages={conversationMessages} revenue={revenue} paymentSetup={paymentSetup} stripeReturn={stripeReturn} /></main>
     </div>
   );
 }

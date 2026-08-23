@@ -7,7 +7,7 @@ import { LeadSubmissionConfirmation } from './lead-submission-confirmation';
 export function LeadForm({ subdomain, sitterName }: { subdomain: string; sitterName: string }) {
   const [state, action, pending] = useActionState<LeadSubmissionState, FormData>(createLeadAction, {});
   return <div className="flex min-h-[31rem] flex-col">
-    {state.success ? <LeadSubmissionConfirmation sitterName={sitterName} /> : <>
+    {state.success ? <LeadSubmissionConfirmation sitterName={sitterName} state={state} /> : <>
       <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400">Ask about availability</p>
       <h2 className="text-xl font-semibold">Tell me about your pet</h2>
       <p className="mt-1.5 text-sm leading-5 text-muted-foreground">Send your dates and care details. I&apos;ll reply by email.</p>

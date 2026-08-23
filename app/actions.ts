@@ -5,12 +5,14 @@ import { redirect } from 'next/navigation';
 import { siteIntake } from '@/lib/intake';
 import { profiles, type BusinessProfile } from '@/lib/profiles';
 import { getSession } from '@/lib/session';
-import { leadIntake, leadRateLimitKey } from '@/lib/leads';
+import { leadIntake, leadRateLimitKey, maySendConversationMessage } from '@/lib/leads';
 import { createPaymentRequestForLead, deliverPaymentRequest, refreshOwnerPaymentSetup } from '@/lib/payment-requests';
 import type { ConnectedAccountStatus } from '@/lib/connected-accounts';
 import { getAppOrigin } from '@/lib/app-url';
 import { createOrContinueOnboarding } from '@/lib/connected-accounts';
 import { transitionOwnedLead } from '@/lib/lead-management';
+import { sendCustomerConversationMessage, sendSitterConversationMessage } from '@/lib/conversations';
+import { sendConversationMessageNotification } from '@/lib/email';
 
 async function requireUser(callbackURL = '/admin') {
   const session = await getSession();
@@ -103,7 +105,16 @@ export async function completeOnboardingAction(formData: FormData): Promise<neve
   redirect(`/admin/complete?site=${encodeURIComponent(updated.subdomain)}`);
 }
 
-export type LeadSubmissionState = { success?: boolean; error?: string };
+export type LeadSubmissionState = {
+  success?: boolean;
+  error?: string;
+  conversationToken?: string;
+  initialMessage?: string;
+  serviceRequested?: string;
+  requestedStartDate?: string | null;
+  requestedEndDate?: string | null;
+  createdAt?: number;
+};
 
 export async function createLeadAction(
   _prevState: LeadSubmissionState,
@@ -132,7 +143,74 @@ export async function createLeadAction(
 
   revalidatePath(`/s/${result.subdomain}`);
   revalidatePath('/admin');
-  return { success: true };
+  return {
+    success: true,
+    conversationToken: result.conversationToken,
+    initialMessage: result.lead.message,
+    serviceRequested: result.lead.serviceRequested,
+    requestedStartDate: result.lead.requestedStartDate,
+    requestedEndDate: result.lead.requestedEndDate,
+    createdAt: result.lead.createdAt
+  };
+}
+
+export type ConversationMessageState = { success?: boolean; error?: string; sentAt?: number };
+
+export async function sendCustomerConversationMessageAction(
+  _state: ConversationMessageState,
+  formData: FormData
+): Promise<ConversationMessageState> {
+  const token = String(formData.get('conversationToken') || '');
+  try {
+    if (!(await maySendConversationMessage(token))) return { error: 'Please wait a moment before sending another message.' };
+    const message = await sendCustomerConversationMessage(token, formData.get('message'));
+    if (message.sitterEmail) {
+      try {
+        await sendConversationMessageNotification({
+          messageId: message.id,
+          conversationToken: token,
+          recipientEmail: message.sitterEmail,
+          senderName: message.customerName,
+          preview: message.body
+        });
+      } catch (error) {
+        console.error(JSON.stringify({ event: 'conversation_notification_failed', messageId: message.id, reason: error instanceof Error ? error.name : 'unknown' }));
+      }
+    }
+    revalidatePath(`/conversation/${token}`);
+    revalidatePath('/admin');
+    return { success: true, sentAt: Date.now() };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : 'Your message could not be sent.' };
+  }
+}
+
+export async function sendSitterConversationMessageAction(
+  _state: ConversationMessageState,
+  formData: FormData
+): Promise<ConversationMessageState> {
+  const user = await requireUser();
+  const leadId = String(formData.get('leadId') || '');
+  try {
+    const message = await sendSitterConversationMessage(user.id, leadId, formData.get('message'));
+    try {
+      await sendConversationMessageNotification({
+        messageId: message.id,
+        conversationToken: message.publicToken,
+        recipientEmail: message.customerEmail,
+        replyTo: message.sitterEmail,
+        senderName: message.businessName,
+        preview: message.body
+      });
+    } catch (error) {
+      console.error(JSON.stringify({ event: 'conversation_notification_failed', messageId: message.id, reason: error instanceof Error ? error.name : 'unknown' }));
+    }
+    revalidatePath('/admin');
+    revalidatePath(`/conversation/${message.publicToken}`);
+    return { success: true, sentAt: Date.now() };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : 'Your reply could not be sent.' };
+  }
 }
 
 export async function saveProfileImageAction(formData: FormData): Promise<void> {
