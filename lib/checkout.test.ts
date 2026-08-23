@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { buildCheckoutSessionParams, checkoutLifecycleDecision } from './checkout';
+import Stripe from 'stripe';
+import { assertConnectedAccountCanAcceptPayments, buildCheckoutSessionParams, checkoutLifecycleDecision } from './checkout';
 
 const request = { id: 'request-1', public_token: 'token', amount_cents: 24000, platform_fee_cents: 720, description: 'Overnight care', customer_email: 'client@example.com', currency: 'usd', status: 'OPEN', stripe_checkout_session_id: null, stripe_account_id: 'acct_1' };
 
@@ -14,5 +15,11 @@ describe('canonical Checkout', () => {
     expect(checkoutLifecycleDecision(request, { ...base, status: 'open' })).toBe('reuse');
     expect(checkoutLifecycleDecision(request, { ...base, status: 'expired' })).toBe('replace');
     expect(() => checkoutLifecycleDecision(request, { ...base, status: 'open', amountTotal: 1 })).toThrow(/amount/);
+  });
+  it('fails closed unless Stripe reports card payments active at checkout time', () => {
+    const account = (status: 'active' | 'pending' | 'restricted') => ({ configuration: { merchant: { capabilities: { card_payments: { status } } } } }) as Stripe.V2.Core.Account;
+    expect(() => assertConnectedAccountCanAcceptPayments(account('active'))).not.toThrow();
+    expect(() => assertConnectedAccountCanAcceptPayments(account('pending'))).toThrow(/cannot accept/);
+    expect(() => assertConnectedAccountCanAcceptPayments(account('restricted'))).toThrow(/cannot accept/);
   });
 });

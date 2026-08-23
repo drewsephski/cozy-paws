@@ -21,12 +21,20 @@ export function buildCheckoutSessionParams(row: CheckoutRow): Stripe.Checkout.Se
 
 const snapshot = (session: Stripe.Checkout.Session): CheckoutSnapshot => ({ id: session.id, status: session.status, paymentStatus: session.payment_status, url: session.url, clientReferenceId: session.client_reference_id, paymentRequestId: session.metadata?.paymentRequestId ?? null, amountTotal: session.amount_total, currency: session.currency });
 
+export function assertConnectedAccountCanAcceptPayments(account: Stripe.V2.Core.Account) {
+  if (account.configuration?.merchant?.capabilities?.card_payments?.status !== 'active') {
+    throw new Error('This business cannot accept Stripe payments yet');
+  }
+}
+
 export async function createOrReuseCheckoutSession(publicToken: string) {
   return transaction(async (client) => {
     await client.query('select pg_advisory_xact_lock(hashtext($1))', [publicToken]);
     const result = await client.query<CheckoutRow>(`select pr.*,b.stripe_account_id from payment_request pr join business b on b.id=pr.business_id where pr.public_token=$1 for update of pr`, [publicToken]);
     const row = result.rows[0];
     if (!row || row.status !== 'OPEN' || !row.stripe_account_id) throw new Error('Payment request is not available');
+    const account = await getStripe().v2.core.accounts.retrieve(row.stripe_account_id, { include: ['configuration.merchant'] });
+    assertConnectedAccountCanAcceptPayments(account);
     const create = async (idempotencyKey: string) => {
       const session = await getStripe().checkout.sessions.create(buildCheckoutSessionParams(row), { stripeAccount: row.stripe_account_id!, idempotencyKey });
       if (!session.url) throw new Error('Stripe did not return a Checkout URL');

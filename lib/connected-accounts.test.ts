@@ -1,8 +1,17 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Stripe from 'stripe';
-import { buildConnectedAccountParams, connectedAccountStatus, isConnectedAccountStatusEvent, statementDescriptorForBusiness } from './connected-accounts';
+
+const { queryMock, retrieveAccountMock } = vi.hoisted(() => ({ queryMock: vi.fn(), retrieveAccountMock: vi.fn() }));
+vi.mock('./db', () => ({ query: queryMock }));
+vi.mock('./stripe', () => ({ getStripe: () => ({ v2: { core: { accounts: { retrieve: retrieveAccountMock } } } }) }));
+
+import { buildConnectedAccountParams, connectedAccountStatus, isConnectedAccountStatusEvent, processConnectedAccountStatusEvent, statementDescriptorForBusiness } from './connected-accounts';
 
 describe('Stripe connected-account prefill', () => {
+  beforeEach(() => {
+    queryMock.mockReset();
+    retrieveAccountMock.mockReset();
+  });
   it('classifies pet-care businesses before hosted onboarding', () => {
     const params = buildConnectedAccountParams({
       id: 'business-1',
@@ -41,5 +50,25 @@ describe('Stripe connected-account prefill', () => {
     expect(isConnectedAccountStatusEvent('v2.core.account[requirements].updated')).toBe(true);
     expect(isConnectedAccountStatusEvent('v2.core.account[configuration.merchant].capability_status_updated')).toBe(true);
     expect(isConnectedAccountStatusEvent('v2.core.account[identity].updated')).toBe(false);
+  });
+
+  it('reconciles an account event into durable readiness and records the event', async () => {
+    queryMock
+      .mockResolvedValueOnce({ rows: [{ id: 'business-1', stripe_account_id: 'acct_1', stripe_ready: false }] })
+      .mockResolvedValue({ rows: [] });
+    retrieveAccountMock.mockResolvedValue({
+      configuration: { merchant: { capabilities: { card_payments: { status: 'active' } } } },
+      requirements: { entries: [] },
+    });
+
+    await processConnectedAccountStatusEvent({
+      id: 'evt_1',
+      type: 'v2.core.account[configuration.merchant].capability_status_updated',
+      related_object: { id: 'acct_1', type: 'v2.core.account' },
+    });
+
+    expect(retrieveAccountMock).toHaveBeenCalledWith('acct_1', { include: ['configuration.merchant', 'requirements'] });
+    expect(queryMock).toHaveBeenCalledWith(expect.stringContaining('update business set stripe_ready'), ['business-1', true]);
+    expect(queryMock).toHaveBeenCalledWith(expect.stringContaining('insert into stripe_webhook_event'), ['evt_1', 'v2.core.account[configuration.merchant].capability_status_updated']);
   });
 });
