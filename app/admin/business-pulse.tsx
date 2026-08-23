@@ -34,8 +34,8 @@ export function BusinessPulse({ revenue }: { revenue: RevenueSnapshot }) {
     <section aria-labelledby="business-pulse-title" className="space-y-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400">Your business pulse</p>
-          <h2 id="business-pulse-title" className="mt-1 text-xl font-semibold">From first hello to paid care</h2>
+          <h2 id="business-pulse-title" className="text-xl font-semibold">From first hello to paid care</h2>
+          <p className="mt-1 text-sm text-muted-foreground">See how pet owners move from inquiry to completed care.</p>
         </div>
         <p className="text-sm text-muted-foreground">All-time activity across your live sites</p>
       </div>
@@ -43,9 +43,9 @@ export function BusinessPulse({ revenue }: { revenue: RevenueSnapshot }) {
       <div className="grid gap-4 lg:grid-cols-[1.3fr_.7fr]">
         <Stat className="overflow-hidden border-emerald-500/20 bg-[linear-gradient(135deg,rgba(16,185,129,.12),transparent_58%)] p-6 sm:p-7">
           <div className="flex items-start justify-between gap-4">
-            <div>
+            <div className="min-w-0">
               <StatLabel>Generated revenue</StatLabel>
-              <StatValue className="mt-3 text-5xl sm:text-6xl">{currency.format(revenue.generatedRevenueCents / 100)}</StatValue>
+              <StatValue className="mt-3 break-words text-[clamp(2.5rem,9vw,3.75rem)] leading-none">{currency.format(revenue.generatedRevenueCents / 100)}</StatValue>
             </div>
             <StatIndicator variant="icon" color="success" className="size-11"><CircleDollarSign className="size-5" aria-hidden="true" /></StatIndicator>
           </div>
@@ -76,10 +76,10 @@ export function BusinessPulse({ revenue }: { revenue: RevenueSnapshot }) {
       <div className="grid gap-4 rounded-2xl border bg-card p-5 shadow-sm lg:grid-cols-[1.25fr_.75fr] lg:p-6">
         <div>
           <div className="flex items-center justify-between"><h3 className="text-sm font-semibold">Care journey</h3><span className="text-xs text-muted-foreground">All time</span></div>
-          <div className="mt-5 grid grid-cols-4 gap-2" aria-label="Inquiry funnel">
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-2" aria-label="Inquiry funnel">
             {journey.map((step, index) => {
               const width = revenue.inquiries > 0 ? Math.max(18, rate(step.value, revenue.inquiries) * 100) : 18;
-              return <div key={step.label} className="min-w-0"><div className="flex h-20 items-end overflow-hidden rounded-xl bg-muted/70"><div className="w-full rounded-xl bg-emerald-600/80 transition-[height] duration-700 motion-reduce:transition-none" style={{ height: `${width}%` }} /></div><p className="mt-2 truncate text-xs text-muted-foreground">{step.label}</p><p className="text-lg font-semibold tabular-nums">{step.value}</p>{index < journey.length - 1 && <span className="sr-only">then</span>}</div>;
+              return <div key={step.label} className="min-w-0"><div className="flex h-20 items-end overflow-hidden rounded-xl bg-muted/70"><div className="w-full rounded-xl bg-emerald-600/80 transition-[height] duration-700 motion-reduce:transition-none" style={{ height: `${width}%` }} /></div><p className="mt-2 text-xs leading-4 text-muted-foreground">{step.label}</p><p className="text-lg font-semibold tabular-nums">{step.value}</p>{index < journey.length - 1 && <span className="sr-only">then</span>}</div>;
             })}
           </div>
         </div>

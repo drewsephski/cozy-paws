@@ -5,7 +5,8 @@ import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Stepper, StepperDescription, StepperIndicator, StepperItem, StepperList, StepperSeparator, StepperTitle, StepperTrigger } from '@/components/ui/stepper';
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, Loader2, RotateCw } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, ArrowRight, ChartNoAxesCombined, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, LayoutDashboard, Loader2, RotateCw } from 'lucide-react';
 import Link from 'next/link';
 import { deleteSubdomainAction, refreshStripeStatusAction, startStripeOnboardingAction, type RefreshStripeStatusState } from '@/app/actions';
 import type { ConnectedAccountStatus } from '@/lib/connected-accounts';
@@ -193,15 +194,10 @@ function OnboardingField({ label, optional = false, name, value, onChange, hint,
 }
 
 function DashboardHeader() {
-  // TODO: You can add authentication here with your preferred auth provider
-
   return (
-    <div className="border-b border-border pb-7">
-      <div>
-        <p className="mb-2 text-xs font-medium uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400">Sitter dashboard</p>
-        <h1 className="text-3xl font-semibold tracking-tight">Your pet-care website</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Update what pet owners see, share your site, and review new inquiries.</p>
-      </div>
+    <div className="max-w-2xl">
+      <h1 className="text-3xl font-semibold tracking-[-.025em] sm:text-4xl">Your pet-care business</h1>
+      <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">Manage your website and inquiries, or check how your business is performing.</p>
     </div>
   );
 }
@@ -413,23 +409,33 @@ export function AdminDashboard({ sites, leads, revenue, paymentSetup, stripeRetu
   if (onboardingSite) return <ProfileOnboarding site={onboardingSite} />;
 
   return (
-    <div className="relative mx-auto w-full max-w-6xl space-y-12 px-5 pb-12 pt-8 lg:px-8 lg:pb-16 lg:pt-12">
+    <div className="relative mx-auto w-full max-w-6xl px-5 pb-12 pt-8 lg:px-8 lg:pb-16 lg:pt-12">
       <DashboardHeader />
-      <BusinessPulse revenue={revenue} />
-      <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><SiteGrid sites={sites} action={action} isPending={isPending} /></section>
-      {paymentSetup.some((business) => business.status !== 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
-      {sites[0] && <ProfileEditor site={sites[0]} />}
-      <section className="space-y-4"><div><h2 className="text-xl font-semibold">Recent inquiries</h2><p className="mt-1 text-sm text-muted-foreground">Messages pet owners sent through your sites.</p></div><LeadInbox leads={leads} /></section>
-      {paymentSetup.length > 0 && paymentSetup.every((business) => business.status === 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
+      <Tabs defaultValue="dashboard" className="mt-7">
+        <TabsList aria-label="Dashboard views">
+          <TabsTrigger value="dashboard"><LayoutDashboard className="size-4" aria-hidden="true" />Dashboard</TabsTrigger>
+          <TabsTrigger value="stats"><ChartNoAxesCombined className="size-4" aria-hidden="true" />Stats</TabsTrigger>
+        </TabsList>
+        <TabsContent value="dashboard" forceMount className="space-y-12 pt-8 data-[state=inactive]:hidden">
+          <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><SiteGrid sites={sites} action={action} isPending={isPending} /></section>
+          {paymentSetup.some((business) => business.status !== 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
+          {sites[0] && <ProfileEditor site={sites[0]} />}
+          <section className="space-y-4"><div><h2 className="text-xl font-semibold">Recent inquiries</h2><p className="mt-1 text-sm text-muted-foreground">Messages pet owners sent through your sites.</p></div><LeadInbox leads={leads} /></section>
+          {paymentSetup.length > 0 && paymentSetup.every((business) => business.status === 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
+        </TabsContent>
+        <TabsContent value="stats" forceMount className="pt-8 data-[state=inactive]:hidden">
+          <BusinessPulse revenue={revenue} />
+        </TabsContent>
+      </Tabs>
 
       {state.error && (
-        <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md">
+        <div role="alert" className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-50 max-w-[calc(100vw-2rem)] rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 shadow-[0_16px_40px_-20px_rgba(0,0,0,.45)] dark:border-red-900 dark:bg-red-950 dark:text-red-200">
           {state.error}
         </div>
       )}
 
       {state.success && (
-        <div className="fixed bottom-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-md">
+        <div role="status" className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-50 max-w-[calc(100vw-2rem)] rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 shadow-[0_16px_40px_-20px_rgba(0,0,0,.45)] dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-200">
           {state.success}
         </div>
       )}

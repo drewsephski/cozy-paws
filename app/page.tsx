@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowRight, Check, Inbox, MapPin, PawPrint } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { getSession } from '@/lib/session';
+import { NoiseTexture } from '@/components/ui/noise-texture';
 
 export const metadata = {
   title: 'Website for Pet Sitters',
@@ -35,10 +36,13 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <section id="site-address" className="landing-panel w-full scroll-mt-24 border p-6 shadow-[0_24px_80px_-40px_rgba(0,0,0,.28)] sm:p-8 md:max-w-2xl md:justify-self-center lg:max-w-none">
-              <div className="mb-8 flex items-start justify-between gap-4"><div><p className="text-sm font-medium landing-muted">Start here</p><h2 className="mt-1 text-2xl font-semibold tracking-tight">Choose your site address</h2></div><div className="landing-accent-soft grid size-9 place-items-center rounded-lg landing-accent"><PawPrint aria-hidden="true" className="size-4" /></div></div>
-              <SubdomainForm />
-              <p className="mt-5 text-center text-xs landing-muted">Build the draft first. Create an account when you publish.</p>
+            <section id="site-address" className="landing-panel relative w-full scroll-mt-24 overflow-hidden border p-6 shadow-[0_24px_80px_-40px_rgba(0,0,0,.28)] sm:p-8 md:max-w-2xl md:justify-self-center lg:max-w-none">
+              <NoiseTexture className="opacity-[.055] dark:opacity-[.1]" frequency={0.55} slope={0.2} />
+              <div className="relative">
+                <div className="mb-8 flex items-start justify-between gap-4"><div><p className="text-sm font-medium landing-muted">Start here</p><h2 className="mt-1 text-2xl font-semibold tracking-tight">Choose your site address</h2></div><div className="landing-accent-soft relative grid size-9 place-items-center overflow-hidden rounded-lg landing-accent"><NoiseTexture className="opacity-15" frequency={0.7} octaves={4} /><PawPrint aria-hidden="true" className="relative size-4" /></div></div>
+                <SubdomainForm />
+                <p className="mt-5 text-center text-xs landing-muted">Build the draft first. Create an account when you publish.</p>
+              </div>
             </section>
           </div>
         </section>
@@ -56,7 +60,7 @@ export default async function HomePage() {
                 [Inbox, 'Keep every request together', 'Clients send dates and care details into one sitter dashboard instead of an old message thread.']
               ].map(([Icon, title, body]) => (
                 <article key={String(title)} className="grid gap-5 py-8 sm:grid-cols-[3rem_minmax(0,1fr)] sm:py-10">
-                  <div className="landing-accent-soft grid size-11 place-items-center rounded-lg landing-accent"><Icon aria-hidden="true" className="size-5" /></div>
+                  <div className="landing-accent-soft relative grid size-11 place-items-center overflow-hidden rounded-lg landing-accent"><NoiseTexture className="opacity-15" frequency={0.7} octaves={4} /><Icon aria-hidden="true" className="relative size-5" /></div>
                   <div><h3 className="text-xl font-semibold tracking-[-.02em]">{String(title)}</h3><p className="mt-2 max-w-xl leading-7 landing-muted">{String(body)}</p></div>
                 </article>
               ))}
