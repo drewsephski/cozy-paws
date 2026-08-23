@@ -282,8 +282,8 @@ type PaymentSetup = { businessId: string; businessName: string; connected: boole
 
 const paymentSetupContent = {
   not_started: { title: 'Set up Stripe', detail: 'Add your identity and bank details securely with Stripe.', button: 'Start Stripe setup', icon: CreditCard, tone: 'text-muted-foreground bg-muted' },
-  action_required: { title: 'More information needed', detail: 'Stripe still needs a few details before you can accept payments.', button: 'Finish Stripe setup', icon: CircleAlert, tone: 'text-amber-700 bg-amber-100 dark:text-amber-300 dark:bg-amber-950' },
-  pending: { title: 'Stripe is reviewing your details', detail: 'Nothing else is needed right now. We’ll check again whenever you open this dashboard.', button: 'Review submitted details', icon: Clock3, tone: 'text-blue-700 bg-blue-100 dark:text-blue-300 dark:bg-blue-950' },
+  action_required: { title: 'More information needed', detail: 'Stripe needs a few details to activate or keep your payment account in good standing.', button: 'Finish Stripe setup', icon: CircleAlert, tone: 'text-amber-700 bg-amber-100 dark:text-amber-300 dark:bg-amber-950' },
+  pending: { title: 'Stripe is reviewing your details', detail: 'Nothing else is needed right now. We’ll check again whenever you open this dashboard.', button: '', icon: Clock3, tone: 'text-blue-700 bg-blue-100 dark:text-blue-300 dark:bg-blue-950' },
   ready: { title: 'Ready to accept payments', detail: 'Stripe is connected and this business can send payment requests.', button: '', icon: CheckCircle2, tone: 'text-emerald-700 bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950' },
   unavailable: { title: 'Status could not be refreshed', detail: 'Your Stripe details are safe. Try refreshing this page in a moment.', button: '', icon: RotateCw, tone: 'text-muted-foreground bg-muted' },
 } as const;
@@ -314,6 +314,7 @@ function StripeSetup({ businesses, stripeReturn }: { businesses: PaymentSetup[];
           return <div key={business.businessId} className="flex flex-col gap-4 rounded-xl border border-border p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3"><span className={`grid size-9 shrink-0 place-items-center rounded-full ${content.tone}`}><Icon className={`size-4 ${business.status === 'unavailable' ? 'animate-spin' : ''}`} aria-hidden="true" /></span><div><p className="font-medium">{business.businessName}</p><p className="mt-0.5 text-sm font-medium">{content.title}</p><p className="mt-1 max-w-2xl text-sm leading-5 text-muted-foreground">{content.detail}</p></div></div>
             {content.button && <form action={startStripeOnboardingAction} className="shrink-0"><input type="hidden" name="businessId" value={business.businessId} /><Button type="submit" size="sm" variant={business.status === 'pending' ? 'outline' : 'default'}>{content.button}</Button></form>}
+            {['pending', 'ready'].includes(business.status) && <Button asChild size="sm" variant="outline" className="shrink-0"><a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer">Manage in Stripe <ExternalLink aria-hidden="true" /></a></Button>}
             {business.status === 'unavailable' && <Button asChild size="sm" variant="outline" className="shrink-0"><Link href="/admin">Refresh status</Link></Button>}
           </div>;
         })}

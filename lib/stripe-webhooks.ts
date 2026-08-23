@@ -8,6 +8,14 @@ type Row = { id: string; lead_id: string; amount_cents: number; platform_fee_cen
 const objectId = (value: string | { id: string } | null) => typeof value === 'string' ? value : value?.id ?? null;
 const toState = (row: Row): PaymentState => ({ requestId: row.id, connectedAccountId: row.stripe_account_id, amountCents: row.amount_cents, currency: row.currency, status: row.status, refundedAmountCents: row.refunded_amount_cents, checkoutSessionId: row.stripe_checkout_session_id, paymentIntentId: row.stripe_payment_intent_id, chargeId: row.stripe_charge_id });
 
+export function checkoutEventOutcome(type: string, session: Pick<Stripe.Checkout.Session, 'status' | 'payment_status'>): 'paid' | 'pending' | 'failed' {
+  if (session.status !== 'complete') throw new Error('Checkout Session is not complete');
+  if (type === 'checkout.session.async_payment_failed') return 'failed';
+  if (session.payment_status === 'paid') return 'paid';
+  if (type === 'checkout.session.completed' && session.payment_status === 'unpaid') return 'pending';
+  throw new Error('Checkout Session payment state is inconsistent with its event');
+}
+
 async function stripeObjects(accountId: string, intentValue: string | Stripe.PaymentIntent | null, chargeValue: string | Stripe.Charge | null) {
   let intent = typeof intentValue === 'object' && intentValue ? intentValue : null;
   const intentId = objectId(intentValue);
@@ -41,15 +49,27 @@ async function reconcileFeeRefund(row: Row, charge: Stripe.Charge, feeId: string
 
 export async function processStripeEvent(event: Stripe.Event) {
   const accountId = typeof event.account === 'string' ? event.account : null;
-  const handled = ['checkout.session.completed', 'charge.refunded', 'charge.dispute.created', 'charge.dispute.closed'].includes(event.type);
+  const checkoutEvents = ['checkout.session.completed', 'checkout.session.async_payment_succeeded', 'checkout.session.async_payment_failed'];
+  const handled = [...checkoutEvents, 'charge.refunded', 'charge.dispute.created', 'charge.dispute.closed'].includes(event.type);
   if (!handled) { await transaction(async (client) => { await client.query(`insert into stripe_webhook_event(event_id,event_type) values($1,$2) on conflict do nothing`, [event.id, event.type]); }); return; }
   if (!accountId) throw new Error('Expected a connected-account Stripe event');
 
   let objects; let signal; let paidAt: Date | null = null;
-  if (event.type === 'checkout.session.completed') {
+  if (checkoutEvents.includes(event.type)) {
     const session = event.data.object as Stripe.Checkout.Session;
     const requestId = session.metadata?.paymentRequestId ?? '';
-    if (!requestId || session.client_reference_id !== requestId || session.payment_status !== 'paid' || session.status !== 'complete') throw new Error('Checkout Session is not a completed Sitterfolio payment');
+    if (!requestId || session.client_reference_id !== requestId) throw new Error('Checkout Session does not identify a Sitterfolio payment');
+    const outcome = checkoutEventOutcome(event.type, session);
+    if (outcome !== 'paid') {
+      await transaction(async (client) => {
+        if ((await client.query(`select event_id from stripe_webhook_event where event_id=$1`, [event.id])).rowCount) return;
+        const row = await lockedRow(client, requestId);
+        if (row.stripe_account_id !== accountId || row.stripe_checkout_session_id !== session.id) throw new Error('Checkout Session does not match the canonical payment request');
+        if (outcome === 'failed' && row.status === 'OPEN') await client.query(`update payment_request set stripe_checkout_session_id=null,updated_at=now() where id=$1`, [row.id]);
+        await client.query(`insert into stripe_webhook_event(event_id,event_type) values($1,$2)`, [event.id, event.type]);
+      });
+      return;
+    }
     objects = await stripeObjects(accountId, typeof session.payment_intent === 'string' ? session.payment_intent : null, null);
     if (objects.requestId !== requestId) throw new Error('Checkout and PaymentIntent metadata disagree');
     paidAt = new Date(objects.charge.created * 1000);

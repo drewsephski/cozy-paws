@@ -95,9 +95,14 @@ KV_REST_API_URL=https://...
 KV_REST_API_TOKEN=...
 RESEND_API_KEY=re_...
 SITTERFOLIO_FROM_EMAIL="Sitterfolio <notifications@example.com>"
+STRIPE_SECRET_KEY=sk_test_or_restricted_key
+STRIPE_WEBHOOK_SECRET=whsec_payment_event_destination
+STRIPE_ACCOUNT_WEBHOOK_SECRET=whsec_accounts_v2_thin_event_destination
 ```
 
 Generate a local secret with `openssl rand -base64 32`. Do not commit it. Before starting the app for the first time, apply [`migrations/auth.sql`](migrations/auth.sql) to the PostgreSQL database. Production must use its canonical HTTPS root URL for `BETTER_AUTH_URL` and its own secret and database credentials.
+
+Stripe uses separate signed event destinations: `/api/webhook` receives connected-account payment snapshot events (including `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, refund, and dispute events), while `/api/stripe/account-events` receives Accounts v2 thin events for `v2.core.account[requirements].updated` and `v2.core.account[configuration.merchant].capability_status_updated`. Use distinct signing secrets and isolated Stripe credentials and databases for Sandbox/preview and live production.
 
 ## Feature behavior in the application
 

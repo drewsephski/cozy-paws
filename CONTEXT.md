@@ -70,7 +70,7 @@ Use pnpm (`pnpm@10.12.4`). Relevant variables are:
 ```text
 DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL, BETTER_AUTH_TRUSTED_ORIGINS
 NEXT_PUBLIC_ROOT_DOMAIN, KV_REST_API_URL, KV_REST_API_TOKEN, BLOB_READ_WRITE_TOKEN
-STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
+STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_ACCOUNT_WEBHOOK_SECRET
 ```
 
 Upstash Redis backs compatibility, rate limiting, and location caching. Vercel Blob stores profile-image bytes; PostgreSQL stores the resulting URL. Nominatim is reached through the validated, cached, throttled application API. Stripe handles connected accounts and Checkout. Never print or commit credentials. Keep local, preview, and production databases and Stripe modes separate.

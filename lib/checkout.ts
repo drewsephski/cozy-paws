@@ -16,7 +16,7 @@ export function checkoutLifecycleDecision(row: Pick<CheckoutRow, 'id' | 'amount_
 }
 
 export function buildCheckoutSessionParams(row: CheckoutRow): Stripe.Checkout.SessionCreateParams {
-  return { mode: 'payment', payment_method_types: ['card'], client_reference_id: row.id, line_items: [{ price_data: { currency: row.currency, unit_amount: row.amount_cents, product_data: { name: row.description } }, quantity: 1 }], payment_intent_data: { application_fee_amount: row.platform_fee_cents, metadata: { paymentRequestId: row.id } }, customer_email: row.customer_email ?? undefined, metadata: { paymentRequestId: row.id }, success_url: `${getAppOrigin()}/pay/${row.public_token}/success?session_id={CHECKOUT_SESSION_ID}`, cancel_url: `${getAppOrigin()}/pay/${row.public_token}` };
+  return { mode: 'payment', integration_identifier: 'sitterfolio_checkout_nkqvjdpx', client_reference_id: row.id, line_items: [{ price_data: { currency: row.currency, unit_amount: row.amount_cents, product_data: { name: row.description } }, quantity: 1 }], payment_intent_data: { application_fee_amount: row.platform_fee_cents, metadata: { paymentRequestId: row.id } }, customer_email: row.customer_email ?? undefined, metadata: { paymentRequestId: row.id }, success_url: `${getAppOrigin()}/pay/${row.public_token}/success?session_id={CHECKOUT_SESSION_ID}`, cancel_url: `${getAppOrigin()}/pay/${row.public_token}` };
 }
 
 const snapshot = (session: Stripe.Checkout.Session): CheckoutSnapshot => ({ id: session.id, status: session.status, paymentStatus: session.payment_status, url: session.url, clientReferenceId: session.client_reference_id, paymentRequestId: session.metadata?.paymentRequestId ?? null, amountTotal: session.amount_total, currency: session.currency });
