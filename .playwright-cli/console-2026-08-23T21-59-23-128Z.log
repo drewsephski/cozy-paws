@@ -120,3 +120,7 @@
 [ 3021203ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [ 3033147ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [ 3033236ms] [LOG] [Fast Refresh] done in 192ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3042245ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3042289ms] [LOG] [Fast Refresh] done in 108ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3070373ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3070373ms] [LOG] [Fast Refresh] done in 103ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477

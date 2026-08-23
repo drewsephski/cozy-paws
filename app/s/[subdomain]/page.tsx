@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { profiles } from '@/lib/profiles';
 import { protocol, rootDomain } from '@/lib/utils';
-import { LeadForm } from './lead-form';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Check, MapPin } from 'lucide-react';
 import { PetIcon } from '@/components/pet-icon';
