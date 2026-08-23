@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { MessageCircle } from 'lucide-react';
+import { randomBytes } from 'node:crypto';
 import { getSession } from '@/lib/session';
 import { profiles } from '@/lib/profiles';
 import { privatePageMetadata } from '@/lib/seo';
@@ -32,6 +33,7 @@ export default async function StartMessagePage({ params }: { params: Promise<{ s
             subdomain={subdomain}
             sitterName={sitterName}
             customer={{ name: session.user.name, email: session.user.email }}
+            submissionToken={randomBytes(24).toString('base64url')}
           />
         </section>
       </main>

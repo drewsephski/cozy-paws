@@ -71,6 +71,22 @@ describe('Lead conversations', () => {
     expect(client.query.mock.calls[0][0]).toContain('c.revoked_at is null');
   });
 
+  it('serializes a customer message behind the Lead status lock before writing', async () => {
+    const client = { query: vi.fn()
+      .mockResolvedValueOnce({ rows: [{ id: 'conversation-1', lead_id: 'lead-1', customer_name: 'Sam', business_name: 'Happy Tails', sitter_email: 'sitter@example.com' }] })
+      .mockResolvedValueOnce({ rows: [{ id: 'conversation-1' }] })
+      .mockResolvedValueOnce({ rows: [{ id: 'message-1', created_at: new Date() }] })
+      .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({ rows: [] }) };
+    transactionMock.mockImplementation((work) => work(client));
+
+    await expect(sendCustomerConversationMessage('open-token', 'Hello')).resolves.toMatchObject({ id: 'message-1' });
+    expect(client.query.mock.calls[0][0]).toContain('for update of l');
+    expect(client.query.mock.calls[1][0]).toContain('lead_conversation');
+    expect(client.query.mock.calls[1][0]).toContain('for update');
+    expect(client.query.mock.calls[2][0]).toContain('insert into lead_conversation_message');
+  });
+
   it('authorizes sitter replies through Business ownership', async () => {
     const client = { query: vi.fn()
       .mockResolvedValueOnce({ rows: [{ id: 'conversation-1', public_token: 'customer-token', customer_email: 'sam@example.com', business_name: 'The Pet Nanny', sitter_email: 'drew@example.com' }] })
@@ -85,5 +101,14 @@ describe('Lead conversations', () => {
     expect(client.query.mock.calls[0][0]).toContain('b.owner_user_id=$2');
     expect(client.query.mock.calls[0][1]).toEqual(['lead-1', 'owner-1']);
     expect(client.query.mock.calls[0][0]).toContain('c.closed_at is null');
+  });
+
+  it('rejects a sitter reply across the Business ownership boundary', async () => {
+    const client = { query: vi.fn().mockResolvedValueOnce({ rows: [] }) };
+    transactionMock.mockImplementation((work) => work(client));
+
+    await expect(sendSitterConversationMessage('owner-2', 'lead-1', 'No access')).rejects.toThrow('could not be found');
+    expect(client.query).toHaveBeenCalledTimes(1);
+    expect(client.query.mock.calls[0][1]).toEqual(['lead-1', 'owner-2']);
   });
 });

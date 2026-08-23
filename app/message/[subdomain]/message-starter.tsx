@@ -3,19 +3,21 @@
 import { useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Send } from 'lucide-react';
-import { createLeadAction, type LeadSubmissionState } from '@/app/actions';
+import { createAuthenticatedLeadAction, type LeadSubmissionState } from '@/app/actions';
 
 export function MessageStarter({
   subdomain,
   sitterName,
   customer,
+  submissionToken,
 }: {
   subdomain: string;
   sitterName: string;
   customer: { name: string; email: string };
+  submissionToken: string;
 }) {
   const router = useRouter();
-  const [state, action, pending] = useActionState<LeadSubmissionState, FormData>(createLeadAction, {});
+  const [state, action, pending] = useActionState<LeadSubmissionState, FormData>(createAuthenticatedLeadAction, {});
 
   useEffect(() => {
     if (state.success && state.conversationToken) {
@@ -26,9 +28,7 @@ export function MessageStarter({
   return (
     <form action={action} className="mt-7 space-y-5">
       <input type="hidden" name="subdomain" value={subdomain} />
-      <input type="hidden" name="source" value="sitterfolio_account_message" />
-      <input type="hidden" name="name" value={customer.name} />
-      <input type="hidden" name="email" value={customer.email} />
+      <input type="hidden" name="submissionToken" value={submissionToken} />
       <div className="rounded-xl bg-muted/60 px-4 py-3 text-sm">
         <p className="font-medium">Messaging as {customer.name}</p>
         <p className="mt-0.5 text-muted-foreground">{customer.email}</p>

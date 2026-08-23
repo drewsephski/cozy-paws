@@ -1,5 +1,6 @@
+import { randomBytes } from 'node:crypto';
 import type { ProfileOwnership } from './profile-ownership';
-import { parseLeadSubmission } from './domain/leads';
+import { parseLeadSubmission, type QualifiedLeadInput } from './domain/leads';
 
 export type LeadSubmission = {
   subdomain: unknown;
@@ -15,6 +16,7 @@ export type LeadSubmission = {
   postalCode?: unknown;
   source?: unknown;
   campaign?: unknown;
+  submissionToken?: unknown;
 };
 
 export type LeadRateLimiter = (key: string) => Promise<boolean>;
@@ -25,11 +27,16 @@ export type AcceptedLead = {
   conversationToken?: string;
 };
 export type LeadNotifier = (accepted: AcceptedLead) => Promise<void>;
-export type ConversationStarter = (leadId: string) => Promise<string>;
+export type LeadPersister = (input: {
+  subdomain: string;
+  submissionToken: string;
+  lead: QualifiedLeadInput;
+  createdAt: number;
+}) => Promise<(AcceptedLead & { created: boolean }) | null>;
 
 const readText = (value: unknown) => typeof value === 'string' ? value.trim() : '';
 
-export function createLeadIntake(profiles: ProfileOwnership, maySubmit: LeadRateLimiter, notify?: LeadNotifier, startConversation?: ConversationStarter) {
+export function createLeadIntake(profiles: ProfileOwnership, maySubmit: LeadRateLimiter, notify?: LeadNotifier, persist?: LeadPersister) {
   return {
     async submit(input: LeadSubmission, rateLimitKey: string, createdAt = Date.now()) {
       const subdomain = readText(input.subdomain);
@@ -44,21 +51,28 @@ export function createLeadIntake(profiles: ProfileOwnership, maySubmit: LeadRate
       }
 
       const lead = parsed.data;
-      const saved = await profiles.recordLead(subdomain, {
-        name: lead.name, email: lead.email, dates: lead.dateDetails, message: lead.careDetails,
-        serviceRequested: lead.serviceRequested, requestedStartDate: lead.requestedStartDate,
-        requestedEndDate: lead.requestedEndDate, petTypes: lead.petTypes, petCount: lead.petCount,
-        postalCode: lead.postalCode, source: lead.source, campaign: lead.campaign, status: 'NEW'
-      }, createdAt);
-      if (!saved) return { success: false as const, error: 'This site is no longer available.' };
-      const conversationToken = startConversation ? await startConversation(saved.lead.id) : undefined;
-      const accepted = { ...saved, conversationToken };
-      if (notify) {
+      const requestedToken = readText(input.submissionToken);
+      const submissionToken = requestedToken.length >= 32 && requestedToken.length <= 200
+        ? requestedToken
+        : randomBytes(24).toString('base64url');
+      const accepted = persist
+        ? await persist({ subdomain, submissionToken, lead, createdAt })
+        : await (async () => {
+          const saved = await profiles.recordLead(subdomain, {
+            name: lead.name, email: lead.email, dates: lead.dateDetails, message: lead.careDetails,
+            serviceRequested: lead.serviceRequested, requestedStartDate: lead.requestedStartDate,
+            requestedEndDate: lead.requestedEndDate, petTypes: lead.petTypes, petCount: lead.petCount,
+            postalCode: lead.postalCode, source: lead.source, campaign: lead.campaign, status: 'NEW'
+          }, createdAt);
+          return saved ? { ...saved, created: true, conversationToken: undefined } : null;
+        })();
+      if (!accepted) return { success: false as const, error: 'This site is no longer available.' };
+      if (notify && accepted.created) {
         try { await notify(accepted); } catch (error) {
           console.error(JSON.stringify({ event: 'new_lead_notification_failed', reason: error instanceof Error ? error.name : 'unknown' }));
         }
       }
-      return { success: true as const, subdomain: saved.subdomain, lead: saved.lead, conversationToken };
+      return { success: true as const, subdomain: accepted.subdomain, lead: accepted.lead, conversationToken: accepted.conversationToken };
     }
   };
 }

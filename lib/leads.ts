@@ -3,13 +3,13 @@ import { profiles } from './profiles';
 import { redis } from './redis';
 import { createLeadIntake } from './lead-intake';
 import { sendNewLeadNotification } from './email';
-import { createLeadConversation } from './conversations';
+import { persistPostgresLeadWithConversation } from './postgres-lead-intake';
 import { createHash } from 'node:crypto';
 
 const maySubmit = async (key: string) =>
   Boolean(await redis.set(`lead-rate:${key}`, Date.now(), { nx: true, ex: 30 }));
 
-export const leadIntake = createLeadIntake(profiles, maySubmit, sendNewLeadNotification, createLeadConversation);
+export const leadIntake = createLeadIntake(profiles, maySubmit, sendNewLeadNotification, persistPostgresLeadWithConversation);
 
 async function requestAddress() {
   const requestHeaders = await headers();

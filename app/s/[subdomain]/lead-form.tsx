@@ -1,12 +1,18 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { createLeadAction, type LeadSubmissionState } from '@/app/actions';
 import { LeadSubmissionConfirmation } from './lead-submission-confirmation';
 import { DateRangePicker } from '@/components/date-range-picker';
 
-export function LeadForm({ subdomain, sitterName, services = [] }: { subdomain: string; sitterName: string; services?: string[] }) {
+export function LeadForm({ subdomain, sitterName, services = [], submissionToken, onConversationStarted }: { subdomain: string; sitterName: string; services?: string[]; submissionToken: string; onConversationStarted?: (conversationToken: string) => void }) {
   const [state, action, pending] = useActionState<LeadSubmissionState, FormData>(createLeadAction, {});
+  const conversationToken = state.success ? state.conversationToken : undefined;
+
+  useEffect(() => {
+    if (conversationToken) onConversationStarted?.(conversationToken);
+  }, [conversationToken, onConversationStarted]);
+
   return <div className="flex min-h-[31rem] flex-col">
     {state.success ? <LeadSubmissionConfirmation sitterName={sitterName} state={state} /> : <>
       <h2 className="text-2xl font-semibold tracking-tight">Ask about availability</h2>
@@ -14,6 +20,7 @@ export function LeadForm({ subdomain, sitterName, services = [] }: { subdomain: 
       <form action={action} className="mt-5 space-y-3">
     <input type="hidden" name="subdomain" value={subdomain} />
     <input type="hidden" name="source" value="sitterfolio_site" />
+    <input type="hidden" name="submissionToken" value={submissionToken} />
     <label className="block"><span className="mb-1 block text-xs font-medium">Your name</span><input name="name" required autoComplete="name" className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label>
     <label className="block"><span className="mb-1 block text-xs font-medium">Email</span><input name="email" type="email" required autoComplete="email" className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" /></label>
     <label className="block"><span className="mb-1 block text-xs font-medium">Service needed</span><input name="service" list={services.length ? `services-${subdomain}` : undefined} placeholder={services[0] || 'Overnight care, walks, drop-ins...'} className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40" />{services.length > 0 && <datalist id={`services-${subdomain}`}>{services.map((service) => <option key={service} value={service} />)}</datalist>}</label>

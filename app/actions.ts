@@ -16,6 +16,7 @@ import { sendCustomerConversationMessage, sendSitterConversationMessage } from '
 import { sendConversationMessageNotification } from '@/lib/email';
 import { addOwnedClientPet, createClientHouseholdFromOwnedLead, updateOwnedClientHousehold, updateOwnedClientPet } from '@/lib/client-households';
 import { createOwnedBooking, transitionOwnedBooking } from '@/lib/bookings';
+import { submitAuthenticatedLead } from '@/lib/authenticated-lead-intake';
 
 async function requireUser(callbackURL = '/admin') {
   const session = await getSession();
@@ -134,9 +135,41 @@ export async function createLeadAction(
       petCount: formData.get('petCount'),
       postalCode: formData.get('postalCode'),
       source: formData.get('source'),
-      campaign: formData.get('campaign')
+      campaign: formData.get('campaign'),
+      submissionToken: formData.get('submissionToken')
     },
     await leadRateLimitKey(subdomain)
+  );
+  if (!result.success) return { error: result.error };
+
+  revalidatePath(`/s/${result.subdomain}`);
+  revalidatePath('/admin');
+  return {
+    success: true,
+    conversationToken: result.conversationToken,
+    initialMessage: result.lead.message,
+    serviceRequested: result.lead.serviceRequested,
+    requestedStartDate: result.lead.requestedStartDate,
+    requestedEndDate: result.lead.requestedEndDate,
+    createdAt: result.lead.createdAt
+  };
+}
+
+export async function createAuthenticatedLeadAction(
+  _prevState: LeadSubmissionState,
+  formData: FormData
+): Promise<LeadSubmissionState> {
+  const subdomain = String(formData.get('subdomain') || '');
+  const session = await getSession();
+  const result = await submitAuthenticatedLead(
+    session?.user ?? null,
+    {
+      subdomain,
+      details: formData.get('details'),
+      submissionToken: formData.get('submissionToken')
+    },
+    await leadRateLimitKey(subdomain),
+    leadIntake.submit
   );
   if (!result.success) return { error: result.error };
 

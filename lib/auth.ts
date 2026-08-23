@@ -2,16 +2,9 @@ import { betterAuth } from 'better-auth';
 import { nextCookies } from 'better-auth/next-js';
 import { pool } from './db';
 import { sendPasswordResetEmail } from './email';
+import { getTrustedOrigins } from './auth-origins';
 
-const trustedOrigins = [
-  'https://sitterfolio.com',
-  'https://www.sitterfolio.com',
-  'http://localhost:3000',
-  process.env.BETTER_AUTH_URL,
-  ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',') ?? [])
-]
-  .map((origin) => origin?.trim())
-  .filter((origin): origin is string => Boolean(origin));
+const trustedOrigins = getTrustedOrigins();
 
 const baseURL =
   process.env.BETTER_AUTH_URL ||

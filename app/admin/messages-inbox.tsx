@@ -7,6 +7,7 @@ import { ConversationMessages, ConversationReplyForm } from '@/components/conver
 import type { ConversationMessage } from '@/lib/conversations';
 import type { OwnedLead } from '@/lib/profile-ownership';
 import { formatInquiryDateRange } from './lead-inbox-model';
+import { canReopenLead } from '@/lib/domain/leads';
 
 function fullConversation(lead: OwnedLead, messages: ConversationMessage[]) {
   return [{ id: `lead-${lead.id}`, sender: 'CUSTOMER' as const, body: lead.message || lead.serviceRequested || 'Availability request', createdAt: lead.createdAt }, ...messages];
@@ -47,7 +48,7 @@ export function MessagesInbox({ leads, conversationMessages }: { leads: OwnedLea
     {selectedLead && <section className="flex min-w-0 flex-col">
       <header className="border-b border-border px-5 py-4"><div className="flex items-baseline justify-between gap-4"><div className="min-w-0"><h2 className="truncate font-semibold">{selectedLead.name}</h2><p className="truncate text-xs text-muted-foreground">{selectedLead.email}</p></div><span className="shrink-0 text-xs text-muted-foreground">{selectedLead.siteName}</span></div><p className="mt-2 text-xs text-muted-foreground">{selectedLead.serviceRequested || 'Pet care'} · {formatInquiryDateRange(selectedLead)}</p></header>
       <div className="flex-1 overflow-y-auto bg-muted/20 p-5"><ConversationMessages messages={fullConversation(selectedLead, conversationMessages[selectedLead.id])} /></div>
-      <div className="border-t border-border bg-card px-5 pb-5"><ConversationReplyForm participant="SITTER" leadId={selectedLead.id} />{isPending && <p className="mt-2 text-xs text-muted-foreground" role="status">Marking conversation read...</p>}</div>
+      <div className="border-t border-border bg-card px-5 pb-5">{canReopenLead(selectedLead.status) ? <p className="pt-4 text-xs text-muted-foreground">This conversation is closed. Reopen it from Leads before replying.</p> : <ConversationReplyForm participant="SITTER" leadId={selectedLead.id} />}{isPending && <p className="mt-2 text-xs text-muted-foreground" role="status">Marking conversation read...</p>}</div>
     </section>}
   </div>;
 }

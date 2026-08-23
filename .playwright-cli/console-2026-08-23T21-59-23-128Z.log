@@ -41,3 +41,73 @@
 [ 1839611ms] [LOG] [Fast Refresh] done in 107ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [ 1841966ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [ 1841979ms] [LOG] [Fast Refresh] done in 114ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 1873811ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 1873864ms] [LOG] [Fast Refresh] done in 156ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 1969990ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 1970752ms] [LOG] [Fast Refresh] done in 743ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 1970859ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 1971295ms] [LOG] [Fast Refresh] done in 538ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 1988704ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 1988745ms] [LOG] [Fast Refresh] done in 142ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2021905ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2022499ms] [LOG] [Fast Refresh] done in 695ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2022753ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2023196ms] [LOG] [Fast Refresh] done in 543ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2051969ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2052123ms] [LOG] [Fast Refresh] done in 255ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2052227ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2052397ms] [LOG] [Fast Refresh] done in 270ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2052522ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2053094ms] [LOG] [Fast Refresh] done in 673ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2053341ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2053868ms] [LOG] [Fast Refresh] done in 629ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2054964ms] [ERROR] A component is changing an uncontrolled input to be controlled. This is likely caused by the value changing from undefined to a defined value, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://react.dev/link/controlled-components @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:3318
+[ 2055105ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2055226ms] [LOG] [Fast Refresh] done in 236ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2102677ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2103015ms] [LOG] [Fast Refresh] done in 330ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2103122ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2103785ms] [LOG] [Fast Refresh] done in 765ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2104138ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2104453ms] [LOG] [Fast Refresh] done in 416ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2112138ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2112198ms] [LOG] [Fast Refresh] done in 66ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2117453ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2117458ms] [LOG] [Fast Refresh] done in 107ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2140653ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2140934ms] [LOG] [Fast Refresh] done in 386ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2147363ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2147366ms] [LOG] [Fast Refresh] done in 104ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2165536ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2165590ms] [LOG] [Fast Refresh] done in 66ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2425670ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2425771ms] [LOG] [Fast Refresh] done in 201ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2470452ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2470620ms] [LOG] [Fast Refresh] done in 270ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2470969ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2471063ms] [LOG] [Fast Refresh] done in 196ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2471165ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2471282ms] [LOG] [Fast Refresh] done in 218ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2703974ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2704102ms] [LOG] [Fast Refresh] done in 228ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2922259ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2922302ms] [LOG] [Fast Refresh] done in 149ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2970234ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2970239ms] [LOG] [Fast Refresh] done in 106ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2975568ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2975712ms] [LOG] [Fast Refresh] done in 247ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2985750ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2986198ms] [LOG] [Fast Refresh] done in 497ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2986332ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2986753ms] [LOG] [Fast Refresh] done in 524ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2988038ms] ReferenceError: NoiseTexture is not defined
+    at SubdomainPage (about://React/Server/file:///Users/drewsepeczi/platforms/.next/dev/server/chunks/ssr/%5Broot-of-the-server%5D__02mmqb_._.js?375:532:472)
+    at resolveErrorDev (http://drew.localhost:3000/_next/static/chunks/1154_next_dist_compiled_react-server-dom-turbopack_06cd8qh._.js:1919:150)
+    at processFullStringRow (http://drew.localhost:3000/_next/static/chunks/1154_next_dist_compiled_react-server-dom-turbopack_06cd8qh._.js:2434:29)
+    at processFullBinaryRow (http://drew.localhost:3000/_next/static/chunks/1154_next_dist_compiled_react-server-dom-turbopack_06cd8qh._.js:2393:9)
+    at processBinaryChunk (http://drew.localhost:3000/_next/static/chunks/1154_next_dist_compiled_react-server-dom-turbopack_06cd8qh._.js:2502:221)
+    at progress (http://drew.localhost:3000/_next/static/chunks/1154_next_dist_compiled_react-server-dom-turbopack_06cd8qh._.js:2689:13)
+[ 2999698ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 2999728ms] [LOG] [Fast Refresh] done in 132ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3004032ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3004084ms] [LOG] [Fast Refresh] done in 153ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
