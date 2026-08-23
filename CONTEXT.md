@@ -6,7 +6,7 @@ This document onboards coding agents to the current repository. Treat source cod
 
 Sitterfolio gives an independent pet sitter a public website at an address such as `happy-tails.sitterfolio.com`. A sitter creates a profile, publishes services and contact details, receives availability inquiries, reviews and replies to them in a private dashboard, and can turn a qualified inquiry into a payment request. It is a direct-business presence and lead-to-revenue tool, not a marketplace or scheduling system.
 
-Use these domain terms: a **Site** is the public business profile; a **Profile** is its sitter identity and care details; a **Business** is the operating/legal pet-care business owned by one authenticated **User**; a **Lead** is an availability request; a **Conversation** is the one-to-one message history attached to a Lead, beginning with the original request; a **Payment request** is a customer-facing fixed-cent amount associated with a Lead; **Generated revenue** is paid customer volume net of refunds, not Sitterfolio's application-fee revenue. Avoid `tenant`, `contact record`, `invoice`, and `booking` for these concepts.
+Use these domain terms: a **Site** is the public business profile; a **Profile** is its sitter identity and care details; a **Business** is the operating/legal pet-care business owned by one authenticated **User**; a **Lead** is an availability request; a **Conversation** is the one-to-one message history attached to a Lead, beginning with the original request; a **Client household** is the reusable owner/household record promoted from a qualified Lead; a **Pet profile** is reusable care information under a Client household; a **Payment request** is a customer-facing fixed-cent amount associated with a Lead; **Generated revenue** is paid customer volume net of refunds, not Sitterfolio's application-fee revenue. Avoid `tenant`, `contact record`, `invoice`, and `booking` for these concepts.
 
 ## User flow
 
@@ -17,6 +17,7 @@ Use these domain terms: a **Site** is the public business profile; a **Profile**
 5. The dashboard inbox lists Leads across the owner's Sites. Pet owners return to a Conversation through a private account-free link; authenticated sitters reply from the owning Business dashboard. Valid lifecycle transitions are `NEW → QUALIFIED → QUOTED → BOOKED`, with decline/spam terminal paths where allowed.
 6. A qualified or quoted Lead can receive one open Payment request after Stripe connected-account readiness is confirmed.
 7. `/pay/[token]` creates or reuses an idempotent Stripe Checkout Session. A Stripe-ready public Site also lets a pet owner choose an amount for a direct public payment without the sitter creating a Product or Payment Link. Signed Stripe webhooks reconcile payment, refund, and dispute facts into PostgreSQL; only a successful Lead-attributed payment moves a quoted Lead to `BOOKED`.
+8. A sitter can promote a qualified, quoted, or booked Lead into one reusable Client household with draft Pet profiles. This does not create or schedule a Booking.
 
 Sitterfolio does not choose a sitter, schedule care, confirm availability, provide general-purpose social chat, send autonomous campaigns, or replace the sitter's client relationship. Customer-entered public Site payments are separate from the internal Lead-attributed Payment request flow.
 
@@ -35,9 +36,10 @@ PostgreSQL is the durable source of truth for Better Auth, migrated Sites, Leads
 ```text
 User → Business → Site → Lead → Payment request
               └── Connected Stripe account
+              └── Client household → Pet profile
 ```
 
-`migrations/auth.sql` creates Better Auth tables. `migrations/2026-08-21-add-auth-session.sql` adds the session change. `migrations/2026-08-21-inquiry-to-revenue.sql` creates the Business/Site/Lead/Lead-event/Payment-request/Stripe-webhook tables and constraints. `migrations/2026-08-23-stripe-checkout-retry.sql` adds the durable Checkout retry generation used after asynchronous payment failure. There is no ORM migration runner; these are manually applied SQL migrations.
+`migrations/auth.sql` creates Better Auth tables. `migrations/2026-08-21-add-auth-session.sql` adds the session change. `migrations/2026-08-21-inquiry-to-revenue.sql` creates the Business/Site/Lead/Lead-event/Payment-request/Stripe-webhook tables and constraints. `migrations/2026-08-23-stripe-checkout-retry.sql` adds the durable Checkout retry generation used after asynchronous payment failure. `migrations/2026-08-23-client-households.sql` adds reusable Client-household and Pet-profile records. There is no ORM migration runner; these are manually applied SQL migrations.
 
 `lib/profiles.ts` exposes the ownership service. `lib/profile-ownership.ts` handles normalization and owner checks. `lib/postgres-profile-repository.ts` is active and joins through Business ownership. `lib/redis-profile-repository.ts` is legacy compatibility only. If a record is absent in PostgreSQL, the PostgreSQL repository can lazily read its Redis record and migrate it. Redis remains for compatibility, rate limits, and caches; new financial state must not be written there. Do not delete legacy Redis data casually.
 

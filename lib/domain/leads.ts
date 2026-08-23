@@ -13,6 +13,7 @@ export function canTransitionLead(from: LeadStatus, to: LeadStatus) {
   return from === to || transitions[from].includes(to);
 }
 export const canRequestPayment = (status: LeadStatus | undefined) => status === 'QUALIFIED' || status === 'QUOTED';
+export const canSaveClientFromLead = (status: LeadStatus | undefined) => status === 'QUALIFIED' || status === 'QUOTED' || status === 'BOOKED';
 
 export const leadEventForStatus = (status: LeadStatus) => status === 'QUALIFIED' ? 'QUALIFIED' : status === 'DECLINED' ? 'DECLINED' : status === 'SPAM' ? 'SPAM' : null;
 

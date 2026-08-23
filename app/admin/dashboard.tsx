@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Stepper, StepperDescription, StepperIndicator, StepperItem, StepperList, StepperSeparator, StepperTitle, StepperTrigger } from '@/components/ui/stepper';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, ArrowRight, ChartNoAxesCombined, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, LayoutDashboard, Loader2, MessageCircle, RotateCw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChartNoAxesCombined, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, LayoutDashboard, Loader2, MessageCircle, RotateCw, Users } from 'lucide-react';
 import Link from 'next/link';
 import { deleteSubdomainAction, refreshStripeStatusAction, startStripeOnboardingAction, type RefreshStripeStatusState } from '@/app/actions';
 import type { ConnectedAccountStatus } from '@/lib/connected-accounts';
@@ -21,6 +21,8 @@ import { ServiceAreaField, ServicesField, SuggestionField } from './profile-sele
 import { LeadInbox } from './lead-inbox';
 import { BusinessPulse, type RevenueSnapshot } from './business-pulse';
 import { MessagesInbox } from './messages-inbox';
+import { ClientHouseholds } from './client-households';
+import type { ClientHousehold } from '@/lib/client-households';
 
 type SiteProfile = {
   subdomain: string;
@@ -400,7 +402,7 @@ function StripeSetup({ businesses, stripeReturn }: { businesses: PaymentSetup[];
   );
 }
 
-export function AdminDashboard({ sites, leads, conversationMessages, revenue, paymentSetup, stripeReturn }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; conversationMessages: Record<string, import('@/lib/conversations').ConversationMessage[]>; revenue: RevenueSnapshot; paymentSetup: PaymentSetup[]; stripeReturn?: string }) {
+export function AdminDashboard({ sites, leads, conversationMessages, clientHouseholds, revenue, paymentSetup, stripeReturn }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; conversationMessages: Record<string, import('@/lib/conversations').ConversationMessage[]>; clientHouseholds: ClientHousehold[]; revenue: RevenueSnapshot; paymentSetup: PaymentSetup[]; stripeReturn?: string }) {
   const [state, action, isPending] = useActionState<DeleteState, FormData>(
     deleteSubdomainAction,
     {}
@@ -417,9 +419,10 @@ export function AdminDashboard({ sites, leads, conversationMessages, revenue, pa
           <TabsTrigger value="dashboard"><LayoutDashboard className="size-4" aria-hidden="true" />Dashboard</TabsTrigger>
           <TabsTrigger value="stats"><ChartNoAxesCombined className="size-4" aria-hidden="true" />Stats</TabsTrigger>
           <TabsTrigger value="messages"><MessageCircle className="size-4" aria-hidden="true" />Messages</TabsTrigger>
+          <TabsTrigger value="clients"><Users className="size-4" aria-hidden="true" />Clients</TabsTrigger>
         </TabsList>
         <TabsContent value="dashboard" forceMount className="space-y-12 pt-8 data-[state=inactive]:hidden">
-          <section className="space-y-4"><div><h2 className="text-xl font-semibold">Requests</h2><p className="mt-1 text-sm text-muted-foreground">Read and reply to pet owners in one place.</p></div><LeadInbox sites={sites} leads={leads} conversationMessages={conversationMessages} /></section>
+          <section className="space-y-4"><div><h2 className="text-xl font-semibold">Requests</h2><p className="mt-1 text-sm text-muted-foreground">Read and reply to pet owners in one place.</p></div><LeadInbox sites={sites} leads={leads} conversationMessages={conversationMessages} clientLeadIds={clientHouseholds.map((household) => household.sourceLeadId)} /></section>
           <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><SiteGrid sites={sites} action={action} isPending={isPending} /></section>
           {paymentSetup.some((business) => business.status !== 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
           {sites[0] && <ProfileEditor site={sites[0]} />}
@@ -431,6 +434,10 @@ export function AdminDashboard({ sites, leads, conversationMessages, revenue, pa
         <TabsContent value="messages" forceMount className="pt-8 data-[state=inactive]:hidden">
           <div className="mb-5"><h2 className="text-xl font-semibold">Messages</h2><p className="mt-1 text-sm text-muted-foreground">Continue private conversations with pet owners across all your sites.</p></div>
           <MessagesInbox leads={leads} conversationMessages={conversationMessages} />
+        </TabsContent>
+        <TabsContent value="clients" forceMount className="pt-8 data-[state=inactive]:hidden">
+          <div className="mb-5"><h2 className="text-xl font-semibold">Clients and pets</h2><p className="mt-1 text-sm text-muted-foreground">Reusable household and pet details saved from qualified inquiries.</p></div>
+          <ClientHouseholds households={clientHouseholds} />
         </TabsContent>
       </Tabs>
 

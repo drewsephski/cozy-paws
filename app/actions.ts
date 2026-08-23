@@ -13,6 +13,7 @@ import { createOrContinueOnboarding } from '@/lib/connected-accounts';
 import { transitionOwnedLead } from '@/lib/lead-management';
 import { sendCustomerConversationMessage, sendSitterConversationMessage } from '@/lib/conversations';
 import { sendConversationMessageNotification } from '@/lib/email';
+import { createClientHouseholdFromOwnedLead } from '@/lib/client-households';
 
 async function requireUser(callbackURL = '/admin') {
   const session = await getSession();
@@ -242,6 +243,18 @@ export async function updateLeadStatusAction(formData: FormData): Promise<void> 
   const leadId = String(formData.get('leadId') || '');
   await transitionOwnedLead(user.id, leadId, formData.get('status'));
   revalidatePath('/admin');
+}
+
+export type SaveClientState = { success?: string; error?: string; savedAt?: number };
+export async function saveClientFromLeadAction(_state: SaveClientState, formData: FormData): Promise<SaveClientState> {
+  const user = await requireUser();
+  try {
+    const household = await createClientHouseholdFromOwnedLead(user.id, String(formData.get('leadId') || ''));
+    revalidatePath('/admin');
+    return { success: `${household.name} is now saved as a client.`, savedAt: Date.now() };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : 'Unable to save this client.' };
+  }
 }
 
 export type PaymentRequestState = { error?: string; paymentUrl?: string; customerEmail?: string; delivered?: boolean };

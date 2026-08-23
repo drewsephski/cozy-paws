@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canTransitionLead, parseLeadSubmission } from './leads';
+import { canSaveClientFromLead, canTransitionLead, parseLeadSubmission } from './leads';
 
 describe('lead intake', () => {
   it('accepts qualified inquiry fields and preserves attribution', () => {
@@ -22,6 +22,14 @@ describe('lead intake', () => {
 });
 
 describe('lead lifecycle', () => {
+  it('allows reusable clients from active care relationships only', () => {
+    expect(canSaveClientFromLead('QUALIFIED')).toBe(true);
+    expect(canSaveClientFromLead('QUOTED')).toBe(true);
+    expect(canSaveClientFromLead('BOOKED')).toBe(true);
+    expect(canSaveClientFromLead('NEW')).toBe(false);
+    expect(canSaveClientFromLead('DECLINED')).toBe(false);
+  });
+
   it('allows the deliberate commercial transitions only', () => {
     expect(canTransitionLead('NEW', 'QUALIFIED')).toBe(true);
     expect(canTransitionLead('QUALIFIED', 'QUOTED')).toBe(true);
