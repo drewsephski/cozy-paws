@@ -42,6 +42,8 @@ describe('payment request email', () => {
     expect((sent as { text: string }).text).toContain('Overnight care');
     expect((sent as { html: string }).html).toContain('Payment request for $240.00');
     expect((sent as { html: string }).html).toContain('Pay $240.00');
+    expect((sent as { html: string }).html).toContain('href="http://localhost:3000/pay/public-token"');
+    expect((sent as { html: string }).html).toContain('mark this message as not spam first');
     expect((sent as { html: string }).html).toContain('Please call on arrival');
   });
 });

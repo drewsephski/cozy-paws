@@ -189,7 +189,7 @@ export async function sendPaymentRequestNotification(input: { paymentRequestId: 
       details: [{ label: 'Service', value: input.description }, { label: 'Total', value: amount }],
       message: input.customerNote ? { label: 'Note from your sitter', body: input.customerNote } : undefined,
       action: { label: `Pay ${amount}`, url: paymentUrl },
-      notice: 'Payment is processed securely through Stripe. Reply to this email to contact your sitter.',
+      notice: 'Payment is processed securely through Stripe. If your email provider disables the payment link, mark this message as not spam first. Reply to this email to contact your sitter.',
       footer: 'Sent by Sitterfolio'
     }),
     text: [
@@ -197,7 +197,7 @@ export async function sendPaymentRequestNotification(input: { paymentRequestId: 
       `Service: ${input.description}`, `Total: ${amount}`,
       ...(input.customerNote ? [`Note from your sitter: ${input.customerNote}`] : []), '',
       `Pay securely through Stripe: ${paymentUrl}`, '',
-      'Your payment is processed securely through Stripe. Reply to this email to contact your sitter.'
+      'Your payment is processed securely through Stripe. If your email provider disables the payment link, mark this message as not spam first. Reply to this email to contact your sitter.'
     ].join('\n')
   });
 }

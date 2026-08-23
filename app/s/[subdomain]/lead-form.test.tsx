@@ -15,6 +15,8 @@ describe('LeadSubmissionConfirmation', () => {
     expect(html).toContain('role="status"');
     expect(html).toContain('Your conversation with Drew has started.');
     expect(html).toContain('No account needed.');
+    expect(html).toContain('Check your Spam or Junk folder');
+    expect(html).toContain('Mark it as not spam so links in the message work.');
     expect(html).toContain('/conversation/private-token');
   });
 });

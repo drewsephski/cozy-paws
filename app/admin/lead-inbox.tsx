@@ -6,7 +6,7 @@ import { useActionState } from 'react';
 import type { OwnedLead } from '@/lib/profile-ownership';
 import { canRequestPayment } from '@/lib/domain/leads';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronDown, Copy } from 'lucide-react';
 import { ConversationMessages, ConversationReplyForm } from '@/components/conversation-thread';
 import type { ConversationMessage } from '@/lib/conversations';
 import { buildSiteFilterOptions, formatInquiryDateRange, formatReceivedDate, type InboxSite } from './lead-inbox-model';
@@ -15,7 +15,20 @@ type InboxLead = OwnedLead;
 
 function PaymentForm({ lead }: { lead: InboxLead }) {
   const [state, action, pending] = useActionState<PaymentRequestState, FormData>(createPaymentRequestAction, {});
-  if (state.paymentUrl) return <div className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm dark:bg-emerald-950/40"><p className="font-medium">{state.delivered ? `Payment request sent to ${state.customerEmail}` : 'Payment request created, but the email could not be sent.'}</p>{!state.delivered && <p className="mt-1">Copy the payment link and send it manually.</p>}<button type="button" className="mt-2 rounded-md border px-3 py-1.5 font-medium" onClick={() => void navigator.clipboard.writeText(state.paymentUrl!)}>Copy payment link</button></div>;
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle');
+
+  async function copyPaymentLink() {
+    if (!state.paymentUrl) return;
+
+    try {
+      await navigator.clipboard.writeText(state.paymentUrl);
+      setCopyStatus('copied');
+    } catch {
+      setCopyStatus('error');
+    }
+  }
+
+  if (state.paymentUrl) return <div className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm dark:bg-emerald-950/40"><p className="font-medium">{state.delivered ? `Payment request sent to ${state.customerEmail}` : 'Payment request created, but the email could not be sent.'}</p>{state.delivered ? <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-300">Ask the pet owner to check Spam or Junk if it isn&apos;t in their inbox, then mark it as not spam so the payment link works.</p> : <p className="mt-1">Copy the payment link and send it manually.</p>}<button type="button" className="mt-2 inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 font-medium transition-colors hover:bg-emerald-100 disabled:cursor-default dark:hover:bg-emerald-900/50" onClick={() => void copyPaymentLink()} disabled={copyStatus === 'copied'}>{copyStatus === 'copied' ? <Check className="size-4" aria-hidden="true" /> : <Copy className="size-4" aria-hidden="true" />}{copyStatus === 'copied' ? 'Copied' : 'Copy payment link'}</button><div className="mt-1 min-h-5" aria-live="polite">{copyStatus === 'copied' && <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300">Payment link copied. Paste it anywhere.</p>}{copyStatus === 'error' && <p className="text-xs text-destructive">We couldn&apos;t copy the link. Check your browser&apos;s clipboard permission and try again.</p>}</div></div>;
   return <form action={action} className="mt-4 grid gap-3 rounded-lg border border-border p-3 sm:grid-cols-2"><input type="hidden" name="leadId" value={lead.id} /><label><span className="mb-1 block text-xs font-medium">Total amount</span><input name="amount" required inputMode="decimal" placeholder="240.00" className="h-10 w-full rounded-lg border border-input bg-background px-3" /></label><label><span className="mb-1 block text-xs font-medium">Service</span><input name="description" required defaultValue={lead.serviceRequested || 'Pet care'} className="h-10 w-full rounded-lg border border-input bg-background px-3" /></label><label className="sm:col-span-2"><span className="mb-1 block text-xs font-medium">Customer note (optional)</span><input name="note" className="h-10 w-full rounded-lg border border-input bg-background px-3" /></label>{state.error && <p className="text-destructive sm:col-span-2">{state.error}</p>}<button disabled={pending} className="h-10 rounded-lg bg-primary px-4 font-medium text-primary-foreground sm:col-span-2">{pending ? 'Sending...' : 'Send payment request'}</button></form>;
 }
 
