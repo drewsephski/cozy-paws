@@ -16,6 +16,8 @@ describe('PublicPaymentSection', () => {
     expect(html).toContain('name="amount"');
     expect(html).toContain('action="/api/s/happy-tails/payments/checkout"');
     expect(html).toContain('Choose the amount');
+    expect(html).toContain('Continue to Stripe');
+    expect(html).toContain('type="submit"');
   });
 
   it('explains when Stripe Checkout could not be opened', () => {
