@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState, useEffect, useRef, useState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, Loader2, RotateCw } from 'lucide-react';
@@ -290,6 +291,13 @@ const paymentSetupContent = {
   unavailable: { title: 'Status could not be refreshed', detail: 'Your Stripe details are safe. Try refreshing this page in a moment.', button: '', icon: RotateCw, tone: 'text-muted-foreground bg-muted' },
 } as const;
 
+function StripeOnboardingButton({ label }: { label: string }) {
+  const { pending } = useFormStatus();
+  return <Button type="submit" size="sm" disabled={pending} aria-disabled={pending}>
+    {pending ? <><Loader2 className="animate-spin" aria-hidden="true" />Opening Stripe…</> : label}
+  </Button>;
+}
+
 function StripeBusinessStatus({ business }: { business: PaymentSetup }) {
   const initialState: RefreshStripeStatusState = { status: business.status, ready: business.ready };
   const [refreshState, refreshAction, isRefreshing] = useActionState(refreshStripeStatusAction, initialState);
@@ -312,7 +320,7 @@ function StripeBusinessStatus({ business }: { business: PaymentSetup }) {
       </div>
     </div>
     <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end">
-      {content.button && <form action={startStripeOnboardingAction}><input type="hidden" name="businessId" value={business.businessId} /><Button type="submit" size="sm">{content.button}</Button></form>}
+      {content.button && <form action={startStripeOnboardingAction}><input type="hidden" name="businessId" value={business.businessId} /><StripeOnboardingButton label={content.button} /></form>}
       {canManage && <Button asChild size="sm" variant="outline"><a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer">Manage in Stripe <ExternalLink aria-hidden="true" /></a></Button>}
       {canRefresh && <form action={refreshAction}><input type="hidden" name="businessId" value={business.businessId} /><Button type="submit" size="sm" variant="outline" disabled={isRefreshing}>{isRefreshing ? <><Loader2 className="animate-spin" aria-hidden="true" />Checking…</> : <><RotateCw aria-hidden="true" />Refresh status</>}</Button></form>}
     </div>
