@@ -178,6 +178,60 @@
 .landing-rule { border-color: var(--color-landing-rule); }
 .landing-accent-soft { background: var(--color-landing-accent-soft); }
 
+.landing-step-card {
+  transition: background-color 240ms var(--ease-out);
+}
+
+.landing-step-noise {
+  opacity: 0;
+  transition: opacity 280ms var(--ease-out);
+}
+
+.landing-faq-trigger {
+  align-items: center;
+  display: flex;
+  font-size: 1.125rem;
+  font-weight: 600;
+  gap: 1.5rem;
+  justify-content: space-between;
+  padding-block: 1.75rem;
+  text-align: left;
+  width: 100%;
+}
+
+.landing-faq-trigger:focus-visible {
+  border-radius: var(--radius-control);
+  outline: 3px solid var(--color-landing-focus);
+  outline-offset: 4px;
+}
+
+.landing-faq-icon {
+  align-items: center;
+  background: var(--color-landing-accent-soft);
+  border-radius: 999px;
+  color: var(--color-landing-accent-strong);
+  display: inline-flex;
+  flex: none;
+  justify-content: center;
+  height: 2rem;
+  transition: transform 320ms var(--ease-out), background-color 200ms var(--ease-out);
+  width: 2rem;
+}
+
+.landing-faq-trigger[aria-expanded='true'] .landing-faq-icon {
+  transform: rotate(180deg);
+}
+
+.landing-faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 360ms var(--ease-out), opacity 240ms var(--ease-out);
+}
+
+.landing-faq-answer > div { overflow: hidden; }
+.landing-faq-answer[data-open='true'] { grid-template-rows: 1fr; opacity: 1; }
+
 .landing-cta,
 .landing-secondary-cta {
   align-items: center;
@@ -210,6 +264,13 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .landing-step-card:hover { background: var(--color-landing-paper-raised); }
+  .landing-step-card:hover .landing-step-noise { opacity: 0.055; }
+  .dark .landing-step-card:hover .landing-step-noise { opacity: 0.09; }
+  .landing-faq-trigger:hover .landing-faq-icon {
+    background: var(--color-landing-accent);
+    color: var(--color-landing-dark);
+  }
   .landing-cta:hover,
   .landing-secondary-cta:hover { transform: translateY(-2px); }
   .landing-cta:hover { background: var(--color-landing-accent-strong); color: var(--color-landing-on-dark); }
@@ -224,6 +285,10 @@
 .landing-secondary-cta:disabled { cursor: not-allowed; opacity: 0.55; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
+  .landing-step-card,
+  .landing-step-noise,
+  .landing-faq-answer,
+  .landing-faq-icon { transition-duration: 0.01ms; }
   .landing-cta,
   .landing-secondary-cta { transition-duration: var(--dur-fast); transition-property: opacity, background-color, border-color; }
 }

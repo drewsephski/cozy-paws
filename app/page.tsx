@@ -5,6 +5,7 @@ import { SiteHeader } from '@/components/site-header';
 import { getSession } from '@/lib/session';
 import { NoiseTexture } from '@/components/ui/noise-texture';
 import { getAppOrigin } from '@/lib/app-url';
+import { LandingFaq } from '@/components/landing-faq';
 
 export const metadata = {
   title: 'Pet Sitter Website Builder',
@@ -49,7 +50,7 @@ export default async function HomePage() {
           <div className="relative mx-auto grid min-h-[calc(100svh-1rem)] w-full max-w-6xl min-w-0 items-center gap-12 px-5 pb-16 pt-28 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,.95fr)] lg:px-8 lg:pb-24 lg:pt-32">
             <div className="min-w-0">
               <p className="mb-6 flex items-center text-sm font-medium landing-muted"><PawPrint aria-hidden="true" className="mr-2 size-4 landing-accent" strokeWidth={2.25} />A simple website for your pet-sitting business</p>
-              <h1 className="max-w-xl text-5xl font-bold tracking-[-.04em] sm:text-6xl lg:text-7xl">Turn &quot;Are you available?&quot; into an organized request.</h1>
+              <h1 className="max-w-xl text-5xl font-bold tracking-[-.04em] sm:text-6xl lg:text-7xl">Get the details before you say yes.</h1>
               <p className="mt-6 max-w-lg text-lg leading-8 landing-muted">Publish your services, service area, and photo on one page. Pet owners can send their dates and care details before you start the conversation.</p>
               <div className="mt-8">
                 {signedIn ? <Link href="/admin" className="landing-cta">Open dashboard<ArrowRight aria-hidden="true" className="size-4" /></Link> : <HeroStartButton />}
@@ -101,22 +102,15 @@ export default async function HomePage() {
                 [Link2, '1. Choose your address', 'Pick a memorable Sitterfolio address, then add your name, services, service area, and contact details.'],
                 [Send, '2. Share it with pet owners', 'Add the link to your social profiles, email signature, business card, or client follow-up messages.'],
                 [Inbox, '3. Review each request', 'See the requested service, dates, pets, and care notes together before you reply.']
-              ].map(([Icon, title, body]) => <article key={String(title)} className="bg-background p-7 sm:p-9"><Icon aria-hidden="true" className="size-5 landing-accent" /><h3 className="mt-8 text-xl font-semibold tracking-tight">{String(title)}</h3><p className="mt-3 leading-7 landing-muted">{String(body)}</p></article>)}
+              ].map(([Icon, title, body]) => <article key={String(title)} className="landing-step-card relative overflow-hidden bg-background p-7 sm:p-9"><NoiseTexture className="landing-step-noise" frequency={0.72} octaves={4} slope={0.18} /><div className="relative"><Icon aria-hidden="true" className="size-5 landing-accent" /><h3 className="mt-8 text-xl font-semibold tracking-tight">{String(title)}</h3><p className="mt-3 leading-7 landing-muted">{String(body)}</p></div></article>)}
             </div>
           </div>
         </section>
 
         <section className="border-b landing-rule">
-          <div className="mx-auto grid w-full max-w-6xl gap-10 px-5 py-20 lg:grid-cols-[minmax(0,.75fr)_minmax(0,1.25fr)] lg:px-8 lg:py-28">
-            <div><p className="text-sm font-medium landing-accent">Common questions</p><h2 className="mt-3 landing-section-title font-semibold">What pet sitters ask before building a site.</h2></div>
-            <div className="divide-y border-y landing-rule">
-              {[
-                ['What can I put on my pet-sitting website?', 'Your page can include your name or business name, photo, service area, services, contact details, and an availability request form.'],
-                ['Do I need to know how to design a website?', 'No. The builder asks for your business details one step at a time and turns them into a finished page.'],
-                ['How do pet owners contact me?', 'They send an availability request from your page. You receive their dates, service request, pet details, and message in your dashboard.'],
-                ['Does Sitterfolio confirm bookings for me?', 'No. You decide whether you are available and confirm care directly with the pet owner. Sitterfolio keeps the request and conversation organized.']
-              ].map(([question, answer]) => <article key={question} className="py-7"><h3 className="text-lg font-semibold">{question}</h3><p className="mt-2 max-w-2xl leading-7 landing-muted">{answer}</p></article>)}
-            </div>
+          <div className="mx-auto w-full max-w-3xl px-5 py-20 lg:px-8 lg:py-28">
+            <div className="mx-auto mb-12 max-w-2xl text-center"><p className="text-sm font-medium landing-accent">Common questions</p><h2 className="mt-3 landing-section-title font-semibold">What pet sitters ask before building a site.</h2></div>
+            <LandingFaq />
           </div>
         </section>
 
