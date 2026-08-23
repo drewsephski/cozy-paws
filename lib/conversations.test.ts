@@ -45,6 +45,15 @@ describe('Lead conversations', () => {
       expect.objectContaining({ sender: 'SITTER', body: 'Those dates work.' })
     ]);
     expect(queryMock.mock.calls[0][1]).toEqual(['valid-token']);
+    expect(queryMock.mock.calls[0][0]).toContain('c.closed_at is null');
+    expect(queryMock.mock.calls[0][0]).toContain('c.revoked_at is null');
+  });
+
+  it('rejects reads for a revoked customer bearer token', async () => {
+    queryMock.mockResolvedValueOnce({ rows: [] });
+
+    await expect(getCustomerConversation('revoked-token')).resolves.toBeNull();
+    expect(queryMock.mock.calls[0][0]).toContain('c.revoked_at is null');
   });
 
   it('rejects blank customer messages and requires a matching conversation token', async () => {
@@ -52,9 +61,20 @@ describe('Lead conversations', () => {
     expect(transactionMock).not.toHaveBeenCalled();
   });
 
+  it('locks the Lead before the Conversation and rejects a revoked customer write', async () => {
+    const client = { query: vi.fn().mockResolvedValueOnce({ rows: [] }) };
+    transactionMock.mockImplementation((work) => work(client));
+
+    await expect(sendCustomerConversationMessage('revoked-token', 'Hello')).rejects.toThrow('no longer available');
+    expect(client.query.mock.calls[0][0]).toContain('for update of l');
+    expect(client.query.mock.calls[0][0]).toContain('c.closed_at is null');
+    expect(client.query.mock.calls[0][0]).toContain('c.revoked_at is null');
+  });
+
   it('authorizes sitter replies through Business ownership', async () => {
     const client = { query: vi.fn()
-      .mockResolvedValueOnce({ rows: [{ public_token: 'customer-token', customer_email: 'sam@example.com', business_name: 'The Pet Nanny', sitter_email: 'drew@example.com' }] })
+      .mockResolvedValueOnce({ rows: [{ id: 'conversation-1', public_token: 'customer-token', customer_email: 'sam@example.com', business_name: 'The Pet Nanny', sitter_email: 'drew@example.com' }] })
+      .mockResolvedValueOnce({ rows: [{ id: 'conversation-1' }] })
       .mockResolvedValueOnce({ rows: [{ id: 'message-2' }] }) };
     transactionMock.mockImplementation((work) => work(client));
 
@@ -64,5 +84,6 @@ describe('Lead conversations', () => {
     });
     expect(client.query.mock.calls[0][0]).toContain('b.owner_user_id=$2');
     expect(client.query.mock.calls[0][1]).toEqual(['lead-1', 'owner-1']);
+    expect(client.query.mock.calls[0][0]).toContain('c.closed_at is null');
   });
 });

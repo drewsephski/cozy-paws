@@ -17,7 +17,7 @@ export function AboutSitterfolioDialog({ businessName }: { businessName: string 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button type="button" className="group flex items-center gap-2 rounded-md text-left text-sm font-semibold outline-none transition hover:text-emerald-700 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-4 dark:hover:text-emerald-300">
+        <button type="button" className="group flex min-h-11 items-center gap-2 rounded-md text-left text-sm font-semibold outline-none transition hover:text-emerald-700 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-4 dark:hover:text-emerald-300">
           <PawPrint className="size-4 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />
           <span className="max-w-52 truncate">{businessName}</span>
           <Info className="size-3.5 text-muted-foreground opacity-60 transition group-hover:opacity-100" aria-hidden="true" />

@@ -12,10 +12,10 @@ describe('PublicPaymentSection', () => {
       <PublicPaymentSection subdomain="happy-tails" enabled />
     );
 
-    expect(html).toContain('Make a payment');
+    expect(html).toContain('Already received an amount from your sitter?');
     expect(html).toContain('name="amount"');
     expect(html).toContain('action="/api/s/happy-tails/payments/checkout"');
-    expect(html).toContain('Choose the amount');
+    expect(html).toContain('Make a secure payment through Stripe');
     expect(html).toContain('Continue to Stripe');
     expect(html).toContain('type="submit"');
   });

@@ -1,10 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import {
-  createProfileOwnership
+  createProfileOwnership,
+  normalizeServices
 } from './profile-ownership';
 import { MemoryProfileRepository } from '../tests/support/memory-profile-repository';
 
 describe('profile ownership', () => {
+  it('normalizes and deduplicates service names without inventing content', () => {
+    expect(normalizeServices([' Dog walking ', 'dog   walking', 'DROP-INS', '', ' Drop-ins '])).toEqual([
+      'Dog walking',
+      'DROP-INS'
+    ]);
+  });
   it('normalizes profile identity and enforces ownership through one interface', async () => {
     const profiles = createProfileOwnership(new MemoryProfileRepository());
     const created = await profiles.create('owner-1', 'Happy Tails!', {

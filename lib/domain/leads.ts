@@ -6,7 +6,7 @@ const transitions: Record<LeadStatus, readonly LeadStatus[]> = {
   NEW: ['QUALIFIED', 'DECLINED', 'SPAM'],
   QUALIFIED: ['QUOTED', 'DECLINED', 'SPAM'],
   QUOTED: ['BOOKED', 'DECLINED'],
-  BOOKED: [], DECLINED: [], SPAM: []
+  BOOKED: [], DECLINED: ['NEW'], SPAM: ['NEW']
 };
 
 export function canTransitionLead(from: LeadStatus, to: LeadStatus) {
@@ -14,6 +14,7 @@ export function canTransitionLead(from: LeadStatus, to: LeadStatus) {
 }
 export const canRequestPayment = (status: LeadStatus | undefined) => status === 'QUALIFIED' || status === 'QUOTED';
 export const canSaveClientFromLead = (status: LeadStatus | undefined) => status === 'QUALIFIED' || status === 'QUOTED' || status === 'BOOKED';
+export const canReopenLead = (status: LeadStatus | undefined) => status === 'DECLINED' || status === 'SPAM';
 
 export const leadEventForStatus = (status: LeadStatus) => status === 'QUALIFIED' ? 'QUALIFIED' : status === 'DECLINED' ? 'DECLINED' : status === 'SPAM' ? 'SPAM' : null;
 

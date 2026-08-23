@@ -1,5 +1,5 @@
 import { isPetIconId } from './pet-icons';
-import { normalizeSubdomain, type ProfileOwnership } from './profile-ownership';
+import { normalizeServices, normalizeSubdomain, type ProfileOwnership } from './profile-ownership';
 
 export type DraftAddressInput = {
   subdomain?: unknown;
@@ -90,11 +90,7 @@ export function createSiteIntake(profiles: ProfileOwnership, now = Date.now) {
       const location = readString(draft.location).trim().slice(0, 240);
       const email = readString(draft.email).trim().slice(0, 120);
       const phone = readString(draft.phone).trim().slice(0, 40);
-      const services = readString(draft.services)
-        .split(',')
-        .map((service) => service.trim())
-        .filter(Boolean)
-        .slice(0, 8);
+      const services = normalizeServices(readString(draft.services).split(','));
 
       if (
         normalized !== subdomain ||

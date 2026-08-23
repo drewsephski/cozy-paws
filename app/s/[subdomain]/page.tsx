@@ -5,12 +5,13 @@ import { profiles } from '@/lib/profiles';
 import { protocol, rootDomain } from '@/lib/utils';
 import { LeadForm } from './lead-form';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { ArrowRight, MapPin, MessageCircle } from 'lucide-react';
+import { ArrowRight, Check, MapPin, MessageCircle } from 'lucide-react';
 import { PetIcon } from '@/components/pet-icon';
 import { AboutSitterfolioDialog } from '@/components/about-sitterfolio-dialog';
 import { PublicPaymentSection } from './public-payment-section';
 import { getPublicPaymentAvailability } from '@/lib/public-payments';
 import { NoiseTexture } from '@/components/ui/noise-texture';
+import { normalizeServices } from '@/lib/profile-ownership';
 
 export async function generateMetadata({
   params
@@ -55,15 +56,17 @@ export default async function SubdomainPage({
     notFound();
   }
   const sitterDisplayName = subdomainData.sitterName || subdomainData.businessName || `${subdomain}'s care`;
+  const businessDisplayName = subdomainData.businessName || subdomainData.sitterName || `${subdomain}'s pet care`;
+  const services = normalizeServices(subdomainData.services || []);
   const publicPaymentsEnabled = await getPublicPaymentAvailability(subdomain);
   const structuredData = {
     '@context': 'https://schema.org', '@type': 'LocalBusiness',
-    name: subdomainData.businessName || subdomainData.sitterName || `${subdomain}'s pet care`,
+    name: businessDisplayName,
     description: subdomainData.tagline || undefined,
     url: `${protocol}://${subdomain}.${rootDomain}`,
     image: subdomainData.profileImageUrl || undefined,
     areaServed: subdomainData.location || undefined,
-    knowsAbout: subdomainData.services?.length ? subdomainData.services : undefined
+    knowsAbout: services.length ? services : undefined
   };
 
   return (
@@ -76,34 +79,45 @@ export default async function SubdomainPage({
         </div>
       </header>
 
-      <main className="mx-auto grid w-full max-w-6xl flex-1 gap-12 px-6 py-14 lg:grid-cols-[1fr_390px] lg:items-center lg:py-20">
-        <section>
-          {subdomainData.profileImageUrl ? <img src={subdomainData.profileImageUrl} alt={`${subdomainData.sitterName || subdomainData.businessName || subdomain}'s profile`} className="mb-8 h-28 w-28 rounded-3xl object-cover shadow-lg ring-4 ring-card" /> : <div className="relative mb-8 grid size-28 place-items-center overflow-hidden rounded-3xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"><NoiseTexture className="opacity-15 dark:opacity-20" frequency={0.65} octaves={5} /><PetIcon value={subdomainData.emoji} className="relative size-14" fallbackClassName="text-6xl" /></div>}
-          <p className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400"><MapPin className="size-4" aria-hidden="true" />{subdomainData.location || 'Local pet care'}</p>
-          <h1 className="max-w-2xl text-5xl font-semibold tracking-tight sm:text-7xl">{sitterDisplayName}</h1>
-          {subdomainData.sitterName && subdomainData.businessName && <p className="mt-3 text-lg font-medium text-emerald-700 dark:text-emerald-400">{subdomainData.businessName}</p>}
-          <p className="mt-6 max-w-xl text-xl leading-8 text-muted-foreground">{subdomainData.tagline || 'Pet care from someone local.'}</p>
-          {(subdomainData.services || []).length > 0 && <div className="mt-10"><p className="mb-3 text-sm font-medium">Services</p><div className="flex flex-wrap gap-3">{(subdomainData.services || []).map((service) => <span key={service} className="rounded-full bg-emerald-50 px-4 py-2 text-sm text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">{service}</span>)}</div></div>}
+      <main className="mx-auto grid w-full max-w-6xl flex-1 gap-12 px-5 py-10 sm:px-6 sm:py-14 lg:grid-cols-[minmax(0,1fr)_400px] lg:items-start lg:gap-16 lg:py-20">
+        <section className="min-w-0 lg:sticky lg:top-8">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+            {subdomainData.profileImageUrl ? <img src={subdomainData.profileImageUrl} alt={`${sitterDisplayName}, pet sitter at ${businessDisplayName}`} className="size-32 shrink-0 rounded-3xl object-cover shadow-[0_12px_36px_-18px_rgba(0,0,0,.45)] sm:size-40" /> : <div className="relative grid size-28 shrink-0 place-items-center overflow-hidden rounded-3xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"><NoiseTexture className="opacity-15 dark:opacity-20" frequency={0.65} octaves={5} /><PetIcon value={subdomainData.emoji} className="relative size-14" fallbackClassName="text-6xl" /></div>}
+            <div className="min-w-0">
+              <h1 className="max-w-2xl text-4xl font-semibold tracking-[-.03em] text-balance sm:text-5xl">{businessDisplayName}</h1>
+              {subdomainData.sitterName && subdomainData.businessName && <p className="mt-2 text-base font-medium text-emerald-700 dark:text-emerald-300">Pet care by {subdomainData.sitterName}</p>}
+              <p className="mt-3 flex items-start gap-2 text-sm leading-6 text-muted-foreground"><MapPin className="mt-1 size-4 shrink-0 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />{subdomainData.location || 'Serving local pet families'}</p>
+            </div>
+          </div>
+          <p className="mt-8 max-w-2xl text-xl leading-8 text-foreground/85">{subdomainData.tagline || `${sitterDisplayName} offers thoughtful, one-to-one pet care in the local community.`}</p>
+          <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 border-y border-border py-4 text-sm text-muted-foreground">
+            <span className="inline-flex items-center gap-2"><Check className="size-4 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />Direct contact with {sitterDisplayName}</span>
+            <span className="inline-flex items-center gap-2"><Check className="size-4 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />Private inquiry and email replies</span>
+          </div>
+          <div className="mt-9">
+            <h2 className="text-lg font-semibold">Care offered</h2>
+            {services.length > 0 ? <div className="mt-4 flex flex-wrap gap-2.5">{services.map((service) => <span key={service} className="rounded-full bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">{service}</span>)}</div> : <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">Ask about the care your pet needs. {sitterDisplayName} can confirm services and availability directly.</p>}
+          </div>
           <PublicPaymentSection subdomain={subdomain} enabled={publicPaymentsEnabled} error={paymentError} />
         </section>
         <div className="space-y-4">
-          <section className="relative overflow-hidden rounded-xl bg-card p-4 ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_18px_50px_-36px_rgba(0,0,0,.4)] sm:p-5">
+          <section className="relative overflow-hidden rounded-2xl bg-card p-5 shadow-[0_1px_2px_rgba(0,0,0,.08),0_24px_60px_-38px_rgba(0,0,0,.45)] sm:p-6">
             <NoiseTexture className="opacity-[.035] dark:opacity-[.08]" frequency={0.55} slope={0.2} />
             <div className="relative">
-              <LeadForm subdomain={subdomain} sitterName={sitterDisplayName} />
+              <LeadForm subdomain={subdomain} sitterName={sitterDisplayName} services={services} />
             </div>
           </section>
-          <aside className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 dark:border-emerald-900 dark:bg-emerald-950/30">
-            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-emerald-600 text-white dark:bg-emerald-500 dark:text-emerald-950"><MessageCircle className="size-4" aria-hidden="true" /></span>
-            <div className="min-w-0 flex-1"><p className="font-semibold">Rather chat with {sitterDisplayName} directly?</p><p className="mt-0.5 text-sm leading-5 text-muted-foreground">Create an account to message in Sitterfolio.</p></div>
-            <Link href={`/auth?mode=sign-up&callbackURL=${encodeURIComponent(`/message/${subdomain}`)}`} className="group inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold text-emerald-800 outline-none transition hover:bg-emerald-100 focus-visible:ring-2 focus-visible:ring-emerald-600/40 dark:text-emerald-300 dark:hover:bg-emerald-900/50">Start chat <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></Link>
+          <aside className="flex flex-col gap-3 rounded-xl border border-border p-4 sm:flex-row sm:items-center">
+            <span className="grid size-9 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground"><MessageCircle className="size-4" aria-hidden="true" /></span>
+            <div className="min-w-0 flex-1"><p className="text-sm font-semibold">Have a general question?</p><p className="mt-0.5 text-xs leading-5 text-muted-foreground">Start an account-based chat without sending dates or care details.</p></div>
+            <Link href={`/auth?mode=sign-up&callbackURL=${encodeURIComponent(`/message/${subdomain}`)}`} className="group inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-emerald-800 outline-none transition hover:bg-emerald-50 focus-visible:ring-2 focus-visible:ring-emerald-600/40 dark:text-emerald-300 dark:hover:bg-emerald-950/40">Ask a question <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></Link>
           </aside>
         </div>
       </main>
 
       <footer className="border-t border-border/70">
         <div className="mx-auto flex max-w-6xl items-center justify-center px-6 py-5 text-xs text-muted-foreground sm:justify-end">
-          <Link href={`${protocol}://${rootDomain}`} className="rounded-sm underline-offset-4 transition hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Site by Sitterfolio</Link>
+          <Link href={`${protocol}://${rootDomain}`} className="inline-flex min-h-11 items-center rounded-sm underline-offset-4 transition hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Site by Sitterfolio</Link>
         </div>
       </footer>
     </div>

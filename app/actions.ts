@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { siteIntake } from '@/lib/intake';
 import { profiles, type BusinessProfile } from '@/lib/profiles';
+import { normalizeServices } from '@/lib/profile-ownership';
 import { getSession } from '@/lib/session';
 import { leadIntake, leadRateLimitKey, maySendConversationMessage } from '@/lib/leads';
 import { createPaymentRequestForLead, deliverPaymentRequest, refreshOwnerPaymentSetup } from '@/lib/payment-requests';
@@ -79,11 +80,7 @@ export async function saveProfileAction(
   }
 
   if (formData.has('services')) {
-    updates.services = String(formData.get('services') || '')
-      .split(',')
-      .map((service) => service.trim())
-      .filter(Boolean)
-      .slice(0, 8);
+    updates.services = normalizeServices(String(formData.get('services') || '').split(','));
   }
 
   const updated = await profiles.updateOwned(user.id, subdomain, updates);

@@ -30,14 +30,16 @@ describe('LeadSubmissionConfirmation', () => {
 
 describe('LeadForm', () => {
   it('shows the availability form without a direct-message mode', () => {
-    const html = renderToStaticMarkup(<LeadForm subdomain="drew" sitterName="Drew" />);
+    const html = renderToStaticMarkup(<LeadForm subdomain="drew" sitterName="Drew" services={['Dog walking', 'Drop-ins']} />);
 
-    expect(html).toContain('Tell me about your pet');
+    expect(html).toContain('Ask about availability');
     expect(html).toContain('Service needed');
     expect(html).toContain('Choose care dates');
     expect(html).toContain('name="startDate"');
     expect(html).toContain('name="endDate"');
-    expect(html).toContain('Send availability request');
+    expect(html).toContain('Request availability');
+    expect(html).toContain('This starts a private conversation');
+    expect(html).toContain('value="Dog walking"');
     expect(html).toContain('sitterfolio_site');
     expect(html).not.toContain('Direct message');
     expect(html).not.toContain('sitterfolio_direct_message');

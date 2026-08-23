@@ -70,6 +70,18 @@ export function normalizeSubdomain(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9-]/g, '');
 }
 
+export function normalizeServices(services: readonly string[], limit = 8) {
+  const seen = new Set<string>();
+
+  return services.flatMap((service) => {
+    const normalized = service.trim().replace(/\s+/g, ' ');
+    const key = normalized.toLocaleLowerCase('en-US');
+    if (!normalized || seen.has(key)) return [];
+    seen.add(key);
+    return [normalized];
+  }).slice(0, limit);
+}
+
 export function createProfileOwnership(repository: ProfileRepository) {
   async function get(subdomain: string): Promise<ProfileRecord | null> {
     const normalized = normalizeSubdomain(subdomain);

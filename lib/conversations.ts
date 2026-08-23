@@ -98,7 +98,7 @@ export async function getCustomerConversation(publicToken: string) {
      from lead_conversation c
      join lead l on l.id=c.lead_id and l.business_id=c.business_id
      join site s on s.id=l.site_id
-     where c.public_token=$1 and s.deleted_at is null`,
+     where c.public_token=$1 and c.closed_at is null and c.revoked_at is null and s.deleted_at is null`,
     [publicToken]
   );
   const row = result.rows[0];
@@ -144,11 +144,13 @@ export async function sendCustomerConversationMessage(publicToken: string, input
     const conversation = await client.query<{ id: string; lead_id: string; customer_name: string; business_name: string; sitter_email: string | null }>(
       `select c.id,c.lead_id,l.customer_name,coalesce(s.business_name,s.sitter_name,s.subdomain) business_name,s.email sitter_email
        from lead_conversation c join lead l on l.id=c.lead_id join site s on s.id=l.site_id
-       where c.public_token=$1 and s.deleted_at is null for update of c`,
+       where c.public_token=$1 and c.closed_at is null and c.revoked_at is null and s.deleted_at is null
+       for update of l`,
       [publicToken]
     );
     const row = conversation.rows[0];
     if (!row) throw new Error('This conversation link is no longer available.');
+    await client.query(`select id from lead_conversation where id=$1 and closed_at is null and revoked_at is null for update`, [row.id]);
     const inserted = await client.query<{ id: string; created_at: Date }>(
       `insert into lead_conversation_message(conversation_id,sender,body) values($1,'CUSTOMER',$2) returning id,created_at`,
       [row.id, body]
@@ -168,11 +170,13 @@ export async function sendSitterConversationMessage(ownerId: string, leadId: str
        join lead l on l.id=c.lead_id and l.business_id=c.business_id
        join site s on s.id=l.site_id
        join business b on b.id=c.business_id
-       where l.id=$1 and b.owner_user_id=$2 and s.deleted_at is null for update of c`,
+       where l.id=$1 and b.owner_user_id=$2 and c.closed_at is null and c.revoked_at is null and s.deleted_at is null
+       for update of l`,
       [leadId, ownerId]
     );
     const row = conversation.rows[0];
     if (!row) throw new Error('This conversation could not be found.');
+    await client.query(`select id from lead_conversation where id=$1 and closed_at is null and revoked_at is null for update`, [row.id]);
     const inserted = await client.query<{ id: string }>(
       `insert into lead_conversation_message(conversation_id,sender,body) values($1,'SITTER',$2) returning id`,
       [row.id, body]

@@ -79,7 +79,7 @@ export function DateRangePicker({
             aria-label={`Care dates: ${selectionLabel(range, selectingEnd)}`}
             className={cn(
               "flex w-full items-center gap-3 rounded-xl border border-input bg-background px-3 text-left shadow-xs outline-none transition hover:border-emerald-400 hover:bg-emerald-50/50 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 dark:hover:bg-emerald-950/20",
-              compact ? "h-10 text-sm" : "min-h-12 text-sm",
+              compact ? "h-11 text-sm" : "min-h-12 text-sm",
             )}
           >
             <span className={cn("grid shrink-0 place-items-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300", compact ? "size-7" : "size-8")}> 

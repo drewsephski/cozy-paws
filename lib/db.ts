@@ -14,7 +14,9 @@ export async function query<T extends QueryResultRow>(text: string, values: unkn
   return pool.query<T>(text, values);
 }
 
-export async function transaction<T>(work: (client: PoolClient) => Promise<T>): Promise<T> {
+export type TransactionRunner = <T>(work: (client: PoolClient) => Promise<T>) => Promise<T>;
+
+export const transaction: TransactionRunner = async (work) => {
   const client = await pool.connect();
   try {
     await client.query('begin');
@@ -27,4 +29,4 @@ export async function transaction<T>(work: (client: PoolClient) => Promise<T>): 
   } finally {
     client.release();
   }
-}
+};
