@@ -11,6 +11,7 @@ import { PetIcon } from '@/components/pet-icon';
 import { AboutSitterfolioDialog } from '@/components/about-sitterfolio-dialog';
 import { PublicPaymentSection } from './public-payment-section';
 import { getPublicPaymentAvailability } from '@/lib/public-payments';
+import { NoiseTexture } from '@/components/ui/noise-texture';
 import { normalizeServices } from '@/lib/profile-ownership';
 import { PublicInquiryColumn } from './public-inquiry-column';
 

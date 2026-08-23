@@ -111,3 +111,12 @@
 [ 2999728ms] [LOG] [Fast Refresh] done in 132ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [ 3004032ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [ 3004084ms] [LOG] [Fast Refresh] done in 153ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3019026ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3019119ms] [LOG] [Fast Refresh] done in 104ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3019229ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3019694ms] [LOG] [Fast Refresh] done in 567ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3021030ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3021060ms] [LOG] [HMR] connected @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3021203ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3033147ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[ 3033236ms] [LOG] [Fast Refresh] done in 192ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
