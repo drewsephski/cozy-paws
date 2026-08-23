@@ -108,7 +108,7 @@ export async function sendPasswordResetEmail(
 export async function sendNewLeadNotification({ profile, lead }: AcceptedLead) {
   if (!profile?.email || !process.env.RESEND_API_KEY || !process.env.SITTERFOLIO_FROM_EMAIL) return;
 
-  const businessName = bounded(profile.businessName || profile.subdomain, 80);
+  const businessName = bounded(profile.businessName || profile.sitterName || profile.subdomain, 80);
   const customerName = bounded(lead.name, 120);
   const details = bounded(lead.message, 500);
   const resend = new Resend(process.env.RESEND_API_KEY);

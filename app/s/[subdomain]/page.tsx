@@ -26,7 +26,7 @@ export async function generateMetadata({
 
   return {
     title: `${subdomain}.${rootDomain}`,
-    description: subdomainData.tagline || `Pet care from ${subdomainData.businessName || subdomain}.`
+    description: subdomainData.tagline || `Pet care from ${subdomainData.sitterName || subdomainData.businessName || subdomain}.`
   };
 }
 
@@ -46,16 +46,17 @@ export default async function SubdomainPage({
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="border-b border-border/70">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <AboutSitterfolioDialog businessName={subdomainData.businessName || `${subdomain}'s pet care`} />
+          <AboutSitterfolioDialog businessName={subdomainData.businessName || subdomainData.sitterName || `${subdomain}'s pet care`} />
           <ThemeToggle />
         </div>
       </header>
 
       <main className="mx-auto grid w-full max-w-6xl flex-1 gap-12 px-6 py-14 lg:grid-cols-[1fr_390px] lg:items-center lg:py-20">
         <section>
-          {subdomainData.profileImageUrl ? <img src={subdomainData.profileImageUrl} alt={`${subdomainData.businessName || subdomain}'s profile`} className="mb-8 h-28 w-28 rounded-3xl object-cover shadow-lg ring-4 ring-card" /> : <div className="mb-8 grid size-28 place-items-center rounded-3xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"><PetIcon value={subdomainData.emoji} className="size-14" fallbackClassName="text-6xl" /></div>}
+          {subdomainData.profileImageUrl ? <img src={subdomainData.profileImageUrl} alt={`${subdomainData.sitterName || subdomainData.businessName || subdomain}'s profile`} className="mb-8 h-28 w-28 rounded-3xl object-cover shadow-lg ring-4 ring-card" /> : <div className="mb-8 grid size-28 place-items-center rounded-3xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"><PetIcon value={subdomainData.emoji} className="size-14" fallbackClassName="text-6xl" /></div>}
           <p className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400"><MapPin className="size-4" aria-hidden="true" />{subdomainData.location || 'Local pet care'}</p>
-          <h1 className="max-w-2xl text-5xl font-semibold tracking-tight sm:text-7xl">{subdomainData.businessName || `${subdomain}'s care`}</h1>
+          <h1 className="max-w-2xl text-5xl font-semibold tracking-tight sm:text-7xl">{subdomainData.sitterName || subdomainData.businessName || `${subdomain}'s care`}</h1>
+          {subdomainData.sitterName && subdomainData.businessName && <p className="mt-3 text-lg font-medium text-emerald-700 dark:text-emerald-400">{subdomainData.businessName}</p>}
           <p className="mt-6 max-w-xl text-xl leading-8 text-muted-foreground">{subdomainData.tagline || 'Pet care from someone local.'}</p>
           {(subdomainData.services || []).length > 0 && <div className="mt-10"><p className="mb-3 text-sm font-medium">Services</p><div className="flex flex-wrap gap-3">{(subdomainData.services || []).map((service) => <span key={service} className="rounded-full bg-emerald-50 px-4 py-2 text-sm text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">{service}</span>)}</div></div>}
           <PublicPaymentSection paymentLinkUrl={subdomainData.paymentLinkUrl} />

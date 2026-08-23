@@ -56,6 +56,7 @@ export async function saveProfileAction(
   const subdomain = String(formData.get('subdomain') || '');
   const updates: Partial<Omit<BusinessProfile, 'ownerId' | 'createdAt'>> = {};
   const textFields = [
+    ['sitterName', 80],
     ['businessName', 80],
     ['tagline', 160],
     ['location', 240],
@@ -68,6 +69,10 @@ export async function saveProfileAction(
     if (formData.has(name)) {
       updates[name] = String(formData.get(name) || '').trim().slice(0, maximumLength);
     }
+  }
+
+  if ((formData.has('sitterName') || formData.has('businessName')) && !updates.sitterName && !updates.businessName) {
+    return { error: 'Add your name or a business name so pet owners know who they are contacting.' };
   }
 
   if (updates.paymentLinkUrl) {

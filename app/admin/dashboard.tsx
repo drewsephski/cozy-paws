@@ -22,6 +22,7 @@ type SiteProfile = {
   subdomain: string;
   emoji: string;
   createdAt: number;
+  sitterName?: string;
   businessName?: string;
   tagline?: string;
   location?: string;
@@ -39,7 +40,7 @@ type DeleteState = {
 };
 
 const onboardingSteps = [
-  { name: 'businessName', title: 'What should pet owners call your business?', helper: 'Use the name clients already recognize.', placeholder: 'Happy Tails Pet Care', required: true },
+  { name: 'identity', title: 'Who will pet owners be contacting?', helper: 'Add your name, a business name, or both. At least one is required.', placeholder: '', required: true },
   { name: 'tagline', title: 'How would you describe your care?', helper: 'Write one sentence about the care clients can expect from you.', placeholder: 'Reliable visits for dogs and cats in Oak Park.', required: true },
   { name: 'location', title: 'Where do you care for pets?', helper: 'Name the neighborhood, city, or area you serve.', placeholder: 'Oak Park and nearby neighborhoods', required: true },
   { name: 'services', title: 'Which services do you offer?', helper: 'Separate each service with a comma. You can add up to eight.', placeholder: 'Dog walking, Drop-in visits, Overnight stays', required: true },
@@ -60,7 +61,8 @@ function SitePreview({ site, values }: { site: SiteProfile; values: Record<strin
         <div className="mx-auto grid size-20 place-items-center overflow-hidden rounded-full border-4 border-emerald-100 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300">
           {values.profileImageUrl ? <img src={values.profileImageUrl} alt="Profile preview" className="size-full object-cover" /> : <PetIcon value={site.emoji} className="size-10" fallbackClassName="text-4xl" />}
         </div>
-        <h2 className="mt-5 text-2xl font-semibold tracking-tight text-emerald-800 dark:text-emerald-300">{values.businessName || 'Your business name'}</h2>
+        <h2 className="mt-5 text-2xl font-semibold tracking-tight text-emerald-800 dark:text-emerald-300">{values.sitterName || values.businessName || 'Your name'}</h2>
+        {values.sitterName && values.businessName && <p className="mt-1 text-sm font-medium text-emerald-700 dark:text-emerald-400">{values.businessName}</p>}
         <p className="mt-2 text-sm text-muted-foreground">{values.location || `${site.subdomain}.${rootDomain}`}</p>
         <div className="mx-auto mt-7 h-28 max-w-sm rounded-xl bg-muted/70" />
         <p className="mx-auto mt-6 max-w-sm text-sm leading-6 text-muted-foreground">{values.tagline || 'Your introduction will appear here.'}</p>
@@ -94,7 +96,7 @@ export function OnboardingComplete({ site }: { site: SiteProfile }) {
 
 function ProfileOnboarding({ site }: { site: SiteProfile }) {
   const [stepIndex, setStepIndex] = useState(() => {
-    if (!site.businessName) return 0;
+    if (!site.sitterName && !site.businessName) return 0;
     if (!site.tagline) return 1;
     if (!site.location) return 2;
     if (!site.services?.length) return 3;
@@ -103,7 +105,7 @@ function ProfileOnboarding({ site }: { site: SiteProfile }) {
     return 6;
   });
   const [values, setValues] = useState<Record<string, string>>({
-    businessName: site.businessName || '', tagline: site.tagline || '', location: site.location || '',
+    sitterName: site.sitterName || '', businessName: site.businessName || '', tagline: site.tagline || '', location: site.location || '',
     services: (site.services || []).join(', '), email: site.email || '', phone: site.phone || '', profileImageUrl: site.profileImageUrl || ''
   });
   const [state, saveAction, isSaving] = useActionState<SaveProfileState, FormData>(saveProfileAction, {});
@@ -132,13 +134,18 @@ function ProfileOnboarding({ site }: { site: SiteProfile }) {
               <input type="hidden" name="subdomain" value={site.subdomain} />
               {step.name === 'profileImageUrl' ? (
                 <div className="rounded-xl border border-border bg-muted/20 p-5"><ProfileImageUpload subdomain={site.subdomain} currentImageUrl={values.profileImageUrl} onUploaded={(url) => setValues((current) => ({ ...current, profileImageUrl: url }))} /></div>
+              ) : step.name === 'identity' ? (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div><label htmlFor="sitterName" className="mb-2 block text-sm font-medium">Your name</label><input autoFocus id="sitterName" name="sitterName" value={values.sitterName} onChange={(event) => setValues((current) => ({ ...current, sitterName: event.target.value }))} placeholder="Jamie" className="h-16 w-full rounded-xl border border-input bg-background px-5 text-lg shadow-sm outline-none transition focus:border-ring focus:ring-4 focus:ring-ring/15" /></div>
+                  <div><label htmlFor="businessName" className="mb-2 block text-sm font-medium">Business name <span className="font-normal text-muted-foreground">(optional)</span></label><input id="businessName" name="businessName" value={values.businessName} onChange={(event) => setValues((current) => ({ ...current, businessName: event.target.value }))} placeholder="Happy Tails Pet Care" className="h-16 w-full rounded-xl border border-input bg-background px-5 text-lg shadow-sm outline-none transition focus:border-ring focus:ring-4 focus:ring-ring/15" /></div>
+                </div>
               ) : (
                 <input autoFocus id={step.name} name={step.name} type={'type' in step ? step.type : 'text'} required={step.required} value={values[step.name]} onChange={(event) => setValues((current) => ({ ...current, [step.name]: event.target.value }))} placeholder={step.placeholder} className="h-16 w-full rounded-xl border border-input bg-background px-5 text-lg shadow-sm outline-none transition focus:border-ring focus:ring-4 focus:ring-ring/15" />
               )}
               {state.error && <p role="alert" className="mt-3 text-sm text-destructive">{state.error}</p>}
               <div className="mt-7 flex items-center gap-3">
                 {stepIndex > 0 && <Button type="button" variant="ghost" size="lg" onClick={() => setStepIndex((current) => current - 1)}><ArrowLeft aria-hidden="true" />Back</Button>}
-                <Button type="submit" size="lg" disabled={isSaving}>{isSaving ? <><Loader2 className="animate-spin" aria-hidden="true" />Saving…</> : stepIndex === onboardingSteps.length - 1 ? <>Finish my site <ArrowRight aria-hidden="true" /></> : <>Continue <ArrowRight aria-hidden="true" /></>}</Button>
+                <Button type="submit" size="lg" disabled={isSaving || (step.name === 'identity' && !values.sitterName.trim() && !values.businessName.trim())}>{isSaving ? <><Loader2 className="animate-spin" aria-hidden="true" />Saving…</> : stepIndex === onboardingSteps.length - 1 ? <>Finish my site <ArrowRight aria-hidden="true" /></> : <>Continue <ArrowRight aria-hidden="true" /></>}</Button>
               </div>
               <p className="mt-7 text-xs text-muted-foreground"><kbd className="mr-2 rounded border border-border bg-muted px-2 py-1 font-sans">Enter</kbd>Press Enter to continue</p>
             </form>
@@ -165,6 +172,7 @@ function DashboardHeader() {
 }
 
 const profileSuggestions = {
+  sitterName: ['Jamie', 'Sam', 'Alex', 'Taylor'],
   businessName: ['Happy Tails Pet Care', 'Paws & Whiskers', 'Neighborhood Pet Care', 'Home Sweet Home Pet Sitting', 'The Pet Nanny'],
   tagline: ['Reliable visits for dogs and cats in Oak Park.', 'In-home care that keeps your pet on their usual routine.', 'Daily walks and drop-in visits for busy pet owners.', 'A familiar sitter while you are away.']
 } as const;
@@ -203,6 +211,7 @@ function ProfileEditor({ site }: { site: SiteProfile }) {
       <form action={saveAction} className="rounded-xl border border-border bg-card shadow-sm">
         <input type="hidden" name="subdomain" value={site.subdomain} />
         <div className="grid gap-4 p-5 sm:grid-cols-2">
+          <SuggestionField label="Your name" name="sitterName" defaultValue={site.sitterName || ''} placeholder="Jamie" suggestions={profileSuggestions.sitterName} hint="The name pet owners will see first." />
           <SuggestionField label="Business name" name="businessName" defaultValue={site.businessName || ''} placeholder="Happy Tails Pet Care" suggestions={profileSuggestions.businessName} hint="Choose a suggestion or type your own." />
           <SuggestionField label="One-sentence introduction" name="tagline" defaultValue={site.tagline || ''} placeholder="Reliable care for pets nearby." suggestions={profileSuggestions.tagline} hint="Choose a starting point or write your own." />
           <ServiceAreaField defaultValue={site.location || ''} />
@@ -281,7 +290,7 @@ function SiteGrid({
         <Card key={site.subdomain} className="group relative flex-row items-center gap-3 overflow-hidden rounded-xl p-3 shadow-sm transition-all hover:border-primary/40 hover:shadow-md focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-ring/30">
           <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-muted text-emerald-700 transition-colors group-hover:bg-accent dark:text-emerald-400"><PetIcon value={site.emoji} className="size-6" fallbackClassName="text-2xl" /></div>
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" /><p className="truncate text-sm font-semibold">{site.businessName || site.subdomain}</p></div>
+            <div className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" /><p className="truncate text-sm font-semibold">{site.businessName || site.sitterName || site.subdomain}</p></div>
             <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-muted-foreground">{site.subdomain}.{rootDomain}<ExternalLink aria-hidden="true" className="size-3 opacity-0 transition-opacity group-hover:opacity-100" /></p>
           </div>
           <a
@@ -289,10 +298,10 @@ function SiteGrid({
             target="_blank"
             rel="noopener noreferrer"
             className="absolute inset-0 rounded-xl focus:outline-none"
-            aria-label={`Open ${site.businessName || site.subdomain} site`}
+            aria-label={`Open ${site.businessName || site.sitterName || site.subdomain} site`}
           />
           <div className="relative z-10 flex shrink-0 items-center gap-1">
-            <ShareSiteButton url={`${protocol}://${site.subdomain}.${rootDomain}`} name={site.businessName || site.subdomain} />
+            <ShareSiteButton url={`${protocol}://${site.subdomain}.${rootDomain}`} name={site.businessName || site.sitterName || site.subdomain} />
               <DeleteSiteDialog
                 subdomain={site.subdomain}
                 siteUrl={`${site.subdomain}.${rootDomain}`}

@@ -7,6 +7,7 @@ export type DraftAddressInput = {
 };
 
 export type SiteDraftInput = DraftAddressInput & {
+  sitterName?: unknown;
   businessName?: unknown;
   tagline?: unknown;
   location?: unknown;
@@ -83,6 +84,7 @@ export function createSiteIntake(profiles: ProfileOwnership, now = Date.now) {
       const subdomain = readString(draft.subdomain).toLowerCase();
       const icon = readString(draft.icon);
       const normalized = normalizeSubdomain(subdomain);
+      const sitterName = readString(draft.sitterName).trim().slice(0, 80);
       const businessName = readString(draft.businessName).trim().slice(0, 80);
       const tagline = readString(draft.tagline).trim().slice(0, 160);
       const location = readString(draft.location).trim().slice(0, 240);
@@ -107,7 +109,7 @@ export function createSiteIntake(profiles: ProfileOwnership, now = Date.now) {
       }
 
       if (
-        !businessName ||
+        (!sitterName && !businessName) ||
         !tagline ||
         !location ||
         !services.length ||
@@ -124,6 +126,7 @@ export function createSiteIntake(profiles: ProfileOwnership, now = Date.now) {
       const created = await profiles.create(ownerId, normalized, {
         emoji: icon,
         createdAt: timestamp,
+        sitterName,
         businessName,
         tagline,
         location,

@@ -2,6 +2,7 @@ export type BusinessProfile = {
   ownerId?: string;
   emoji: string;
   createdAt: number;
+  sitterName?: string;
   businessName?: string;
   tagline?: string;
   location?: string;
@@ -161,7 +162,7 @@ export function createProfileOwnership(repository: ProfileRepository) {
           (await this.getOwnedLeads(ownerId, profile.subdomain)).map((lead) => ({
             ...lead,
             subdomain: profile.subdomain,
-            siteName: profile.businessName || profile.subdomain
+            siteName: profile.businessName || profile.sitterName || profile.subdomain
           }))
         )
       );

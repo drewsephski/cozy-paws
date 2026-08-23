@@ -18,6 +18,8 @@ create table if not exists site (
   business_id uuid not null references business(id) on delete restrict,
   subdomain text not null unique,
   emoji text not null,
+  sitter_name text,
+  business_name text,
   tagline text,
   location text,
   services text[] not null default '{}',
@@ -31,6 +33,9 @@ create table if not exists site (
   constraint site_subdomain_normalized check (subdomain = lower(subdomain))
 );
 create index if not exists site_business_idx on site(business_id) where deleted_at is null;
+alter table site add column if not exists sitter_name text;
+alter table site add column if not exists business_name text;
+update site s set business_name=b.name from business b where s.business_id=b.id and s.business_name is null and s.sitter_name is null;
 create unique index if not exists site_id_business_uidx on site(id,business_id);
 
 create table if not exists lead (

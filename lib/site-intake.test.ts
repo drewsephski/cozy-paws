@@ -52,6 +52,7 @@ describe('site intake', () => {
     const draft = {
       subdomain: 'HAPPY-TAILS',
       icon: 'dog',
+      sitterName: '  Jamie Lee  ',
       businessName: '  Happy Tails  ',
       tagline: '  Trusted neighborhood care.  ',
       location: '  Oak Park  ',
@@ -65,6 +66,7 @@ describe('site intake', () => {
       subdomain: 'happy-tails'
     });
     expect(await profiles.getOwned('happy-tails', 'owner-1')).toMatchObject({
+      sitterName: 'Jamie Lee',
       businessName: 'Happy Tails',
       tagline: 'Trusted neighborhood care.',
       location: 'Oak Park',
@@ -101,6 +103,15 @@ describe('site intake', () => {
       error: 'Your draft is incomplete. Return to the builder and finish the required details.'
     });
     expect(await profiles.get('happy-tails')).toBeNull();
+  });
+
+  it('accepts either a sitter name or a business name, but not an empty identity', async () => {
+    const profiles = createProfileOwnership(new MemoryProfileRepository());
+    const intake = createSiteIntake(profiles);
+    const required = { icon: 'dog', tagline: 'Trusted care', location: 'Oak Park', services: 'Walks', email: 'hi@example.com' };
+
+    await expect(intake.launch('owner-1', { ...required, subdomain: 'jamie-care', sitterName: 'Jamie', businessName: '' })).resolves.toMatchObject({ success: true });
+    await expect(intake.launch('owner-2', { ...required, subdomain: 'empty-care', sitterName: '', businessName: '' })).resolves.toMatchObject({ success: false, error: 'Your draft is incomplete. Return to the builder and finish the required details.' });
   });
 
   it('coerces untrusted form values inside the intake interface', async () => {
