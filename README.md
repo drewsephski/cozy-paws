@@ -11,6 +11,8 @@ CONFIRM_FINANCIAL_MIGRATION=yes pnpm db:backfill:revenue
 
 Do not run it against preview or production until database isolation and the rollback expectations in `docs/adr/0001-postgres-inquiry-to-revenue.md` are verified. Existing Redis Site and Lead records are backfilled lazily and remain available as a temporary compatibility source.
 
+Before deploying the asynchronous Checkout retry handling, apply `migrations/2026-08-23-stripe-checkout-retry.sql` to the isolated target database.
+
 Sitterfolio is a simple, shareable online home for independent pet sitters. It helps a sitter turn the essentials of their business—who they are, where they work, what they offer, and how to reach them—into one polished page they can send to pet owners.
 
 The product is designed for the moment when a sitter needs a professional web presence without spending time designing or maintaining a full website. A sitter chooses a memorable address, adds their profile details and photo, and gets a public page where prospective clients can learn about their care and ask about availability.
@@ -78,7 +80,8 @@ Sitterfolio is a Next.js application built with the App Router and React. The ma
 - **TypeScript** for application and data-model typing.
 - **Tailwind CSS 4** and **shadcn/ui-style components** for the responsive visual system and accessible UI primitives.
 - **Better Auth** with PostgreSQL for email-and-password accounts.
-- **Upstash Redis** for site profiles, site-name availability, inquiry storage, cached location results, sessions, and auth rate limits.
+- **PostgreSQL** for Better Auth, businesses, sites, leads, connected Stripe accounts, payment requests, and reconciled webhook state.
+- **Upstash Redis** for legacy profile compatibility, cached location results, and rate limits.
 - **Vercel Blob** for profile-image uploads, restricted to common web image formats and a 5 MB maximum upload size.
 - **OpenStreetMap Nominatim** for location search suggestions. Results are normalized, cached in Redis, and rate-limited before external lookup.
 - **Vercel Analytics and Speed Insights** for product usage and performance visibility.
@@ -95,9 +98,14 @@ KV_REST_API_URL=https://...
 KV_REST_API_TOKEN=...
 RESEND_API_KEY=re_...
 SITTERFOLIO_FROM_EMAIL="Sitterfolio <notifications@example.com>"
+STRIPE_SECRET_KEY=sk_test_or_restricted_key
+STRIPE_WEBHOOK_SECRET=whsec_payment_event_destination
+STRIPE_ACCOUNT_WEBHOOK_SECRET=whsec_accounts_v2_thin_event_destination
 ```
 
 Generate a local secret with `openssl rand -base64 32`. Do not commit it. Before starting the app for the first time, apply [`migrations/auth.sql`](migrations/auth.sql) to the PostgreSQL database. Production must use its canonical HTTPS root URL for `BETTER_AUTH_URL` and its own secret and database credentials.
+
+Stripe uses separate signed event destinations: `/api/webhook` receives connected-account payment snapshot events (including `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, refund, and dispute events), while `/api/stripe/account-events` receives Accounts v2 thin events for `v2.core.account[requirements].updated` and `v2.core.account[configuration.merchant].capability_status_updated`. Use distinct signing secrets and isolated Stripe credentials and databases for Sandbox/preview and live production.
 
 ## Feature behavior in the application
 
@@ -107,7 +115,7 @@ The proxy identifies a sitter’s subdomain and rewrites its root URL to the cor
 
 ### Profile and inquiry data
 
-Site data is stored under a site-specific Redis key. Profile updates preserve existing fields and revalidate the public page after saving. Availability requests are stored per site, newest first, with the latest 100 requests retained for dashboard review.
+Site, profile, and availability-request data is stored in PostgreSQL. Legacy Redis profile records can be migrated lazily for compatibility. Profile updates preserve existing fields and revalidate the public page after saving.
 
 ### Image handling
 
@@ -123,4 +131,4 @@ Sitterfolio includes Better Auth routes and session-aware navigation so signed-i
 
 ## Product scope
 
-Sitterfolio is intentionally focused: it creates a trustworthy presence and makes it easier for a pet owner to start a conversation. It is not a marketplace, payment processor, calendar, booking engine, or replacement for the sitter’s own client relationship.
+Sitterfolio is intentionally focused: it creates a trustworthy presence, helps a pet owner start a conversation, and lets an independent sitter send a Lead-attributed payment request through their own Stripe connected account. It is not a marketplace, calendar, booking engine, or replacement for the sitter’s own client relationship.
