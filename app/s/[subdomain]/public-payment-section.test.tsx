@@ -23,4 +23,10 @@ describe('PublicPaymentSection', () => {
     expect(html).toContain('role="alert"');
     expect(html).toContain('try again');
   });
+
+  it('keeps the error visible if Stripe readiness changed', () => {
+    const html = renderToStaticMarkup(<PublicPaymentSection subdomain="happy-tails" enabled={false} error />);
+    expect(html).toContain('role="alert"');
+    expect(html).toContain('temporarily unavailable');
+  });
 });

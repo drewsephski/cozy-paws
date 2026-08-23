@@ -1,7 +1,7 @@
 import { CreditCard } from 'lucide-react';
 
 export function PublicPaymentSection({ subdomain, enabled, error = false }: { subdomain: string; enabled: boolean; error?: boolean }) {
-  if (!enabled) return null;
+  if (!enabled) return error ? <p role="alert" className="mt-10 max-w-xl rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">Payments are temporarily unavailable for this business. Please contact the sitter or try again later.</p> : null;
 
   return (
     <section className="mt-10 max-w-xl rounded-2xl border border-emerald-500/20 bg-emerald-50/60 p-5 dark:bg-emerald-950/20">
