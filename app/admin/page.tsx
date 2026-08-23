@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation';
 import { getOwnerPaymentSetup, getOwnerRevenue } from '@/lib/payment-requests';
 import { getOwnerConversationMessages } from '@/lib/conversations';
 import { listOwnerClientHouseholds } from '@/lib/client-households';
+import { listOwnerBookings } from '@/lib/bookings';
 
 export const metadata: Metadata = {
   title: `Sitter dashboard | ${rootDomain}`,
@@ -22,12 +23,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
   const sites = await profiles.listOwned(session.user.id);
   const leads = await profiles.getOwnedLeadsForAllSites(session.user.id);
-  const [revenue, paymentSetup, conversationMessages, clientHouseholds] = await Promise.all([getOwnerRevenue(session.user.id), getOwnerPaymentSetup(session.user.id), getOwnerConversationMessages(session.user.id), listOwnerClientHouseholds(session.user.id)]);
+  const [revenue, paymentSetup, conversationMessages, clientHouseholds, bookings] = await Promise.all([getOwnerRevenue(session.user.id), getOwnerPaymentSetup(session.user.id), getOwnerConversationMessages(session.user.id), listOwnerClientHouseholds(session.user.id), listOwnerBookings(session.user.id)]);
 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader dashboard signedIn />
-      <main><AdminDashboard sites={sites} leads={leads} conversationMessages={conversationMessages} clientHouseholds={clientHouseholds} revenue={revenue} paymentSetup={paymentSetup} stripeReturn={stripeReturn} /></main>
+      <main><AdminDashboard sites={sites} leads={leads} conversationMessages={conversationMessages} clientHouseholds={clientHouseholds} bookings={bookings} revenue={revenue} paymentSetup={paymentSetup} stripeReturn={stripeReturn} /></main>
     </div>
   );
 }

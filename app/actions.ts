@@ -14,6 +14,7 @@ import { transitionOwnedLead } from '@/lib/lead-management';
 import { sendCustomerConversationMessage, sendSitterConversationMessage } from '@/lib/conversations';
 import { sendConversationMessageNotification } from '@/lib/email';
 import { createClientHouseholdFromOwnedLead } from '@/lib/client-households';
+import { createOwnedBooking, transitionOwnedBooking } from '@/lib/bookings';
 
 async function requireUser(callbackURL = '/admin') {
   const session = await getSession();
@@ -255,6 +256,37 @@ export async function saveClientFromLeadAction(_state: SaveClientState, formData
   } catch (error) {
     return { error: error instanceof Error ? error.message : 'Unable to save this client.' };
   }
+}
+
+export type CreateBookingState = { success?: string; error?: string; createdAt?: number };
+export async function createBookingAction(_state: CreateBookingState, formData: FormData): Promise<CreateBookingState> {
+  const user = await requireUser();
+  try {
+    const dollars = String(formData.get('amount') || '').trim();
+    if (!/^\d{1,5}(\.\d{1,2})?$/.test(dollars)) return { error: 'Enter a valid amount from $1 to $10,000.' };
+    const amountCents = Math.round(Number(dollars) * 100);
+    const booking = await createOwnedBooking(user.id, {
+      householdId: String(formData.get('householdId') || ''),
+      petIds: formData.getAll('petIds').map(String),
+      startDate: String(formData.get('startDate') || ''),
+      endDate: String(formData.get('endDate') || ''),
+      amountCents,
+      notes: String(formData.get('notes') || '')
+    });
+    revalidatePath('/admin');
+    return { success: `Booking saved for ${booking.householdName}.`, createdAt: Date.now() };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : 'Unable to create this booking.' };
+  }
+}
+
+export type TransitionBookingState = { error?: string };
+export async function transitionBookingAction(_state: TransitionBookingState, formData: FormData): Promise<TransitionBookingState> {
+  const user = await requireUser();
+  const transitioned = await transitionOwnedBooking(user.id, String(formData.get('bookingId') || ''), formData.get('status'));
+  if (!transitioned) return { error: 'Booking status could not be updated. Refresh and try again.' };
+  revalidatePath('/admin');
+  return {};
 }
 
 export type PaymentRequestState = { error?: string; paymentUrl?: string; customerEmail?: string; delivered?: boolean };
