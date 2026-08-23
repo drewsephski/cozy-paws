@@ -13,7 +13,7 @@ import { createOrContinueOnboarding } from '@/lib/connected-accounts';
 import { transitionOwnedLead } from '@/lib/lead-management';
 import { sendCustomerConversationMessage, sendSitterConversationMessage } from '@/lib/conversations';
 import { sendConversationMessageNotification } from '@/lib/email';
-import { createClientHouseholdFromOwnedLead } from '@/lib/client-households';
+import { addOwnedClientPet, createClientHouseholdFromOwnedLead, updateOwnedClientHousehold, updateOwnedClientPet } from '@/lib/client-households';
 import { createOwnedBooking, transitionOwnedBooking } from '@/lib/bookings';
 
 async function requireUser(callbackURL = '/admin') {
@@ -255,6 +255,54 @@ export async function saveClientFromLeadAction(_state: SaveClientState, formData
     return { success: `${household.name} is now saved as a client.`, savedAt: Date.now() };
   } catch (error) {
     return { error: error instanceof Error ? error.message : 'Unable to save this client.' };
+  }
+}
+
+export type EditClientState = { success?: string; error?: string; savedAt?: number };
+
+export async function updateClientHouseholdAction(_state: EditClientState, formData: FormData): Promise<EditClientState> {
+  const user = await requireUser();
+  try {
+    await updateOwnedClientHousehold(user.id, String(formData.get('householdId') || ''), {
+      name: String(formData.get('name') || ''),
+      email: String(formData.get('email') || ''),
+      postalCode: String(formData.get('postalCode') || ''),
+      careNotes: String(formData.get('careNotes') || '')
+    });
+    revalidatePath('/admin');
+    return { success: 'Client details saved.', savedAt: Date.now() };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : 'Unable to save client details.' };
+  }
+}
+
+export async function updateClientPetAction(_state: EditClientState, formData: FormData): Promise<EditClientState> {
+  const user = await requireUser();
+  try {
+    await updateOwnedClientPet(user.id, String(formData.get('householdId') || ''), String(formData.get('petId') || ''), {
+      name: String(formData.get('name') || ''),
+      type: String(formData.get('type') || ''),
+      careNotes: String(formData.get('careNotes') || '')
+    });
+    revalidatePath('/admin');
+    return { success: 'Pet profile saved.', savedAt: Date.now() };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : 'Unable to save pet profile.' };
+  }
+}
+
+export async function addClientPetAction(_state: EditClientState, formData: FormData): Promise<EditClientState> {
+  const user = await requireUser();
+  try {
+    const pet = await addOwnedClientPet(user.id, String(formData.get('householdId') || ''), {
+      name: String(formData.get('name') || ''),
+      type: String(formData.get('type') || ''),
+      careNotes: String(formData.get('careNotes') || '')
+    });
+    revalidatePath('/admin');
+    return { success: `${pet.name} added.`, savedAt: Date.now() };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : 'Unable to add pet.' };
   }
 }
 

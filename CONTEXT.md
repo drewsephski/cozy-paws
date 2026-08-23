@@ -18,7 +18,8 @@ Use these domain terms: a **Site** is the public business profile; a **Profile**
 6. A qualified or quoted Lead can receive one open Payment request after Stripe connected-account readiness is confirmed.
 7. `/pay/[token]` creates or reuses an idempotent Stripe Checkout Session. A Stripe-ready public Site also lets a pet owner choose an amount for a direct public payment without the sitter creating a Product or Payment Link. Signed Stripe webhooks reconcile payment, refund, and dispute facts into PostgreSQL; only a successful Lead-attributed payment moves a quoted Lead to `BOOKED`.
 8. A sitter can promote a qualified, quoted, or booked Lead into one reusable Client household with draft Pet profiles. This does not automatically create a Booking.
-9. From a saved Client household, a sitter can create a dated, priced draft Booking for one or more of that household's Pet profiles, then move it through `DRAFT → CONFIRMED → COMPLETED`; `DRAFT` or `CONFIRMED` may instead become `CANCELLED`.
+9. In the Clients view, a sitter can maintain household contact, postal, and care details; correct each Pet profile's name, type, and care notes; and add a Pet to an existing household. Pet edits preserve the profile ID used by existing Bookings.
+10. From a saved Client household, a sitter can create a dated, priced draft Booking for one or more of that household's Pet profiles, then move it through `DRAFT → CONFIRMED → COMPLETED`; `DRAFT` or `CONFIRMED` may instead become `CANCELLED`.
 
 Sitterfolio does not choose a sitter, allocate staff, optimize routes, track GPS, generate recurring series, provide general-purpose social chat, send autonomous campaigns, or replace the sitter's client relationship. Customer-entered public Site payments and internal Lead-attributed Payment requests remain separate from Booking status.
 
@@ -86,6 +87,8 @@ Upstash Redis backs compatibility, rate limiting, and location caching. Vercel B
 For a feature, start at its route/action, trace into the domain/service module, then the repository and migration. Keep framework code thin and business rules testable in `lib/domain`. Lead status changes should go through `transitionOwnedLead`; do not bypass its transition and event rules with direct updates.
 
 `lib/bookings.ts` is the ownership-aware Booking module. Call `createOwnedBooking`, `listOwnerBookings`, and `transitionOwnedBooking`; do not write Booking state directly from actions or conflate Booking transitions with Lead or Payment-request transitions.
+
+`lib/client-households.ts` owns Client-household and Pet-profile persistence. Its edit and add operations validate input and derive ownership through the authenticated User's Business; Pet edits update the existing row so Booking references remain stable.
 
 ## Development and verification
 

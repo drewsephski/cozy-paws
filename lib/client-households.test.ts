@@ -8,9 +8,11 @@ const { clientQueryMock, queryMock, transactionMock } = vi.hoisted(() => ({
 
 vi.mock('./db', () => ({ query: queryMock, transaction: transactionMock }));
 
-import { createClientHouseholdFromOwnedLead, listOwnerClientHouseholds } from './client-households';
+import { addOwnedClientPet, createClientHouseholdFromOwnedLead, listOwnerClientHouseholds, updateOwnedClientHousehold, updateOwnedClientPet } from './client-households';
 
 describe('client households', () => {
+  const editableHouseholdId = '11111111-1111-4111-8111-111111111111';
+  const editablePetId = '22222222-2222-4222-8222-222222222222';
   beforeEach(() => {
     clientQueryMock.mockReset();
     queryMock.mockReset();
@@ -108,5 +110,60 @@ describe('client households', () => {
     expect(households[0].pets.map((pet) => pet.name)).toEqual(['Milo', 'Luna']);
     expect(queryMock.mock.calls[0][0]).toContain('b.owner_user_id=$1');
     expect(queryMock.mock.calls[0][1]).toEqual(['owner-1']);
+  });
+
+  it('updates reusable household details only through the owning sitter', async () => {
+    queryMock.mockResolvedValueOnce({ rows: [{
+      id: editableHouseholdId, business_id: 'business-1', source_lead_id: 'lead-1', name: 'Sam Rivera',
+      email: 'sam@example.com', postal_code: '60601', care_notes: 'Use the side door.',
+      created_at: new Date('2026-08-23T12:00:00Z'), updated_at: new Date('2026-08-24T12:00:00Z')
+    }] });
+
+    const household = await updateOwnedClientHousehold('owner-1', editableHouseholdId, {
+      name: ' Sam Rivera ', email: ' sam@example.com ', postalCode: ' 60601 ', careNotes: ' Use the side door. '
+    });
+
+    expect(household).toMatchObject({ id: editableHouseholdId, name: 'Sam Rivera', postalCode: '60601', careNotes: 'Use the side door.' });
+    queryMock.mockResolvedValueOnce({ rows: [] });
+    await expect(updateOwnedClientHousehold('owner-2', editableHouseholdId, {
+      name: 'Sam Rivera', email: 'sam@example.com', postalCode: '60601', careNotes: 'Use the side door.'
+    })).rejects.toThrow('Client household not found.');
+  });
+
+  it('edits a pet in place so existing bookings keep the stable profile id', async () => {
+    queryMock.mockResolvedValueOnce({ rows: [{
+      id: editablePetId, household_id: editableHouseholdId, name: 'Milo', type: 'Dog', care_notes: 'One tablet at dinner.',
+      created_at: new Date('2026-08-23T12:00:00Z'), updated_at: new Date('2026-08-24T12:00:00Z')
+    }] });
+
+    const pet = await updateOwnedClientPet('owner-1', editableHouseholdId, editablePetId, {
+      name: ' Milo ', type: ' Dog ', careNotes: ' One tablet at dinner. '
+    });
+
+    expect(pet).toEqual({ id: editablePetId, name: 'Milo', type: 'Dog', careNotes: 'One tablet at dinner.' });
+  });
+
+  it('adds a pet under an existing household only when the sitter owns it', async () => {
+    queryMock.mockResolvedValueOnce({ rows: [{
+      id: '33333333-3333-4333-8333-333333333333', household_id: editableHouseholdId, name: 'Pepper', type: 'Cat', care_notes: '',
+      created_at: new Date('2026-08-24T12:00:00Z'), updated_at: new Date('2026-08-24T12:00:00Z')
+    }] });
+
+    const pet = await addOwnedClientPet('owner-1', editableHouseholdId, { name: 'Pepper', type: 'Cat', careNotes: '' });
+
+    expect(pet.id).toBe('33333333-3333-4333-8333-333333333333');
+    queryMock.mockResolvedValueOnce({ rows: [] });
+    await expect(addOwnedClientPet('owner-2', editableHouseholdId, { name: 'Pepper', type: 'Cat', careNotes: '' }))
+      .rejects.toThrow('Client household not found.');
+  });
+
+  it('rejects malformed IDs and fields before persistence', async () => {
+    await expect(addOwnedClientPet('owner-1', 'not-a-uuid', { name: 'Pepper', type: 'Cat', careNotes: '' }))
+      .rejects.toThrow('Client household not found.');
+    await expect(updateOwnedClientPet('owner-1', editableHouseholdId, editablePetId, { name: '', type: 'Dog', careNotes: '' }))
+      .rejects.toThrow('Pet name is required.');
+    await expect(updateOwnedClientHousehold('owner-1', editableHouseholdId, { name: 'Sam', email: 'invalid', postalCode: '', careNotes: '' }))
+      .rejects.toThrow('Enter a valid client email.');
+    expect(queryMock).not.toHaveBeenCalled();
   });
 });

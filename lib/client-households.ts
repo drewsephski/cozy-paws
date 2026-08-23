@@ -43,6 +43,44 @@ export type ClientHousehold = {
   pets: ClientPet[];
 };
 
+export type UpdateClientHouseholdInput = {
+  name: string;
+  email: string;
+  postalCode: string;
+  careNotes: string;
+};
+
+export type ClientPetInput = { name: string; type: string; careNotes: string };
+
+function validatedPetInput(input: ClientPetInput) {
+  return {
+    name: requiredText(input.name, 'Pet name', 120),
+    type: requiredText(input.type, 'Pet type', 80),
+    careNotes: optionalText(input.careNotes, 'Pet care notes', 4000)
+  };
+}
+
+function requiredText(value: unknown, label: string, maximumLength: number) {
+  const text = typeof value === 'string' ? value.trim() : '';
+  if (!text) throw new Error(`${label} is required.`);
+  if (text.length > maximumLength) throw new Error(`${label} is too long.`);
+  return text;
+}
+
+function optionalText(value: unknown, label: string, maximumLength: number) {
+  const text = typeof value === 'string' ? value.trim() : '';
+  if (text.length > maximumLength) throw new Error(`${label} is too long.`);
+  return text;
+}
+
+function recordId(value: unknown, label: string) {
+  const text = typeof value === 'string' ? value : '';
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(text)) {
+    throw new Error(`${label} not found.`);
+  }
+  return text;
+}
+
 function petDrafts(types: string[], count: number | null) {
   const normalizedTypes = types.map((type) => type.trim()).filter(Boolean);
   const size = Math.max(count || 0, normalizedTypes.length, 1);
@@ -184,4 +222,66 @@ export async function listOwnerClientHouseholds(ownerUserId: string) {
     households.set(row.household_id, household);
   }
   return [...households.values()];
+}
+
+export async function updateOwnedClientHousehold(
+  ownerUserId: string,
+  householdId: string,
+  input: UpdateClientHouseholdInput
+) {
+  householdId = recordId(householdId, 'Client household');
+  const name = requiredText(input.name, 'Client name', 120);
+  const email = requiredText(input.email, 'Client email', 320).toLowerCase();
+  const postalCode = optionalText(input.postalCode, 'Postal code', 20);
+  const careNotes = optionalText(input.careNotes, 'Household care notes', 4000);
+  if (!/^\S+@\S+\.\S+$/.test(email)) throw new Error('Enter a valid client email.');
+
+  const result = await query<HouseholdRow>(
+    `update client_household h
+     set name=$3,email=$4,postal_code=$5,care_notes=$6,updated_at=now()
+     from business b
+     where h.id=$1 and h.business_id=b.id and b.owner_user_id=$2
+     returning h.*`,
+    [householdId, ownerUserId, name, email, postalCode, careNotes]
+  );
+  if (!result.rows[0]) throw new Error('Client household not found.');
+  return mapHousehold(result.rows[0], []);
+}
+
+export async function updateOwnedClientPet(
+  ownerUserId: string,
+  householdId: string,
+  petId: string,
+  input: ClientPetInput
+) {
+  householdId = recordId(householdId, 'Client household');
+  petId = recordId(petId, 'Pet profile');
+  const { name, type, careNotes } = validatedPetInput(input);
+  const result = await query<PetRow>(
+    `update client_pet p
+     set name=$4,type=$5,care_notes=$6,updated_at=now()
+     from client_household h
+     join business b on b.id=h.business_id
+     where p.id=$2 and p.household_id=$1 and h.id=p.household_id and b.owner_user_id=$3
+     returning p.*`,
+    [householdId, petId, ownerUserId, name, type, careNotes]
+  );
+  if (!result.rows[0]) throw new Error('Pet profile not found.');
+  return mapPet(result.rows[0]);
+}
+
+export async function addOwnedClientPet(ownerUserId: string, householdId: string, input: ClientPetInput) {
+  householdId = recordId(householdId, 'Client household');
+  const { name, type, careNotes } = validatedPetInput(input);
+  const result = await query<PetRow>(
+    `insert into client_pet(household_id,name,type,care_notes)
+     select h.id,$3,$4,$5
+     from client_household h
+     join business b on b.id=h.business_id
+     where h.id=$1 and b.owner_user_id=$2
+     returning *`,
+    [householdId, ownerUserId, name, type, careNotes]
+  );
+  if (!result.rows[0]) throw new Error('Client household not found.');
+  return mapPet(result.rows[0]);
 }
