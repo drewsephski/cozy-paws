@@ -26,13 +26,14 @@ describe('LeadSubmissionConfirmation', () => {
 });
 
 describe('LeadForm', () => {
-  it('offers direct messaging first and keeps availability details optional', () => {
+  it('shows the availability form without a direct-message mode', () => {
     const html = renderToStaticMarkup(<LeadForm subdomain="drew" sitterName="Drew" />);
 
-    expect(html).toContain('Message Drew');
-    expect(html).toContain('Direct message');
-    expect(html).toContain('Availability details');
-    expect(html).toContain('sitterfolio_direct_message');
-    expect(html).not.toContain('Service needed');
+    expect(html).toContain('Tell me about your pet');
+    expect(html).toContain('Service needed');
+    expect(html).toContain('Send availability request');
+    expect(html).toContain('sitterfolio_site');
+    expect(html).not.toContain('Direct message');
+    expect(html).not.toContain('sitterfolio_direct_message');
   });
 });

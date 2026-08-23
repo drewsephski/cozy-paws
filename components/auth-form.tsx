@@ -21,6 +21,7 @@ export function AuthForm({ initialMode = 'sign-in' }: { initialMode?: Mode }) {
   const callbackURL = requestedCallback?.startsWith('/') && !requestedCallback.startsWith('//')
     ? requestedCallback
     : '/admin';
+  const isStartingConversation = callbackURL.startsWith('/message/');
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -67,7 +68,9 @@ export function AuthForm({ initialMode = 'sign-in' }: { initialMode?: Mode }) {
         return;
       }
 
-      setSuccess(mode === 'sign-up' ? 'Account created. Opening your dashboard...' : 'Signed in. Opening your dashboard...');
+      setSuccess(isStartingConversation
+        ? mode === 'sign-up' ? 'Account created. Opening your conversation...' : 'Signed in. Opening your conversation...'
+        : mode === 'sign-up' ? 'Account created. Opening your dashboard...' : 'Signed in. Opening your dashboard...');
       // Use a full navigation so the next server request observes the session
       // cookie set by Better Auth before protected routes evaluate it.
       window.location.assign(callbackURL);
