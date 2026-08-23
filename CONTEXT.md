@@ -12,13 +12,13 @@ Use these domain terms: a **Site** is the public business profile; a **Profile**
 
 1. `/` explains the product and collects a normalized Site address.
 2. Site creation requires authentication; `/build` and `/launch` lead to `/admin`.
-3. The dashboard saves business name, tagline, service area, services, email, optional phone, optional profile image, and optional Stripe Payment Link URL.
+3. The dashboard saves sitter/business identity, tagline, service area, services, email, optional phone, and optional profile image.
 4. `/s/[subdomain]` renders the public Site and its availability form. The form records name, email, service, dates, pet details, postal code, care details, source, and campaign.
 5. The dashboard inbox lists Leads across the owner's Sites. Valid lifecycle transitions are `NEW → QUALIFIED → QUOTED → BOOKED`, with decline/spam terminal paths where allowed.
 6. A qualified or quoted Lead can receive one open Payment request after Stripe connected-account readiness is confirmed.
-7. `/pay/[token]` creates or reuses an idempotent Stripe Checkout Session. Signed Stripe webhooks reconcile payment, refund, and dispute facts into PostgreSQL; a successful payment moves a quoted Lead to `BOOKED`.
+7. `/pay/[token]` creates or reuses an idempotent Stripe Checkout Session. A Stripe-ready public Site also lets a pet owner choose an amount for a direct public payment without the sitter creating a Product or Payment Link. Signed Stripe webhooks reconcile payment, refund, and dispute facts into PostgreSQL; only a successful Lead-attributed payment moves a quoted Lead to `BOOKED`.
 
-Sitterfolio does not choose a sitter, schedule care, confirm availability, send autonomous campaigns, or replace the sitter's client relationship. An optional external Stripe Payment Link button on a public Site is separate from the internal Lead-attributed Payment request flow.
+Sitterfolio does not choose a sitter, schedule care, confirm availability, send autonomous campaigns, or replace the sitter's client relationship. Customer-entered public Site payments are separate from the internal Lead-attributed Payment request flow.
 
 ## Runtime and routes
 
@@ -100,7 +100,7 @@ For financial or destructive browser tests, stop unless the exact commit/preview
 
 - `README.md` still contains older Redis-only and “not a payment processor” wording; this file and the ADR describe the current payment-enabled architecture.
 - Migration/backfill is not evidence that every environment is migrated. Check row counts, ownership relationships, and the active database before removing Redis compatibility.
-- External Payment Links and internal Lead-attributed Payment requests are separate flows; do not merge them without a contract decision.
+- Public Site payments and internal Lead-attributed Payment requests are separate financial aggregates; never book a Lead from an unattributed public payment.
 - Webhook handling is metadata-, connected-account-, amount-, currency-, Checkout Session-, and Charge-sensitive. Preserve those checks.
 - Do not add unauthenticated admin/Business operations. Do not silently deploy production, submit provider verification, send external email, or run financial migrations; these are approval/release gates.
 

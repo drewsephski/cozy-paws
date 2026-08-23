@@ -5,6 +5,7 @@ import { getAppOrigin } from './app-url';
 import { query, transaction } from './db';
 import { refreshConnectedAccountReadiness } from './connected-accounts';
 import { getStripe } from './stripe';
+import { redis } from './redis';
 
 export type PublicPaymentCheckout = { id: string; publicToken: string; amountCents: number; platformFeeCents: number; currency: string; businessName: string; subdomain: string };
 
@@ -14,6 +15,10 @@ export function parsePublicPaymentAmount(value: unknown) {
   const cents = Math.round(Number(dollars) * 100);
   if (!Number.isSafeInteger(cents) || cents < 100 || cents > 1_000_000) throw new Error('Payment amount must be between $1 and $10,000.');
   return cents;
+}
+
+export async function mayCreatePublicPayment(subdomain: string, address: string) {
+  return Boolean(await redis.set(`public-payment-rate:${subdomain}:${address}`, Date.now(), { nx: true, ex: 10 }));
 }
 
 export function buildPublicCheckoutParams(payment: PublicPaymentCheckout): Stripe.Checkout.SessionCreateParams {

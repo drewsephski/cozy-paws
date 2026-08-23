@@ -61,8 +61,7 @@ export async function saveProfileAction(
     ['tagline', 160],
     ['location', 240],
     ['phone', 40],
-    ['email', 120],
-    ['paymentLinkUrl', 500]
+    ['email', 120]
   ] as const;
 
   for (const [name, maximumLength] of textFields) {
@@ -73,14 +72,6 @@ export async function saveProfileAction(
 
   if ((formData.has('sitterName') || formData.has('businessName')) && !updates.sitterName && !updates.businessName) {
     return { error: 'Add your name or a business name so pet owners know who they are contacting.' };
-  }
-
-  if (updates.paymentLinkUrl) {
-    try {
-      const url = new URL(updates.paymentLinkUrl);
-      if (url.protocol !== 'https:' || !['buy.stripe.com', 'checkout.stripe.com'].includes(url.hostname)) throw new Error();
-      updates.paymentLinkUrl = url.toString();
-    } catch { return { error: 'Use a valid Stripe Payment Link beginning with https://buy.stripe.com.' }; }
   }
 
   if (formData.has('services')) {
