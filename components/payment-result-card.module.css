@@ -86,7 +86,8 @@
   max-width: 24rem;
 }
 
-.returnLink {
+.returnLink,
+.contactLink {
   align-items: center;
   background: var(--foreground);
   border-radius: 999px;
@@ -102,6 +103,9 @@
   transition: gap 160ms ease, transform 160ms ease;
 }
 
+.contactLink { background: var(--primary); color: var(--primary-foreground); }
+.contactLink svg { height: 1rem; width: 1rem; }
+.contactLink:focus-visible,
 .returnLink:focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
 
 .receiptNote {
@@ -124,6 +128,7 @@
 .ribbon { border-radius: 999px; height: .7rem; width: .14rem; }
 
 @media (hover: hover) and (pointer: fine) {
+  .contactLink:hover,
   .returnLink:hover { gap: .8rem; transform: translateY(-1px); }
 }
 
@@ -144,6 +149,7 @@
   .confetti { display: none; }
   .pendingMark svg,
   .successMark { animation: none; }
+  .contactLink,
   .returnLink { transition: none; }
 }
 

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Check, LoaderCircle } from 'lucide-react';
+import { Check, LoaderCircle, MessageCircle } from 'lucide-react';
 import styles from './payment-result-card.module.css';
 
 const CONFETTI = [
@@ -31,7 +31,7 @@ function Confetti() {
   );
 }
 
-export function PaymentResultCard({ confirmed, message, returnHref }: { confirmed: boolean; message: string; returnHref?: string }) {
+export function PaymentResultCard({ confirmed, message, returnHref, contact }: { confirmed: boolean; message: string; returnHref?: string; contact?: { href: string; label: string } }) {
   return (
     <main className={styles.shell}>
       <section className={styles.card}>
@@ -42,6 +42,7 @@ export function PaymentResultCard({ confirmed, message, returnHref }: { confirme
         <p className={styles.eyebrow}>{confirmed ? 'Payment complete' : 'Secure payment'}</p>
         <h1>{confirmed ? 'Payment confirmed' : 'Processing payment...'}</h1>
         <p className={styles.message}>{message}</p>
+        {confirmed && contact ? <Link href={contact.href} className={styles.contactLink}><MessageCircle aria-hidden="true" />{contact.label}</Link> : null}
         {returnHref ? (
           <Link href={returnHref} className={styles.returnLink}>
             Return to the sitter&apos;s site <span aria-hidden="true">→</span>

@@ -10,6 +10,20 @@ const mapPaymentRequestRow = (row: PaymentRow): PaymentRequest => ({ id: row.id,
 
 export async function getPaymentRequest(publicToken: string) { const result = await query<PaymentRow>(`select pr.*,b.stripe_account_id,b.stripe_ready from payment_request pr join business b on b.id=pr.business_id where pr.public_token=$1`, [publicToken]); return result.rows[0] ? mapPaymentRequestRow(result.rows[0]) : null; }
 
+export async function getPaidPaymentConversation(publicToken: string) {
+  const result = await query<{ conversation_token: string; sitter_name: string }>(
+    `select c.public_token conversation_token,coalesce(s.sitter_name,s.business_name,s.subdomain) sitter_name
+     from payment_request pr
+     join lead l on l.id=pr.lead_id and l.business_id=pr.business_id
+     join site s on s.id=l.site_id and s.business_id=pr.business_id
+     join lead_conversation c on c.lead_id=l.id and c.business_id=pr.business_id
+     where pr.public_token=$1 and pr.status<>'OPEN' and s.deleted_at is null`,
+    [publicToken]
+  );
+  const row = result.rows[0];
+  return row ? { conversationToken: row.conversation_token, sitterName: row.sitter_name } : null;
+}
+
 export async function createPaymentRequestForLead(ownerUserId: string, input: { leadId: string; amountCents: number; description: string; customerNote?: string }) {
   const fee = calculatePlatformFeeCents(input.amountCents);
   if (input.description.trim().length < 3) throw new Error('Describe the service in at least 3 characters');

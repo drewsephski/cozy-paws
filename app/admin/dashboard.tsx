@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Stepper, StepperDescription, StepperIndicator, StepperItem, StepperList, StepperSeparator, StepperTitle, StepperTrigger } from '@/components/ui/stepper';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, ArrowRight, ChartNoAxesCombined, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, LayoutDashboard, Loader2, RotateCw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChartNoAxesCombined, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, LayoutDashboard, Loader2, MessageCircle, RotateCw } from 'lucide-react';
 import Link from 'next/link';
 import { deleteSubdomainAction, refreshStripeStatusAction, startStripeOnboardingAction, type RefreshStripeStatusState } from '@/app/actions';
 import type { ConnectedAccountStatus } from '@/lib/connected-accounts';
@@ -20,6 +20,7 @@ import { PetIcon } from '@/components/pet-icon';
 import { ServiceAreaField, ServicesField, SuggestionField } from './profile-select-fields';
 import { LeadInbox } from './lead-inbox';
 import { BusinessPulse, type RevenueSnapshot } from './business-pulse';
+import { MessagesInbox } from './messages-inbox';
 
 type SiteProfile = {
   subdomain: string;
@@ -415,6 +416,7 @@ export function AdminDashboard({ sites, leads, conversationMessages, revenue, pa
         <TabsList aria-label="Dashboard views">
           <TabsTrigger value="dashboard"><LayoutDashboard className="size-4" aria-hidden="true" />Dashboard</TabsTrigger>
           <TabsTrigger value="stats"><ChartNoAxesCombined className="size-4" aria-hidden="true" />Stats</TabsTrigger>
+          <TabsTrigger value="messages"><MessageCircle className="size-4" aria-hidden="true" />Messages</TabsTrigger>
         </TabsList>
         <TabsContent value="dashboard" forceMount className="space-y-12 pt-8 data-[state=inactive]:hidden">
           <section className="space-y-4"><div><h2 className="text-xl font-semibold">Requests</h2><p className="mt-1 text-sm text-muted-foreground">Read and reply to pet owners in one place.</p></div><LeadInbox sites={sites} leads={leads} conversationMessages={conversationMessages} /></section>
@@ -425,6 +427,10 @@ export function AdminDashboard({ sites, leads, conversationMessages, revenue, pa
         </TabsContent>
         <TabsContent value="stats" forceMount className="pt-8 data-[state=inactive]:hidden">
           <BusinessPulse revenue={revenue} />
+        </TabsContent>
+        <TabsContent value="messages" forceMount className="pt-8 data-[state=inactive]:hidden">
+          <div className="mb-5"><h2 className="text-xl font-semibold">Messages</h2><p className="mt-1 text-sm text-muted-foreground">Continue private conversations with pet owners across all your sites.</p></div>
+          <MessagesInbox leads={leads} conversationMessages={conversationMessages} />
         </TabsContent>
       </Tabs>
 
