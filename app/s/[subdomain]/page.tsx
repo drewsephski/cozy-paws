@@ -5,7 +5,7 @@ import { profiles } from '@/lib/profiles';
 import { protocol, rootDomain } from '@/lib/utils';
 import { LeadForm } from './lead-form';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { MapPin } from 'lucide-react';
+import { ArrowRight, MapPin, MessageCircle } from 'lucide-react';
 import { PetIcon } from '@/components/pet-icon';
 import { AboutSitterfolioDialog } from '@/components/about-sitterfolio-dialog';
 import { PublicPaymentSection } from './public-payment-section';
@@ -84,9 +84,14 @@ export default async function SubdomainPage({
           {subdomainData.sitterName && subdomainData.businessName && <p className="mt-3 text-lg font-medium text-emerald-700 dark:text-emerald-400">{subdomainData.businessName}</p>}
           <p className="mt-6 max-w-xl text-xl leading-8 text-muted-foreground">{subdomainData.tagline || 'Pet care from someone local.'}</p>
           {(subdomainData.services || []).length > 0 && <div className="mt-10"><p className="mb-3 text-sm font-medium">Services</p><div className="flex flex-wrap gap-3">{(subdomainData.services || []).map((service) => <span key={service} className="rounded-full bg-emerald-50 px-4 py-2 text-sm text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">{service}</span>)}</div></div>}
+          <div className="mt-10 flex max-w-xl items-center gap-4 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 dark:border-emerald-900 dark:bg-emerald-950/30">
+            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-emerald-600 text-white dark:bg-emerald-500 dark:text-emerald-950"><MessageCircle className="size-5" aria-hidden="true" /></span>
+            <div className="min-w-0 flex-1"><p className="font-semibold">Have a question for {sitterDisplayName}?</p><p className="mt-0.5 text-sm leading-5 text-muted-foreground">Send a direct message. No account is needed.</p></div>
+            <a href="#contact-sitter" className="group inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold text-emerald-800 outline-none transition hover:bg-emerald-100 focus-visible:ring-2 focus-visible:ring-emerald-600/40 dark:text-emerald-300 dark:hover:bg-emerald-900/50">Message <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></a>
+          </div>
           <PublicPaymentSection subdomain={subdomain} enabled={publicPaymentsEnabled} error={paymentError} />
         </section>
-        <section className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-xl shadow-black/10 sm:p-5">
+        <section id="contact-sitter" className="relative scroll-mt-6 overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-xl shadow-black/10 sm:p-5">
           <NoiseTexture className="opacity-[.035] dark:opacity-[.08]" frequency={0.55} slope={0.2} />
           <div className="relative">
             <LeadForm subdomain={subdomain} sitterName={sitterDisplayName} />
