@@ -16,10 +16,11 @@ import { useFormStatus } from 'react-dom';
 type InboxLead = OwnedLead;
 
 function LeadStatusButton({ value, children, primary = false }: { value: string; children: ReactNode; primary?: boolean }) {
-  const { pending } = useFormStatus();
+  const { pending, data } = useFormStatus();
+  const isSubmitting = pending && data?.get('status') === value;
   return <button name="status" value={value} disabled={pending} className={`${primary ? 'bg-primary text-primary-foreground' : 'border'} inline-flex items-center gap-2 rounded-lg px-3 py-2 disabled:opacity-60`}>
-    {pending && <Spokes className="size-4" aria-hidden="true" />}
-    {pending ? 'Updating...' : children}
+    {isSubmitting && <Spokes className="size-4" aria-hidden="true" />}
+    {isSubmitting ? 'Updating...' : children}
   </button>;
 }
 
