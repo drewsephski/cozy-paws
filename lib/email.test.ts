@@ -15,6 +15,21 @@ describe('password reset email', () => {
     });
     expect((sent as { text: string }).text).toContain('https://sitterfolio.com/api/auth/reset-password/token');
     expect((sent as { text: string }).text).toContain('expires in 30 minutes');
+    expect((sent as { html: string }).html).toContain('Reset my password');
+    expect((sent as { html: string }).html).toContain('For your security:');
+    expect((sent as { html: string }).html).toContain('expires in 30 minutes');
+  });
+
+  it('escapes the reset URL before interpolating it into HTML', async () => {
+    let sent: unknown;
+    await sendPasswordResetEmail(
+      { email: 'sitter@example.com', url: 'https://sitterfolio.com/reset?token=a&next=\"unsafe\"' },
+      async (email) => { sent = email; }
+    );
+
+    const html = (sent as { html: string }).html;
+    expect(html).toContain('token=a&amp;next=&quot;unsafe&quot;');
+    expect(html).not.toContain('next=\"unsafe\"');
   });
 });
 
