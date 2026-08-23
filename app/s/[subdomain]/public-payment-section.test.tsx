@@ -17,4 +17,10 @@ describe('PublicPaymentSection', () => {
     expect(html).toContain('action="/api/s/happy-tails/payments/checkout"');
     expect(html).toContain('Choose the amount');
   });
+
+  it('explains when Stripe Checkout could not be opened', () => {
+    const html = renderToStaticMarkup(<PublicPaymentSection subdomain="happy-tails" enabled error />);
+    expect(html).toContain('role="alert"');
+    expect(html).toContain('try again');
+  });
 });

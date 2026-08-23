@@ -60,7 +60,8 @@ export async function maybeProcessPublicPaymentEvent(event: Stripe.Event, accoun
       await transaction(async (client) => {
         if ((await client.query(`select event_id from stripe_webhook_event where event_id=$1`, [event.id])).rowCount) return;
         const row = await lockedRow(client, id);
-        if (row.stripe_account_id !== accountId || row.stripe_checkout_session_id !== session.id) throw new Error('Public Checkout Session does not match the canonical payment');
+        if (row.stripe_account_id !== accountId || (row.stripe_checkout_session_id && row.stripe_checkout_session_id !== session.id)) throw new Error('Public Checkout Session does not match the canonical payment');
+        if (!row.stripe_checkout_session_id) await client.query(`update public_payment set stripe_checkout_session_id=$2,updated_at=now() where id=$1`, [row.id, session.id]);
         await client.query(`insert into stripe_webhook_event(event_id,event_type) values($1,$2)`, [event.id, event.type]);
       });
       return true;
