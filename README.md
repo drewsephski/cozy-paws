@@ -91,7 +91,7 @@ The Rover profile import is controlled by an explicit environment flag. Configur
 ROVER_IMPORT_POC_ENABLED=true
 SCREENSHOTONE_ACCESS_KEY=...
 OPENROUTER_API_KEY=...
-OPENROUTER_VISION_MODEL=google/gemini-3.7-flash
+OPENROUTER_VISION_MODEL=openai/gpt-5.4-mini
 ```
 
 The feature fails closed unless the explicit flag is true and the credentials required by the requested operation exist. Existing database, Redis, Blob, auth, and application-origin variables remain required at their normal seams. Scope the flag and credentials deliberately per Vercel environment; configuration alone is not deployment, migration, provider, browser, or production proof.

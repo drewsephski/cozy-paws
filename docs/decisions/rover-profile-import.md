@@ -16,10 +16,10 @@ cover every one.
 **Requirement:** Sitterfolio uses ScreenshotOne to capture the submitted Rover public-profile page for the import workflow.
 **Constraints:** Bound full-page height, navigation, and application timeouts; use a load state that does not depend on `networkidle0`; request a direct screenshot binary without rendered-HTML metadata. Provider capture success must not mutate the Site by itself.
 
-## D3 — Gemini analyzes the screenshot through OpenRouter
+## D3 — An OpenRouter vision model analyzes the screenshot
 
-**Resolved:** “Have Gemini, since it's good with vision, analyze the screenshot and then fill in the details that way. Use Gemini through the OpenRouter AI SDK provider.”
-**Requirement:** A Gemini vision model reached through the OpenRouter AI SDK provider analyzes the captured screenshot and returns compatible Sitterfolio profile candidates.
+**Resolved:** The initial Gemini choice was revised by “use a better model if necessary” after the production-contract canary proved Google rejected the extraction schema. GPT-5.4 Mini is the tested default through the OpenRouter AI SDK provider.
+**Requirement:** An environment-configured vision model reached through the OpenRouter AI SDK provider analyzes the captured screenshot and returns compatible Sitterfolio profile candidates.
 **Constraints:** Use the D15 configurable model and privacy-routing contract with validated structured output and fail-closed behavior. Model output is untrusted candidate data and must pass application validation.
 
 ## D4 — Import removes manual re-entry
@@ -56,7 +56,7 @@ cover every one.
 
 **Resolved:** “i think it should apply for more content on the sitters page.”
 **Requirement:** The proof of concept expands Sitterfolio’s public sitter content model and page where Rover exposes useful, visible, sitter-owned profile content that has no compatible destination today.
-**Constraints:** Expansion remains bounded to the approved proof-of-concept field bundle. Reviews, badges, hidden/private/source-only records, gallery/stay photos, platform metrics, and claims Sitterfolio cannot substantiate remain excluded. Gemini extracts and organizes visible content; it must not invent missing facts.
+**Constraints:** Expansion remains bounded to the approved proof-of-concept field bundle. Reviews, badges, hidden/private/source-only records, gallery/stay photos, platform metrics, and claims Sitterfolio cannot substantiate remain excluded. The vision model extracts and organizes visible content; it must not invent missing facts.
 
 ## D10 — The richer profile uses one bounded content bundle
 
@@ -68,7 +68,7 @@ cover every one.
 
 **Resolved:** Yes to signed-in onboarding and the existing profile editor, and also add import as an optional step in `/build` so Rover users do not manually fill details already present.
 **Requirement:** `/build` offers an optional Rover-import step, incomplete-Site onboarding offers import at the start, and an existing Site’s profile editor keeps import available as a secondary action.
-**Constraints:** Before authentication, `/build` only validates and stores the Rover URL and ownership attestation in the browser-local draft. ScreenshotOne and Gemini processing begins only after authentication during `/launch` or owned onboarding. There is no unauthenticated paid-provider endpoint, and skipping import preserves the current manual flow.
+**Constraints:** Before authentication, `/build` only validates and stores the Rover URL and ownership attestation in the browser-local draft. ScreenshotOne and vision processing begins only after authentication during `/launch` or owned onboarding. There is no unauthenticated paid-provider endpoint, and skipping import preserves the current manual flow.
 
 ## D12 — The primary photo becomes a Sitterfolio-owned asset
 
@@ -91,7 +91,7 @@ cover every one.
 ## D15 — Provider use fails closed with conservative privacy routing
 
 **Resolved:** The private proof of concept runs only where ScreenshotOne and OpenRouter credentials are explicitly configured and uses the provider privacy controls established in research.
-**Requirement:** Capture uses ScreenshotOne; analysis uses an environment-configured Gemini vision model through the OpenRouter AI SDK provider, defaulting to the researched `google/gemini-3.7-flash`, structured output, data-collection denial, and zero-data-retention routing.
+**Requirement:** Capture uses ScreenshotOne; analysis uses an environment-configured vision model through the OpenRouter AI SDK provider, defaulting to the production-canary-tested `openai/gpt-5.4-mini`, structured output, data-collection denial, and zero-data-retention routing.
 **Constraints:** Missing credentials, quota, no eligible privacy-compatible endpoint, invalid schema output, or provider failure returns a stable unavailable/retry state with no Site mutation. The model identifier stays configurable because catalog availability and pricing can change.
 
 ## D16 — The URL boundary is Rover-only
@@ -126,7 +126,7 @@ cover every one.
 
 ## D21 — The primary image is a crop of visible screenshot pixels
 
-**Resolved:** Gemini identifies a high-confidence bounding box for the primary sitter portrait in ordered screenshot slices, and Sitterfolio crops those visible pixels in memory.
+**Resolved:** The vision model identifies a high-confidence bounding box for the primary sitter portrait in ordered screenshot slices, and Sitterfolio crops those visible pixels in memory.
 **Requirement:** Only a validated, metadata-stripped JPEG/PNG/WebP crop selected during review may be copied to the authenticated Site's Blob path on apply.
 **Constraints:** Sitterfolio never fetches or hotlinks a Rover image URL. Failure to isolate a safe visible portrait is non-fatal and preserves the current photo or manual-upload path.
 

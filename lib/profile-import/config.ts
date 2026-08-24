@@ -19,5 +19,5 @@ export function resolveRoverImportConfig(operation: 'prepare' | 'apply' = 'prepa
   const screenshotOneAccessKey = env.SCREENSHOTONE_ACCESS_KEY ?? '';
   const openRouterApiKey = env.OPENROUTER_API_KEY ?? '';
   if (operation === 'prepare' && (!screenshotOneAccessKey || !openRouterApiKey)) throw new RoverImportError('PROVIDER_NOT_CONFIGURED');
-  return { screenshotOneAccessKey, openRouterApiKey, visionModel: env.OPENROUTER_VISION_MODEL || 'google/gemini-3.7-flash' };
+  return { screenshotOneAccessKey, openRouterApiKey, visionModel: env.OPENROUTER_VISION_MODEL || 'openai/gpt-5.4-mini' };
 }

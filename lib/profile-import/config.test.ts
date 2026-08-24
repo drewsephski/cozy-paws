@@ -12,12 +12,12 @@ describe('Rover import POC configuration', () => {
       VERCEL: '1',
       SCREENSHOTONE_ACCESS_KEY: 'x',
       OPENROUTER_API_KEY: 'y',
-    })).toMatchObject({ visionModel: 'google/gemini-3.7-flash' });
+    })).toMatchObject({ visionModel: 'openai/gpt-5.4-mini' });
   });
 
   it('requires provider credentials only for capture and analysis', () => {
     const env = { ROVER_IMPORT_POC_ENABLED: 'true', NODE_ENV: 'development' as const };
     expect(() => resolveRoverImportConfig('prepare', env)).toThrow();
-    expect(resolveRoverImportConfig('apply', env)).toMatchObject({ visionModel: 'google/gemini-3.7-flash' });
+    expect(resolveRoverImportConfig('apply', env)).toMatchObject({ visionModel: 'openai/gpt-5.4-mini' });
   });
 });
