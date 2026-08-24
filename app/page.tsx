@@ -120,7 +120,7 @@ export default async function HomePage() {
         <div><p className="landing-section-title max-w-[18ch] font-semibold">Give your pet-care business a home online.</p><div className="mt-7">{signedIn ? <Link href="/admin" className="landing-cta">Open dashboard<ArrowRight aria-hidden="true" className="size-4" /></Link> : <HeroStartButton />}</div></div>
         <div className="row-start-3 flex flex-col gap-4 border-t pt-5 text-sm landing-muted landing-rule sm:flex-row sm:items-center sm:justify-between">
           <span>Sitterfolio · Built for independent pet sitters.</span>
-          <span>© {new Date().getFullYear()}</span>
+          <div className="flex items-center gap-5"><Link href="/privacy" className="hover:text-foreground">Privacy</Link><Link href="/terms" className="hover:text-foreground">Terms</Link><span>© {new Date().getFullYear()}</span></div>
         </div>
       </footer>
     </div>
