@@ -46,6 +46,17 @@ where table_schema = current_schema()
   and table_name in ('business','site','lead','payment_request','public_payment','client_household','client_pet','booking','booking_pet','stripe_webhook_event')
 order by table_name, ordinal_position;
 
+select column_name, column_default
+from information_schema.columns
+where table_schema=current_schema() and table_name='site'
+  and column_name in ('about','care_routine','home_environment','pet_preferences','experience_summary','special_care_summary','service_details','profile_revision')
+order by column_name;
+
+select conname
+from pg_constraint
+where conrelid='site'::regclass and conname like 'site_%_check'
+order by conname;
+
 select count(*) owners_pending_legacy_profile_check
 from "user" u
 cross join legacy_profile_migration_cutover cutover

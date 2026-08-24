@@ -4,8 +4,8 @@ import { editableSiteOptions, reviewedBookingDraft } from './site-editing-model'
 describe('multi-Site editing and reviewed Booking handoff', () => {
   it('offers every owned Site as an editing target', () => {
     expect(editableSiteOptions([
-      { subdomain: 'first', ownerId: 'owner-1', emoji: 'dog', createdAt: 1, businessName: 'First Care' },
-      { subdomain: 'second', ownerId: 'owner-1', emoji: 'cat', createdAt: 2, sitterName: 'Jamie' }
+      { subdomain: 'first', ownerId: 'owner-1', emoji: 'dog', createdAt: 1, businessName: 'First Care', profileRevision: 0 },
+      { subdomain: 'second', ownerId: 'owner-1', emoji: 'cat', createdAt: 2, sitterName: 'Jamie', profileRevision: 0 }
     ])).toEqual([{ value: 'first', label: 'First Care' }, { value: 'second', label: 'Jamie' }]);
   });
 

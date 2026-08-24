@@ -23,6 +23,8 @@ describe('Postgres owner profile query shape', () => {
     await expect(postgresProfileRepository.readProfiles(['first', 'second'])).resolves.toHaveLength(2);
     expect(queryMock).toHaveBeenCalledTimes(1);
     expect(queryMock.mock.calls[0][0]).toContain('s.subdomain=any($1::text[])');
+    expect(queryMock.mock.calls[0][0]).toContain('s.service_details');
+    expect(queryMock.mock.calls[0][0]).toContain('s.profile_revision');
   });
 
   it('batch acknowledges only read_at through an owner-scoped Site join', async () => {
@@ -67,7 +69,7 @@ describe('Postgres owner profile query shape', () => {
 
   it('treats an empty PostgreSQL Lead set as authoritative for known Sites', async () => {
     queryMock.mockResolvedValueOnce({ rows: [] });
-    const profile = { ownerId: 'owner-1', subdomain: 'first', emoji: 'dog', createdAt: 1 };
+    const profile = { ownerId: 'owner-1', subdomain: 'first', emoji: 'dog', createdAt: 1, profileRevision: 0 };
     await expect(postgresProfileRepository.readOwnerLeads('owner-1', [profile])).resolves.toEqual([]);
     expect(queryMock).toHaveBeenCalledTimes(1);
     expect(legacyReadLeadsMock).not.toHaveBeenCalled();

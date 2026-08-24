@@ -9,6 +9,7 @@ import { getOwnerPaymentSetup, getOwnerRevenue } from '@/lib/payment-requests';
 import { getOwnerConversationMessages } from '@/lib/conversations';
 import { listOwnerClientHouseholds } from '@/lib/client-households';
 import { listOwnerBookings } from '@/lib/bookings';
+import { isRoverImportPrepareAvailable } from '@/lib/profile-import/config';
 
 export const metadata: Metadata = {
   title: `Sitter dashboard | ${rootDomain}`,
@@ -31,7 +32,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader dashboard signedIn />
-      <main><AdminDashboard sites={sites} leads={leads} conversationMessages={conversationMessages} clientHouseholds={clientHouseholds} bookings={bookings} revenue={revenue} paymentSetup={paymentSetup} stripeReturn={stripeReturn} /></main>
+      <main><AdminDashboard sites={sites} leads={leads} conversationMessages={conversationMessages} clientHouseholds={clientHouseholds} bookings={bookings} revenue={revenue} paymentSetup={paymentSetup} stripeReturn={stripeReturn} roverImportEnabled={isRoverImportPrepareAvailable()} /></main>
     </div>
   );
 }

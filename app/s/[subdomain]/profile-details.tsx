@@ -16,6 +16,7 @@ export function PublicProfileDetails({ profile }: { profile: BusinessProfile }) 
     || Boolean(profile.selfReportedCredentials?.length);
 
   return <div className="mt-8 space-y-6">
+    {profile.about && <section aria-labelledby="about-heading"><h2 id="about-heading" className="text-lg font-semibold">About</h2><p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted-foreground">{profile.about}</p></section>}
     <section aria-labelledby="availability-heading" className="rounded-xl border border-emerald-700/20 bg-emerald-50/60 p-4 dark:bg-emerald-950/25">
       <h2 id="availability-heading" className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">{availabilityLabel(profile)}</h2>
       <p className="mt-1 text-xs leading-5 text-muted-foreground">Availability is self-reported and may change. Ask about your dates before making plans.</p>
@@ -30,5 +31,12 @@ export function PublicProfileDetails({ profile }: { profile: BusinessProfile }) 
       </dl>
       {!!profile.selfReportedCredentials?.length && <div className="mt-5 rounded-xl border border-border p-4"><h3 className="text-sm font-semibold">Self-reported credentials</h3><ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">{profile.selfReportedCredentials.map((credential) => <li key={credential}>{credential}</li>)}</ul><p className="mt-3 text-xs leading-5 text-muted-foreground">Sitterfolio does not verify insurance, certifications, background checks, or safety claims. Ask the sitter for current details.</p></div>}
     </section>}
+    {(profile.careRoutine || profile.homeEnvironment || profile.petPreferences || profile.experienceSummary || profile.specialCareSummary) && <section aria-labelledby="profile-care-heading"><h2 id="profile-care-heading" className="text-lg font-semibold">How care works</h2><dl className="mt-4 grid gap-5 text-sm sm:grid-cols-2">
+      {profile.careRoutine && <div><dt className="font-semibold">Care routine</dt><dd className="mt-1 whitespace-pre-line leading-6 text-muted-foreground">{profile.careRoutine}</dd></div>}
+      {profile.homeEnvironment && <div><dt className="font-semibold">Home environment</dt><dd className="mt-1 whitespace-pre-line leading-6 text-muted-foreground">{profile.homeEnvironment}</dd></div>}
+      {profile.petPreferences && <div><dt className="font-semibold">Pet preferences</dt><dd className="mt-1 whitespace-pre-line leading-6 text-muted-foreground">{profile.petPreferences}</dd></div>}
+      {profile.experienceSummary && <div><dt className="font-semibold">Experience</dt><dd className="mt-1 whitespace-pre-line leading-6 text-muted-foreground">{profile.experienceSummary}</dd></div>}
+      {profile.specialCareSummary && <div><dt className="font-semibold">Special care</dt><dd className="mt-1 whitespace-pre-line leading-6 text-muted-foreground">{profile.specialCareSummary}</dd></div>}
+    </dl></section>}
   </div>;
 }

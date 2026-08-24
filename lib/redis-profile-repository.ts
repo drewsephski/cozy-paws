@@ -7,20 +7,24 @@ const leadsKey = (subdomain: string) => `leads:${subdomain}`;
 
 export const redisProfileRepository: ProfileRepository = {
   async readProfile(subdomain) {
-    return getRedis().get<BusinessProfile>(profileKey(subdomain));
+    const profile = await getRedis().get<BusinessProfile>(profileKey(subdomain));
+    return profile ? { ...profile, profileRevision: profile.profileRevision ?? 0 } : null;
   },
 
   async readProfiles(subdomains) {
     if (!subdomains.length) return [];
-    return getRedis().mget<BusinessProfile[]>(...subdomains.map(profileKey));
+    const profiles = await getRedis().mget<Array<BusinessProfile | null>>(...subdomains.map(profileKey));
+    return profiles.map((profile) => profile ? { ...profile, profileRevision: profile.profileRevision ?? 0 } : null);
   },
 
   async createProfile(subdomain, profile) {
-    return Boolean(await getRedis().set(profileKey(subdomain), profile, { nx: true }));
+    return Boolean(await getRedis().set(profileKey(subdomain), { ...profile, profileRevision: profile.profileRevision ?? 0 }, { nx: true }));
   },
 
   async writeProfile(subdomain, profile) {
-    await getRedis().set(profileKey(subdomain), profile);
+    const written = { ...profile, profileRevision: (profile.profileRevision ?? 0) + 1 };
+    await getRedis().set(profileKey(subdomain), written);
+    return written;
   },
 
   async deleteProfile(subdomain) {

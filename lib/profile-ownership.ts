@@ -1,3 +1,5 @@
+import { normalizeServices as normalizeProfileServices, type ServiceProfileDetail } from './domain/profile-content';
+
 export type BusinessProfile = {
   ownerId?: string;
   emoji: string;
@@ -20,9 +22,18 @@ export type BusinessProfile = {
   meetAndGreetExpectations?: string;
   cancellationExpectations?: string;
   selfReportedCredentials?: string[];
+  about?: string;
+  careRoutine?: string;
+  homeEnvironment?: string;
+  petPreferences?: string;
+  experienceSummary?: string;
+  specialCareSummary?: string;
+  serviceDetails?: Record<string, ServiceProfileDetail>;
+  profileRevision?: number;
 };
 
-export type ProfileRecord = BusinessProfile & { subdomain: string };
+export type LoadedBusinessProfile = BusinessProfile & { profileRevision: number };
+export type ProfileRecord = LoadedBusinessProfile & { subdomain: string };
 
 export type Lead = {
   id: string;
@@ -46,10 +57,10 @@ export type Lead = {
 export type OwnedLead = Lead & { subdomain: string; siteName: string };
 
 export type ProfileRepository = {
-  readProfile(subdomain: string): Promise<BusinessProfile | null>;
-  readProfiles(subdomains: string[]): Promise<Array<BusinessProfile | null>>;
+  readProfile(subdomain: string): Promise<LoadedBusinessProfile | null>;
+  readProfiles(subdomains: string[]): Promise<Array<LoadedBusinessProfile | null>>;
   createProfile(subdomain: string, profile: BusinessProfile): Promise<boolean>;
-  writeProfile(subdomain: string, profile: BusinessProfile): Promise<void>;
+  writeProfile(subdomain: string, profile: BusinessProfile): Promise<LoadedBusinessProfile>;
   deleteProfile(subdomain: string): Promise<boolean>;
   listOwnerSubdomains(ownerId: string): Promise<string[]>;
   addOwnerSubdomain(ownerId: string, subdomain: string): Promise<void>;
@@ -81,15 +92,7 @@ export function normalizeSubdomain(value: string) {
 }
 
 export function normalizeServices(services: readonly string[], limit = 8) {
-  const seen = new Set<string>();
-
-  return services.flatMap((service) => {
-    const normalized = service.trim().replace(/\s+/g, ' ');
-    const key = normalized.toLocaleLowerCase('en-US');
-    if (!normalized || seen.has(key)) return [];
-    seen.add(key);
-    return [normalized];
-  }).slice(0, limit);
+  return normalizeProfileServices(services, limit);
 }
 
 export function createProfileOwnership(repository: ProfileRepository) {
@@ -97,7 +100,7 @@ export function createProfileOwnership(repository: ProfileRepository) {
     const normalized = normalizeSubdomain(subdomain);
     if (!normalized) return null;
     const profile = await repository.readProfile(normalized);
-    return profile ? { ...profile, subdomain: normalized } : null;
+    return profile ? { ...profile, profileRevision: profile.profileRevision ?? 0, subdomain: normalized } : null;
   }
 
   async function getOwned(subdomain: string, ownerId: string) {
@@ -113,18 +116,18 @@ export function createProfileOwnership(repository: ProfileRepository) {
       const subdomains = (await repository.listOwnerSubdomains(ownerId)).map(normalizeSubdomain);
       const storedProfiles = await repository.readProfiles(subdomains);
       return storedProfiles.flatMap((profile, index) =>
-        profile?.ownerId === ownerId ? [{ ...profile, subdomain: subdomains[index] }] : []
+        profile?.ownerId === ownerId ? [{ ...profile, profileRevision: profile.profileRevision ?? 0, subdomain: subdomains[index] }] : []
       );
     },
 
     async create(
       ownerId: string,
       subdomain: string,
-      profile: Omit<BusinessProfile, 'ownerId'>
+      profile: Omit<BusinessProfile, 'ownerId' | 'profileRevision'> & { profileRevision?: number }
     ) {
       const normalized = normalizeSubdomain(subdomain);
       if (!normalized) return null;
-      const ownedProfile = { ...profile, ownerId };
+      const ownedProfile = { profileRevision: profile.profileRevision ?? 0, ...profile, ownerId };
       const created = await repository.createProfile(normalized, ownedProfile);
       if (!created) return null;
       await repository.addOwnerSubdomain(ownerId, normalized);
@@ -140,8 +143,8 @@ export function createProfileOwnership(repository: ProfileRepository) {
       if (!current) return null;
       const { subdomain: normalized, ...profile } = current;
       const updated = { ...profile, ...updates };
-      await repository.writeProfile(normalized, updated);
-      return { ...updated, subdomain: normalized };
+      const written = await repository.writeProfile(normalized, updated);
+      return { ...written, subdomain: normalized };
     },
 
     async deleteOwned(ownerId: string, subdomain: string) {

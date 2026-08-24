@@ -28,6 +28,8 @@ import { Bookings } from './bookings';
 import type { Booking } from '@/lib/bookings';
 import { editableSiteOptions, reviewedBookingDraft, type ReviewedBookingDraft } from './site-editing-model';
 import type { ProfileRecord } from '@/lib/profile-ownership';
+import { RoverImportCard } from '@/components/rover-import-card';
+import { ProfileRichFields } from './profile-rich-fields';
 
 type SiteProfile = ProfileRecord;
 
@@ -88,7 +90,7 @@ export function OnboardingComplete({ site }: { site: SiteProfile }) {
   );
 }
 
-function ProfileOnboarding({ site }: { site: SiteProfile }) {
+function ProfileOnboarding({ site, roverImportEnabled }: { site: SiteProfile; roverImportEnabled: boolean }) {
   const [stepIndex, setStepIndex] = useState(() => {
     if (!site.sitterName && !site.businessName) return 0;
     if (!site.tagline || !site.location || !site.services?.length) return 1;
@@ -125,6 +127,7 @@ function ProfileOnboarding({ site }: { site: SiteProfile }) {
         <div><p className="text-xs font-medium uppercase tracking-[.16em] text-emerald-700 dark:text-emerald-400">Your site setup</p><h1 className="mt-2 text-2xl font-semibold tracking-tight">A few details, then you&apos;re live.</h1></div>
         <p className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-600" aria-hidden="true" />Saved after every step</p>
       </div>
+      {roverImportEnabled && <div className="mb-8 max-w-3xl"><RoverImportCard site={site.subdomain} /></div>}
       <Stepper value={step.name} onValueChange={goToStep} activationMode="manual" className="gap-10">
         <StepperList className="w-full overflow-x-auto pb-2" aria-label="Site setup progress">
           {onboardingSteps.map((item, index) => (
@@ -233,7 +236,7 @@ function ProfileTextArea({ label, name, defaultValue, placeholder }: { label: st
   return <div className="sm:col-span-2"><label htmlFor={name} className="mb-1.5 block text-xs font-medium text-muted-foreground">{label}</label><textarea id={name} name={name} defaultValue={defaultValue} placeholder={placeholder} maxLength={500} rows={3} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-emerald-500/70 focus:ring-4 focus:ring-emerald-500/10" /></div>;
 }
 
-function ProfileEditor({ site }: { site: SiteProfile }) {
+function ProfileEditor({ site, roverImportEnabled }: { site: SiteProfile; roverImportEnabled: boolean }) {
   const [state, saveAction, isSaving] = useActionState<SaveProfileState, FormData>(saveProfileAction, {});
   const [showSaved, setShowSaved] = useState(false);
 
@@ -247,6 +250,7 @@ function ProfileEditor({ site }: { site: SiteProfile }) {
   return (
     <section className="space-y-3">
       <div><h2 className="text-xl font-semibold">Edit what pet owners see</h2><p className="mt-1 text-sm text-muted-foreground">Keep the essentials current. Changes appear after you save.</p></div>
+      {roverImportEnabled && <div><Button asChild variant="outline" size="sm"><Link href={`/admin/import/rover?site=${encodeURIComponent(site.subdomain)}`}>Import from Rover</Link></Button></div>}
       <form action={saveAction} className="rounded-xl bg-card ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)]">
         <input type="hidden" name="subdomain" value={site.subdomain} />
         <div className="grid gap-4 p-5 sm:grid-cols-2">
@@ -265,6 +269,7 @@ function ProfileEditor({ site }: { site: SiteProfile }) {
           <ProfileTextArea label="Meet-and-greet expectations" name="meetAndGreetExpectations" defaultValue={site.meetAndGreetExpectations || ''} placeholder="Share what a new client should expect before care begins." />
           <ProfileTextArea label="Cancellation expectations" name="cancellationExpectations" defaultValue={site.cancellationExpectations || ''} placeholder="Explain your usual notice and cancellation expectations." />
           <ProfileField label="Self-reported credentials (comma separated)" name="selfReportedCredentials" defaultValue={(site.selfReportedCredentials || []).join(', ')} placeholder="Pet first aid course, insured" className="sm:col-span-2" />
+          <ProfileRichFields site={site} />
           <div className="sm:col-span-2">
             <p className="mb-1.5 text-xs font-medium text-muted-foreground">Profile photo</p>
             <ProfileImageUpload subdomain={site.subdomain} currentImageUrl={site.profileImageUrl} />
@@ -283,14 +288,14 @@ function ProfileEditor({ site }: { site: SiteProfile }) {
   );
 }
 
-function SiteEditor({ sites }: { sites: SiteProfile[] }) {
+function SiteEditor({ sites, roverImportEnabled }: { sites: SiteProfile[]; roverImportEnabled: boolean }) {
   const [selectedSubdomain, setSelectedSubdomain] = useState(sites[0]?.subdomain || '');
   const selected = sites.find((site) => site.subdomain === selectedSubdomain) || sites[0];
   if (!selected) return null;
   const options = editableSiteOptions(sites);
   return <section className="space-y-4">
     {sites.length > 1 && <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted/20 p-4 sm:flex-row sm:items-center sm:justify-between"><div><label htmlFor="site-editor-select" className="text-sm font-semibold">Site to edit</label><p className="mt-1 text-xs text-muted-foreground">Choose any owned Site. Saving changes only this Site.</p></div><select id="site-editor-select" value={selected.subdomain} onChange={(event) => setSelectedSubdomain(event.target.value)} className="h-11 min-w-56 rounded-lg border border-input bg-background px-3 text-sm">{options.map((option) => <option key={option.value} value={option.value}>{option.label} · {option.value}</option>)}</select></div>}
-    <ProfileEditor key={selected.subdomain} site={selected} />
+    <ProfileEditor key={selected.subdomain} site={selected} roverImportEnabled={roverImportEnabled} />
   </section>;
 }
 
@@ -428,7 +433,7 @@ function StripeSetup({ businesses, stripeReturn }: { businesses: PaymentSetup[];
   );
 }
 
-export function AdminDashboard({ sites, leads, conversationMessages, clientHouseholds, bookings, revenue, paymentSetup, stripeReturn }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; conversationMessages: Record<string, import('@/lib/conversations').ConversationMessage[]>; clientHouseholds: ClientHousehold[]; bookings: Booking[]; revenue: RevenueSnapshot; paymentSetup: PaymentSetup[]; stripeReturn?: string }) {
+export function AdminDashboard({ sites, leads, conversationMessages, clientHouseholds, bookings, revenue, paymentSetup, stripeReturn, roverImportEnabled }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; conversationMessages: Record<string, import('@/lib/conversations').ConversationMessage[]>; clientHouseholds: ClientHousehold[]; bookings: Booking[]; revenue: RevenueSnapshot; paymentSetup: PaymentSetup[]; stripeReturn?: string; roverImportEnabled: boolean }) {
   const [state, action, isPending] = useActionState<DeleteState, FormData>(
     deleteSubdomainAction,
     {}
@@ -448,7 +453,7 @@ export function AdminDashboard({ sites, leads, conversationMessages, clientHouse
   }
 
   const onboardingSite = sites.find((site) => site.onboardingCompletedAt === null);
-  if (onboardingSite) return <ProfileOnboarding site={onboardingSite} />;
+  if (onboardingSite) return <ProfileOnboarding site={onboardingSite} roverImportEnabled={roverImportEnabled} />;
 
   return (
     <div className="relative mx-auto w-full max-w-6xl px-5 pb-12 pt-8 lg:px-8 lg:pb-16 lg:pt-12">
@@ -465,7 +470,7 @@ export function AdminDashboard({ sites, leads, conversationMessages, clientHouse
           <section className="space-y-4"><div><h2 className="text-xl font-semibold">Requests</h2><p className="mt-1 text-sm text-muted-foreground">Read and reply to pet owners in one place.</p></div><LeadInbox sites={sites} leads={leads} conversationMessages={conversationMessages} clientHouseholdByLead={clientHouseholdByLead} onCreateDraftBooking={createDraftBooking} /></section>
           <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><SiteGrid sites={sites} action={action} isPending={isPending} /></section>
           {paymentSetup.some((business) => business.status !== 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
-          <SiteEditor sites={sites} />
+          <SiteEditor sites={sites} roverImportEnabled={roverImportEnabled} />
           {paymentSetup.length > 0 && paymentSetup.every((business) => business.status === 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
         </TabsContent>
         <TabsContent value="stats" forceMount className="pt-8 data-[state=inactive]:hidden">

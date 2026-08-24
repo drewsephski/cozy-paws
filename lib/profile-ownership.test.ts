@@ -37,9 +37,7 @@ describe('profile ownership', () => {
       'happy-tails'
     ]);
     expect(await profiles.updateOwned('owner-2', 'happy-tails', { tagline: 'Nope' })).toBeNull();
-    expect((await profiles.updateOwned('owner-1', 'happy-tails', { tagline: 'Trusted care' }))?.tagline).toBe(
-      'Trusted care'
-    );
+    expect(await profiles.updateOwned('owner-1', 'happy-tails', { tagline: 'Trusted care' })).toMatchObject({ tagline: 'Trusted care', profileRevision: 1 });
     expect((await profiles.get('happy-tails'))?.businessName).toBe('Happy Tails');
 
     await profiles.recordLead(
@@ -86,7 +84,8 @@ describe('profile ownership', () => {
     repository.profiles.set('other-site', {
       ownerId: 'owner-2',
       emoji: 'cat',
-      createdAt: 100
+      createdAt: 100,
+      profileRevision: 0
     });
     const profiles = createProfileOwnership(repository);
 

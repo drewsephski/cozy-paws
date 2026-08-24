@@ -50,6 +50,18 @@ describe('canonical PostgreSQL migrations and constraints', () => {
     await expect(query(`insert into public_payment(business_id,site_id,public_token,amount_cents,platform_fee_cents,stripe_account_id) values($1,$2,'wrong-owner-public',10000,300,'acct_2')`, [ids.business2, ids.site1])).rejects.toMatchObject({ code: '23503' });
   });
 
+  it('defaults and bounds richer Site profile content without weakening ownership', async () => {
+    const defaults = (await query<{ service_details: Record<string, unknown>; profile_revision: string }>(`select service_details,profile_revision::text from site where id=$1`, [ids.site1])).rows[0];
+    expect(defaults).toEqual({ service_details: {}, profile_revision: '0' });
+    await expect(query(`update site set about=repeat('a',3001) where id=$1`, [ids.site1])).rejects.toMatchObject({ code: '23514' });
+    await expect(query(`update site set care_routine=repeat('a',1501) where id=$1`, [ids.site1])).rejects.toMatchObject({ code: '23514' });
+    await expect(query(`update site set service_details='[]'::jsonb where id=$1`, [ids.site1])).rejects.toMatchObject({ code: '23514' });
+    await expect(query(`update site set service_details=jsonb_build_object('large',repeat('a',12300)) where id=$1`, [ids.site1])).rejects.toMatchObject({ code: '23514' });
+    await expect(query(`update site set profile_revision=-1 where id=$1`, [ids.site1])).rejects.toMatchObject({ code: '23514' });
+    const ownership = (await query<{ count: string }>(`select count(*)::text count from pg_constraint where conrelid in ('site'::regclass,'lead'::regclass,'payment_request'::regclass,'public_payment'::regclass) and contype='f'`)).rows[0].count;
+    expect(Number(ownership)).toBeGreaterThan(0);
+  });
+
   it('enforces one open Payment request per Lead with a partial unique index', async () => {
     await query(`insert into payment_request(business_id,lead_id,public_token,amount_cents,platform_fee_cents,description,stripe_account_id) values($1,$2,'open-one',10000,300,'Pet care','acct_1')`, [ids.business1, ids.lead1]);
     await expect(query(`insert into payment_request(business_id,lead_id,public_token,amount_cents,platform_fee_cents,description,stripe_account_id) values($1,$2,'open-two',10000,300,'Pet care','acct_1')`, [ids.business1, ids.lead1])).rejects.toMatchObject({ code: '23505' });

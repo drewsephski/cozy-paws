@@ -15,4 +15,12 @@ describe('public availability and trust details', () => {
     expect(html).toContain('Self-reported credentials');
     expect(html).toContain('does not verify insurance');
   });
+
+  it('renders rich imported profile sections as plain text when present', () => {
+    const html = renderToStaticMarkup(<PublicProfileDetails profile={{ emoji: 'dog', createdAt: 1, about: 'I keep pets on their familiar routine.', careRoutine: 'Morning walks and evening play.', homeEnvironment: 'Quiet home with a fenced yard.', petPreferences: 'Comfortable with cats and senior dogs.', experienceSummary: 'Seven years caring for neighborhood pets.', specialCareSummary: 'Oral medications with written instructions.' }} />);
+    expect(html).toContain('About');
+    expect(html).toContain('Morning walks and evening play.');
+    expect(html).toContain('Home environment');
+    expect(html).toContain('Special care');
+  });
 });

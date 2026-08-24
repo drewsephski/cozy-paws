@@ -21,6 +21,7 @@ type SiteRow = {
   profile_image_url: string | null;
   onboarding_completed_at: Date | null;
   payment_link_url: string | null;
+  profile_revision: string | number | null;
 };
 
 type LeadRow = {
@@ -78,7 +79,8 @@ const profileFromRow = (row: SiteRow): ProfileRecord => ({
   linkedinUrl: row.linkedin_url,
   profileImageUrl: row.profile_image_url ?? undefined,
   onboardingCompletedAt: row.onboarding_completed_at?.getTime() ?? null,
-  paymentLinkUrl: row.payment_link_url ?? undefined
+  paymentLinkUrl: row.payment_link_url ?? undefined,
+  profileRevision: Number(row.profile_revision ?? 0)
 });
 
 const leadFromRow = (row: LeadRow): Lead => ({
@@ -106,7 +108,7 @@ export function createPostgresLeadPersister(runTransaction: TransactionRunner = 
       const siteResult = await client.query<SiteRow>(
         `select s.id site_id,s.business_id,b.owner_user_id owner_id,s.subdomain,s.emoji,s.created_at site_created_at,
                 s.sitter_name,s.business_name,s.tagline,s.location,s.services,s.phone,s.email,s.linkedin_url,s.profile_image_url,
-                s.onboarding_completed_at,b.payment_link_url
+                s.onboarding_completed_at,b.payment_link_url,s.profile_revision
          from site s join business b on b.id=s.business_id
          where s.subdomain=$1 and s.deleted_at is null
          for update of s`,

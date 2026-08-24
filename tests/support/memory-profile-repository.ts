@@ -1,11 +1,13 @@
 import type {
   BusinessProfile,
   Lead,
+  LoadedBusinessProfile,
+  ProfileRecord,
   ProfileRepository
 } from '../../lib/profile-ownership';
 
 export class MemoryProfileRepository implements ProfileRepository {
-  readonly profiles = new Map<string, BusinessProfile>();
+  readonly profiles = new Map<string, LoadedBusinessProfile>();
   readonly owners = new Map<string, Set<string>>();
   readonly leads = new Map<string, Lead[]>();
 
@@ -19,13 +21,14 @@ export class MemoryProfileRepository implements ProfileRepository {
 
   createProfile(subdomain: string, profile: BusinessProfile) {
     if (this.profiles.has(subdomain)) return Promise.resolve(false);
-    this.profiles.set(subdomain, profile);
+    this.profiles.set(subdomain, { ...profile, profileRevision: profile.profileRevision ?? 0 });
     return Promise.resolve(true);
   }
 
   writeProfile(subdomain: string, profile: BusinessProfile) {
-    this.profiles.set(subdomain, profile);
-    return Promise.resolve();
+    const written = { ...profile, profileRevision: (this.profiles.get(subdomain)?.profileRevision ?? 0) + 1 };
+    this.profiles.set(subdomain, written);
+    return Promise.resolve(written);
   }
 
   deleteProfile(subdomain: string) {
@@ -57,7 +60,7 @@ export class MemoryProfileRepository implements ProfileRepository {
     return Promise.resolve();
   }
 
-  readOwnerLeads(ownerId: string, profiles: Array<BusinessProfile & { subdomain: string }>) {
+  readOwnerLeads(ownerId: string, profiles: ProfileRecord[]) {
     return Promise.resolve(profiles.flatMap((profile) =>
       profile.ownerId === ownerId
         ? (this.leads.get(profile.subdomain) ?? []).map((lead) => ({

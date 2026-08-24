@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, CheckCircle2 } from '@/components/ui/animated-ic
 import { Button } from '@/components/ui/button';
 import { PetIcon } from '@/components/pet-icon';
 import { rootDomain } from '@/lib/utils';
+import { RoverImportCard, type RoverImportDraft } from '@/components/rover-import-card';
 
 type Draft = {
   subdomain: string;
@@ -17,6 +18,7 @@ type Draft = {
   services: string;
   email: string;
   phone: string;
+  roverImport?: RoverImportDraft;
 };
 
 const emptyDraft: Draft = { subdomain: '', icon: '', sitterName: '', businessName: '', tagline: '', location: '', services: '', email: '', phone: '' };
@@ -29,7 +31,7 @@ const steps = [
   { name: 'phone', title: 'Do you want to share a phone number?', helper: 'Optional. Leave this blank if you prefer email.', placeholder: '(555) 123-4567', type: 'tel', required: false }
 ] as const;
 
-export function DraftBuilder({ signedIn }: { signedIn: boolean }) {
+export function DraftBuilder({ signedIn, roverImportEnabled }: { signedIn: boolean; roverImportEnabled: boolean }) {
   const router = useRouter();
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [stepIndex, setStepIndex] = useState(0);
@@ -74,6 +76,13 @@ export function DraftBuilder({ signedIn }: { signedIn: boolean }) {
         <div className="mt-4 grid grid-cols-6 gap-2">{steps.map((item, index) => <span key={item.name} className={`h-1.5 rounded-full ${index <= stepIndex ? 'bg-primary' : 'bg-muted'}`} />)}</div>
         <p className="mt-5 flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-600" />Your draft stays in this browser until you launch.</p>
       </div>
+      {roverImportEnabled && <div className="mb-8 max-w-3xl"><RoverImportCard initialValue={draft.roverImport} onChoose={(roverImport) => {
+        const next = { ...draft, roverImport };
+        setDraft(next);
+        window.localStorage.setItem('sitterfolio-draft', JSON.stringify(next));
+        router.push(signedIn ? '/launch' : '/auth?mode=sign-up&callbackURL=%2Flaunch');
+      }} />
+      {draft.roverImport && <Button type="button" variant="link" className="mt-2 px-0" onClick={() => setDraft((current) => { const manual = { ...current }; delete manual.roverImport; return manual; })}>Enter details myself instead</Button>}</div>}
       <div className="grid items-start gap-10 border-t border-border pt-10 lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-16">
         <main className="flex min-h-[470px] flex-col justify-center py-4">
           <div className="max-w-3xl">

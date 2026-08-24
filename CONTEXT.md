@@ -8,6 +8,10 @@ Sitterfolio gives an independent pet sitter a public website at an address such 
 
 Use these domain terms: a **Site** is the public business profile; a **Profile** is its sitter identity and care details; a **Business** is the operating/legal pet-care business owned by one authenticated **User**; a **Lead** is an availability request; a **Conversation** is the one-to-one message history attached to a Lead, beginning with the original request; a **Client household** is the reusable owner/household record promoted from a qualified Lead; a **Pet profile** is reusable care information under a Client household; a **Booking** is dated care for one Client household and one or more of its Pet profiles, with an agreed integer-cent amount and its own lifecycle; a **Payment request** is a customer-facing fixed-cent amount associated with a Lead; **Generated revenue** is paid customer volume net of refunds, not Sitterfolio's application-fee revenue. Avoid `tenant`, `contact record`, and `invoice` for these concepts.
 
+An **Import draft** is a transient, sitter-reviewable set of proposed Profile
+details derived from visible external profile content. It is not part of the
+owned Site until the authenticated sitter explicitly applies it.
+
 ## User flow
 
 1. `/` explains the product and collects a normalized Site address.

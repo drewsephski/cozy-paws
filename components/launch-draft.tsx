@@ -8,8 +8,9 @@ import { PetIcon } from '@/components/pet-icon';
 import { Spokes } from '@/components/ui/spokes';
 import { launchDraftAction, type LaunchDraftState } from '@/app/actions';
 import { rootDomain } from '@/lib/utils';
+import type { RoverImportDraft } from '@/components/rover-import-card';
 
-type Draft = Record<'subdomain' | 'icon' | 'sitterName' | 'businessName' | 'tagline' | 'location' | 'services' | 'email' | 'phone', string>;
+type Draft = Record<'subdomain' | 'icon' | 'sitterName' | 'businessName' | 'tagline' | 'location' | 'services' | 'email' | 'phone', string> & { roverImport?: RoverImportDraft };
 
 export function LaunchDraft() {
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -41,13 +42,14 @@ export function LaunchDraft() {
       <section className="grid w-full overflow-hidden rounded-xl bg-card ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_18px_50px_-36px_rgba(0,0,0,.35)] md:grid-cols-[minmax(0,1.12fr)_minmax(18rem,.88fr)]">
         <div className="flex flex-col justify-center px-6 py-8 sm:px-9 sm:py-10 lg:px-12">
           <h1 className="max-w-xl text-3xl font-semibold tracking-[-.025em] text-balance sm:text-4xl">Ready to launch {displayName || 'your site'}?</h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Publish your site at <strong className="font-medium text-foreground">{draft.subdomain}.{rootDomain}</strong>.</p>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">{draft.roverImport ? <>Create a private setup draft at <strong className="font-medium text-foreground">{draft.subdomain}.{rootDomain}</strong>, then review your Rover details before publishing.</> : <>Publish your site at <strong className="font-medium text-foreground">{draft.subdomain}.{rootDomain}</strong>.</>}</p>
           <form action={action} className="mt-7">
-          {Object.entries(draft).map(([name, value]) => <input key={name} type="hidden" name={name} value={value} />)}
+          {Object.entries(draft).filter(([, value]) => typeof value === 'string').map(([name, value]) => <input key={name} type="hidden" name={name} value={String(value)} />)}
+          {draft.roverImport && <><input type="hidden" name="roverUrl" value={draft.roverImport.roverUrl} /><input type="hidden" name="attestationAccepted" value="true" /><input type="hidden" name="attestationVersion" value={draft.roverImport.attestationVersion} /></>}
             {state.error && <p role="alert" className="mb-5 max-w-lg rounded-xl bg-destructive/10 px-4 py-3 text-sm leading-6 text-destructive">{state.error}</p>}
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <Button type="submit" disabled={pending} className="h-10 px-4">
-                {pending ? <><Spokes />Launching...</> : <>Launch my site <ArrowRight /></>}
+                {pending ? <><Spokes />{draft.roverImport ? 'Starting import...' : 'Launching...'}</> : <>{draft.roverImport ? 'Review my Rover profile' : 'Launch my site'} <ArrowRight /></>}
               </Button>
               <Button asChild type="button" variant="ghost" className="h-10 px-4"><Link href="/build"><ArrowLeft />Keep editing</Link></Button>
             </div>

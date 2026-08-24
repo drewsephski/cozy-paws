@@ -83,6 +83,19 @@ STRIPE_ACCOUNT_WEBHOOK_SECRET=whsec_accounts_v2_thin_event_destination
 
 Generate a local Better Auth secret with `openssl rand -base64 32`. Never commit credentials. Keep local, preview, and production databases and Stripe modes isolated.
 
+### Rover profile import
+
+The Rover profile import is controlled by an explicit environment flag. Configure these **server-only** variables in each environment where the import should be available (never use a `NEXT_PUBLIC_` prefix):
+
+```dotenv
+ROVER_IMPORT_POC_ENABLED=true
+SCREENSHOTONE_ACCESS_KEY=...
+OPENROUTER_API_KEY=...
+OPENROUTER_VISION_MODEL=google/gemini-3.7-flash
+```
+
+The feature fails closed unless the explicit flag is true and the credentials required by the requested operation exist. Existing database, Redis, Blob, auth, and application-origin variables remain required at their normal seams. Scope the flag and credentials deliberately per Vercel environment; configuration alone is not deployment, migration, provider, browser, or production proof.
+
 Google sign-in is enabled only when both Google OAuth values are configured. Create a Web application OAuth client in Google Cloud and authorize `http://localhost:3000/api/auth/callback/google` locally and `https://sitterfolio.com/api/auth/callback/google` in production. Use separate credentials for preview environments when their callback origins differ.
 
 Local subdomains use addresses such as `happy-tails.localhost:3000`. Keep `NEXT_PUBLIC_ROOT_DOMAIN` aligned with `BETTER_AUTH_URL`; successful localhost routing does not prove preview or production host configuration.

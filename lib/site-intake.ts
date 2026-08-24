@@ -1,5 +1,6 @@
 import { isPetIconId } from './pet-icons';
 import { normalizeServices, normalizeSubdomain, type ProfileOwnership } from './profile-ownership';
+import { canonicalizeRoverProfileUrl } from './domain/rover-profile-url';
 
 export type DraftAddressInput = {
   subdomain?: unknown;
@@ -140,6 +141,24 @@ export function createSiteIntake(profiles: ProfileOwnership, now = Date.now) {
       }
 
       return { success: true as const, subdomain: created.subdomain };
+    },
+
+    async launchImport(ownerId: string, draft: DraftAddressInput & { roverUrl?: unknown; attestationAccepted?: unknown; attestationVersion?: unknown }) {
+      const subdomain = readString(draft.subdomain).toLowerCase();
+      const icon = readString(draft.icon);
+      const normalized = normalizeSubdomain(subdomain);
+      let roverUrl: string;
+      try { roverUrl = canonicalizeRoverProfileUrl(draft.roverUrl); } catch { return { success: false as const, error: 'Paste a valid Rover public profile URL.' }; }
+      if (draft.attestationAccepted !== true && draft.attestationAccepted !== 'true' || draft.attestationVersion !== 'visible-content-v1') return { success: false as const, error: 'Confirm that you own this Rover profile and may import its visible content.' };
+      if (normalized !== subdomain || subdomain.length < 3 || subdomain.length > 30 || !isValidIcon(icon)) return { success: false as const, error: 'Your draft address is invalid. Return to the home page and choose another.' };
+      const existing = await profiles.get(normalized);
+      if (existing) {
+        if (existing.ownerId === ownerId && existing.onboardingCompletedAt === null) return { success: true as const, subdomain: normalized, roverUrl };
+        return { success: false as const, error: 'That site address is already taken.' };
+      }
+      const created = await profiles.create(ownerId, normalized, { emoji: icon, createdAt: now(), onboardingCompletedAt: null });
+      if (!created) return { success: false as const, error: 'That site address was just taken. Choose another address to launch.' };
+      return { success: true as const, subdomain: created.subdomain, roverUrl };
     }
   };
 }

@@ -737,3 +737,143 @@ To fix this, make sure your Cache-Control headers allow revalidation of chunks a
     at getOrInstantiateRuntimeModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1582:12)
     at Object.registerChunk (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1988:21)
 [64795644ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[65036699ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[65277895ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[65518949ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[65667737ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: Connection closed before receiving a handshake response @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[65773775ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: Error during WebSocket handshake: net::ERR_NETWORK_IO_SUSPENDED @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[66015337ms] [WARNING] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket is closed before the connection is established. @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2319
+[66015344ms] [WARNING] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket is closed before the connection is established. @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2351
+[66329620ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[66570790ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[66811934ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[67052975ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[67298102ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[67543237ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[67613029ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: Connection closed before receiving a handshake response @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[67858013ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[68103028ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[68348087ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[68593238ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[68598192ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://drew.localhost:3000/:0
+[68599240ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://drew.localhost:3000/_next/static/chunks/0-xt_react-dom_1a3j9bp._.js:15305
+[68599413ms] Error: Module [next]/entry/page-loader.ts { PAGE => "[project]/platforms/node_modules/.pnpm/next@16.3.2_@babel+core@7.29.7_@types+node@22.15.17_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/pages/_error.js [client] (ecmascript)" } [client] (ecmascript) was instantiated because it was required from module [hmr-entry]/hmr-entry.js { ENTRY => "[project]/platforms/pages/_error" }, but the module factory is not available.
+This is often caused by a stale browser cache, misconfigured Cache-Control headers, or a service worker serving outdated responses.
+To fix this, make sure your Cache-Control headers allow revalidation of chunks and review your service worker configuration. As an immediate workaround, try hard-reloading the page, clearing the browser cache, or unregistering any service workers.
+    at instantiateModuleShared (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_0lmq94e._.js:1272:15)
+    at instantiateModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_0lmq94e._.js:1621:12)
+    at getOrInstantiateModuleFromParent (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_0lmq94e._.js:1604:12)
+    at DevContext.commonJsRequire [as r] (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_0lmq94e._.js:299:12)
+    at module evaluation (http://drew.localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__0nb779o._.js:472:23)
+    at http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_0lmq94e._.js:1307:27
+    at runModuleExecutionHooks (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_0lmq94e._.js:1636:13)
+    at instantiateModuleShared (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_0lmq94e._.js:1305:9)
+    at instantiateModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_0lmq94e._.js:1621:12)
+    at getOrInstantiateRuntimeModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_0lmq94e._.js:1582:12)
+    at Object.registerChunk (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_0lmq94e._.js:1988:21)
+[68839438ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[69080908ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[69322540ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[69369689ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: Connection closed before receiving a handshake response @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[69610705ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[69851676ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[70096703ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[70341733ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[70586817ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[70831862ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[71077133ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[71322173ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[71567225ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[71576728ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://drew.localhost:3000/:0
+[71577799ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://drew.localhost:3000/_next/static/chunks/0-xt_react-dom_1a3j9bp._.js:15305
+[71577921ms] Error: Module [next]/entry/page-loader.ts { PAGE => "[project]/platforms/node_modules/.pnpm/next@16.2.10_@babel+core@7.29.7_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/app.js [client] (ecmascript)" } [client] (ecmascript) was instantiated because it was required from module [hmr-entry]/hmr-entry.js { ENTRY => "[project]/platforms/pages/_app" }, but the module factory is not available.
+This is often caused by a stale browser cache, misconfigured Cache-Control headers, or a service worker serving outdated responses.
+To fix this, make sure your Cache-Control headers allow revalidation of chunks and review your service worker configuration. As an immediate workaround, try hard-reloading the page, clearing the browser cache, or unregistering any service workers.
+    at instantiateModuleShared (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1272:15)
+    at instantiateModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1621:12)
+    at getOrInstantiateModuleFromParent (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1604:12)
+    at DevContext.commonJsRequire [as r] (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:299:12)
+    at module evaluation (http://drew.localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__0ph75ah._.js:472:23)
+    at http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1307:27
+    at runModuleExecutionHooks (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1636:13)
+    at instantiateModuleShared (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1305:9)
+    at instantiateModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1621:12)
+    at getOrInstantiateRuntimeModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1582:12)
+    at Object.registerChunk (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1988:21)
+[71817941ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[72059079ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[72300321ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[72541656ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[72782841ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[73024104ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[73186619ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: Connection closed before receiving a handshake response @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[73431910ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[73677176ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[73922441ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[74167639ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[74412741ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[74657957ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[74661287ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://drew.localhost:3000/:0
+[74661498ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://drew.localhost:3000/_next/static/chunks/0-xt_react-dom_1a3j9bp._.js:15305
+[74661626ms] Error: Module [next]/entry/page-loader.ts { PAGE => "[project]/platforms/node_modules/.pnpm/next@16.2.10_@babel+core@7.29.7_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/app.js [client] (ecmascript)" } [client] (ecmascript) was instantiated because it was required from module [hmr-entry]/hmr-entry.js { ENTRY => "[project]/platforms/pages/_app" }, but the module factory is not available.
+This is often caused by a stale browser cache, misconfigured Cache-Control headers, or a service worker serving outdated responses.
+To fix this, make sure your Cache-Control headers allow revalidation of chunks and review your service worker configuration. As an immediate workaround, try hard-reloading the page, clearing the browser cache, or unregistering any service workers.
+    at instantiateModuleShared (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1272:15)
+    at instantiateModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1621:12)
+    at getOrInstantiateModuleFromParent (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1604:12)
+    at DevContext.commonJsRequire [as r] (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:299:12)
+    at module evaluation (http://drew.localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__0ph75ah._.js:472:23)
+    at http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1307:27
+    at runModuleExecutionHooks (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1636:13)
+    at instantiateModuleShared (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1305:9)
+    at instantiateModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1621:12)
+    at getOrInstantiateRuntimeModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1582:12)
+    at Object.registerChunk (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1988:21)
+[74901592ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[74950030ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: Connection closed before receiving a handshake response @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[75191045ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[75432053ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[75673026ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[75914165ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[76159278ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[76404435ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[76649860ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[76895196ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[77140417ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[77373746ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: Connection closed before receiving a handshake response @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[77618894ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[77621533ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://drew.localhost:3000/:0
+[77621668ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://drew.localhost:3000/_next/static/chunks/0-xt_react-dom_1a3j9bp._.js:15305
+[77621760ms] Invalid or unexpected token
+[77621760ms] Error: Module [next]/entry/page-loader.ts { PAGE => "[project]/platforms/node_modules/.pnpm/next@16.2.10_@babel+core@7.29.7_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/app.js [client] (ecmascript)" } [client] (ecmascript) was instantiated because it was required from module [hmr-entry]/hmr-entry.js { ENTRY => "[project]/platforms/pages/_app" }, but the module factory is not available.
+This is often caused by a stale browser cache, misconfigured Cache-Control headers, or a service worker serving outdated responses.
+To fix this, make sure your Cache-Control headers allow revalidation of chunks and review your service worker configuration. As an immediate workaround, try hard-reloading the page, clearing the browser cache, or unregistering any service workers.
+    at instantiateModuleShared (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1272:15)
+    at instantiateModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1621:12)
+    at getOrInstantiateModuleFromParent (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1604:12)
+    at DevContext.commonJsRequire [as r] (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:299:12)
+    at module evaluation (http://drew.localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__0ph75ah._.js:472:23)
+    at http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1307:27
+    at runModuleExecutionHooks (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1636:13)
+    at instantiateModuleShared (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1305:9)
+    at instantiateModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1621:12)
+    at getOrInstantiateRuntimeModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1582:12)
+    at Object.registerChunk (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1988:21)
+[77621760ms] Error: Module [next]/entry/page-loader.ts { PAGE => "[project]/platforms/node_modules/.pnpm/next@16.2.10_@babel+core@7.29.7_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/pages/_error.js [client] (ecmascript)" } [client] (ecmascript) was instantiated because it was required from module [hmr-entry]/hmr-entry.js { ENTRY => "[project]/platforms/pages/_error" }, but the module factory is not available.
+This is often caused by a stale browser cache, misconfigured Cache-Control headers, or a service worker serving outdated responses.
+To fix this, make sure your Cache-Control headers allow revalidation of chunks and review your service worker configuration. As an immediate workaround, try hard-reloading the page, clearing the browser cache, or unregistering any service workers.
+    at instantiateModuleShared (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1272:15)
+    at instantiateModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1621:12)
+    at getOrInstantiateModuleFromParent (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1604:12)
+    at DevContext.commonJsRequire [as r] (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:299:12)
+    at module evaluation (http://drew.localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__0nb779o._.js:472:23)
+    at http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1307:27
+    at runModuleExecutionHooks (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1636:13)
+    at instantiateModuleShared (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1305:9)
+    at instantiateModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1621:12)
+    at getOrInstantiateRuntimeModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1582:12)
+    at Object.registerChunk (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1988:21)
+[77861746ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[78102950ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[78344193ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[78585388ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364

@@ -20,6 +20,8 @@ import { submitAuthenticatedLead } from '@/lib/authenticated-lead-intake';
 import { rememberConversationReturn } from '@/lib/conversation-return';
 import { normalizeLinkedInProfileUrl } from '@/lib/domain/linkedin-profile';
 import { isCalendarDate } from '@/lib/calendar-date';
+import { normalizeManualProfilePatch, type ServiceProfileDetail } from '@/lib/domain/profile-content';
+import { resolveRoverImportConfig } from '@/lib/profile-import/config';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -50,6 +52,12 @@ export async function launchDraftAction(
   formData: FormData
 ): Promise<LaunchDraftState> {
   const user = await requireUser('/launch');
+  if (formData.has('roverUrl')) {
+    try { resolveRoverImportConfig('prepare'); } catch { return { error: 'Rover import is unavailable in this environment.' }; }
+    const result = await siteIntake.launchImport(user.id, Object.fromEntries(formData));
+    if (!result.success) return { error: result.error };
+    redirect(`/admin/import/rover?site=${encodeURIComponent(result.subdomain)}`);
+  }
   const result = await siteIntake.launch(user.id, Object.fromEntries(formData));
   if (!result.success) return { error: result.error };
 
@@ -117,6 +125,26 @@ export async function saveProfileAction(
   }
   if (formData.has('careCapabilities')) updates.careCapabilities = normalizeServices(String(formData.get('careCapabilities') || '').split(','), 12);
   if (formData.has('selfReportedCredentials')) updates.selfReportedCredentials = normalizeServices(String(formData.get('selfReportedCredentials') || '').split(','), 12);
+
+  if (formData.has('about')) {
+    const serviceDetails: Record<string, ServiceProfileDetail> = {};
+    for (let index = 0; index < 8; index += 1) {
+      const name = String(formData.get(`serviceDetail.${index}.name`) || '');
+      if (!name) continue;
+      serviceDetails[name] = {
+        description: String(formData.get(`serviceDetail.${index}.description`) || ''),
+        startingPrice: String(formData.get(`serviceDetail.${index}.startingPrice`) || ''),
+        billingUnit: String(formData.get(`serviceDetail.${index}.billingUnit`) || '')
+      };
+    }
+    try {
+      Object.assign(updates, normalizeManualProfilePatch({
+        services: updates.services ?? [], serviceDetails,
+        about: formData.get('about'), careRoutine: formData.get('careRoutine'), homeEnvironment: formData.get('homeEnvironment'),
+        petPreferences: formData.get('petPreferences'), experienceSummary: formData.get('experienceSummary'), specialCareSummary: formData.get('specialCareSummary')
+      }));
+    } catch (error) { return { error: error instanceof Error ? error.message : 'Review your profile details and try again.' }; }
+  }
 
   const updated = await profiles.updateOwned(user.id, subdomain, updates);
   if (!updated) return { error: 'This site could not be found. Refresh and try again.' };

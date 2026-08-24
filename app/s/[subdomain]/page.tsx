@@ -24,7 +24,7 @@ export async function generateMetadata({
   const { subdomain } = await params;
   const subdomainData = await profiles.get(subdomain);
 
-  if (!subdomainData) {
+  if (!subdomainData || subdomainData.onboardingCompletedAt === null) {
     return {
       title: rootDomain
     };
@@ -55,7 +55,7 @@ export default async function SubdomainPage({
   const paymentError = (await searchParams).payment === 'unavailable';
   const subdomainData = await profiles.get(subdomain);
 
-  if (!subdomainData) {
+  if (!subdomainData || subdomainData.onboardingCompletedAt === null) {
     notFound();
   }
   const sitterDisplayName = subdomainData.sitterName || subdomainData.businessName || `${subdomain}'s care`;
@@ -118,7 +118,7 @@ export default async function SubdomainPage({
           </div>
           <div className="mt-9">
             <h2 className="text-lg font-semibold">Care offered</h2>
-            {services.length > 0 ? <div className="mt-4 flex flex-wrap gap-2.5">{services.map((service) => <span key={service} className="rounded-full bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">{service}</span>)}</div> : <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">Ask about the care your pet needs. {sitterDisplayName} can confirm services and availability directly.</p>}
+            {services.length > 0 ? Object.keys(subdomainData.serviceDetails || {}).length ? <div className="mt-4 grid gap-3 sm:grid-cols-2">{services.map((service) => { const detail = subdomainData.serviceDetails?.[service]; return <article key={service} className="rounded-xl border border-border bg-card p-4"><h3 className="font-semibold">{service}</h3>{detail?.description && <p className="mt-2 text-sm leading-6 text-muted-foreground">{detail.description}</p>}{(detail?.startingPrice || detail?.billingUnit) && <p className="mt-3 text-sm font-medium text-emerald-800 dark:text-emerald-300">{[detail.startingPrice, detail.billingUnit].filter(Boolean).join(' ')}</p>}</article>; })}<p className="text-xs leading-5 text-muted-foreground sm:col-span-2">Starting prices are self-reported; confirm directly.</p></div> : <div className="mt-4 flex flex-wrap gap-2.5">{services.map((service) => <span key={service} className="rounded-full bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">{service}</span>)}</div> : <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">Ask about the care your pet needs. {sitterDisplayName} can confirm services and availability directly.</p>}
           </div>
           <PublicProfileDetails profile={subdomainData} />
           <PublicPaymentSection subdomain={subdomain} enabled={publicPaymentsEnabled} error={paymentError} />

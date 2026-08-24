@@ -130,4 +130,14 @@ describe('site intake', () => {
       error: 'Your draft address is invalid. Return to the home page and choose another.'
     });
   });
+
+  it('creates or safely reuses one owned incomplete Site for authenticated Rover import', async () => {
+    const profiles = createProfileOwnership(new MemoryProfileRepository());
+    const intake = createSiteIntake(profiles, () => 700);
+    const input = { subdomain: 'rover-care', icon: 'dog', roverUrl: 'https://www.rover.com/members/jamie/?service_type=boarding', attestationAccepted: true, attestationVersion: 'visible-content-v1' };
+    await expect(intake.launchImport('owner-1', input)).resolves.toEqual({ success: true, subdomain: 'rover-care', roverUrl: 'https://www.rover.com/members/jamie/' });
+    await expect(profiles.getOwned('rover-care', 'owner-1')).resolves.toMatchObject({ onboardingCompletedAt: null, profileRevision: 0 });
+    await expect(intake.launchImport('owner-1', input)).resolves.toMatchObject({ success: true, subdomain: 'rover-care' });
+    await expect(intake.launchImport('owner-2', input)).resolves.toMatchObject({ success: false });
+  });
 });
