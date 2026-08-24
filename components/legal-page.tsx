@@ -35,7 +35,7 @@ export function LegalPage({
               <ul className="space-y-2.5 text-sm text-muted-foreground">
                 {sections.map((section) => (
                   <li key={section.id}>
-                    <a href={`#${section.id}`} className="transition-colors hover:text-foreground">{section.title}</a>
+                    <a href={`#${section.id}`} className="inline-block transition-[color,transform] duration-200 ease-out hover:translate-x-0.5 hover:text-foreground active:translate-x-1 active:text-emerald-700 dark:active:text-emerald-400">{section.title}</a>
                   </li>
                 ))}
               </ul>
