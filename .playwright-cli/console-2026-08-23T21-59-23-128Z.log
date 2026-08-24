@@ -877,3 +877,41 @@ To fix this, make sure your Cache-Control headers allow revalidation of chunks a
 [78102950ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
 [78344193ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
 [78585388ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[78826407ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[78981766ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: Connection closed before receiving a handshake response @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[78986961ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
+[78992041ms] [LOG] [HMR] connected @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[78992067ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79006604ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79012593ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79012600ms] [LOG] [Fast Refresh] done in 6100ms @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79012997ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79139473ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79141159ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79141274ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79141448ms] [LOG] [Fast Refresh] done in 2075ms @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
