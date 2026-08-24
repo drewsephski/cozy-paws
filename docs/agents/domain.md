@@ -1,36 +1,39 @@
 # Domain Docs
 
-How the engineering skills should consume this repo's domain documentation when exploring the codebase.
+How engineering skills consume this repo's domain documentation.
 
-## Before exploring, read these
+## Before exploring
 
-- **`CONTEXT.md`** at the repo root, or
-- **`CONTEXT-MAP.md`** at the repo root if it exists: it points at one `CONTEXT.md` per context. Read each one relevant to the topic.
-- **`docs/adr/`**: read ADRs that touch the area you're about to work in. In multi-context repos, also check `src/<context>/docs/adr/` for context-scoped decisions.
+- Read root `CONTEXT.md`.
+- If root `CONTEXT-MAP.md` exists, follow it to each context relevant to the work.
+- Read accepted ADRs in `docs/adr/` that affect the area being changed. In a multi-context repo, also check `src/<context>/docs/adr/`.
 
-If any of these files don't exist, proceed silently. Don't flag their absence; the `/domain-modeling` skill creates them lazily when terms or decisions actually get resolved.
+If a file does not exist, proceed silently. The domain-modeling discipline in `design`, `grill`, and `architecture` creates documentation only when a real term or decision is settled.
 
-## File structure
+## ADR status
 
-Single-context repo:
+ADR `status` frontmatter is part of the contract:
 
-```
+- **`accepted`** ADRs are in-force architecture.
+- ADRs without status frontmatter are legacy ADRs; treat them as `accepted`.
+- **`proposed`** ADRs are planning context and apply only to their current plan or issue.
+- **`deprecated`** and **`superseded by ADR-NNNN`** ADRs are historical.
+
+Create planning ADRs as `proposed`. Promote them to `accepted` only after the implementing work lands.
+
+## Layout
+
+This is a single-context repo:
+
+```text
 /
 ├── CONTEXT.md
 ├── docs/adr/
-│   ├── 0001-event-sourced-orders.md
-│   └── 0002-postgres-for-write-model.md
-└── src/
+└── app/, components/, lib/
 ```
 
-## Use the glossary's vocabulary
+## Vocabulary and conflicts
 
-When your output names a domain concept (in an issue title, a refactor proposal, a hypothesis, or a test name), use the term as defined in `CONTEXT.md`. Don't drift to synonyms the glossary explicitly avoids.
+Use the terms defined in `CONTEXT.md`. If a needed concept is absent, reconsider invented language or record a genuine domain-modeling gap.
 
-If the concept you need isn't in the glossary yet, that signals either invented language or a real gap; note it for `/domain-modeling`.
-
-## Flag ADR conflicts
-
-If your output contradicts an existing ADR, surface it explicitly rather than silently overriding:
-
-> _Contradicts ADR-0007 (event-sourced orders), but worth reopening because…_
+Surface conflicts with an accepted ADR explicitly instead of silently overriding them.

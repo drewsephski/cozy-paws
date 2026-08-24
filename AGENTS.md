@@ -10,8 +10,18 @@ Issues and specs live in GitHub Issues and are managed with the `gh` CLI. See `d
 
 ### Triage labels
 
-Use the default labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, and `wontfix`. See `docs/agents/triage-labels.md`.
+Use the canonical labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `paused`, and `wontfix`. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 
 This is a single-context repo with root `CONTEXT.md` and `docs/adr/`. See `docs/agents/domain.md`.
+
+### Principles
+
+Preserve the project’s ownership, data-authority, migration-safety, UI, and verification boundaries. Check `docs/agents/principles.md` before `implement`.
+
+### Capability slots
+
+- UI/design: repository `prototype` skill
+- review: repository `code-review` skill
+- browser: Chrome DevTools MCP; prefer Dia when exposed
