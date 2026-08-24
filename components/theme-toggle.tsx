@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from '@/components/ui/animated-icons';
 import { Button } from '@/components/ui/button';
 
 type Theme = 'light' | 'dark';

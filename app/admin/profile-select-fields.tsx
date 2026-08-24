@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, ChevronDown, MapPin, Search, X } from 'lucide-react';
+import { Check, ChevronDown, MapPin, Search, X } from '@/components/ui/animated-icons';
 import { Button } from '@/components/ui/button';
 import { Spokes } from '@/components/ui/spokes';
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from '@/components/ui/popover';

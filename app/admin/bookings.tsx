@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState, useEffect, useState } from 'react';
-import { CalendarDays, Check, PawPrint } from 'lucide-react';
+import { CalendarDays, Check, PawPrint } from '@/components/ui/animated-icons';
 import { createBookingAction, transitionBookingAction, type CreateBookingState, type TransitionBookingState } from '@/app/actions';
 import type { Booking } from '@/lib/bookings';
 import { allowedBookingTransitions, type BookingStatus } from '@/lib/domain/bookings';

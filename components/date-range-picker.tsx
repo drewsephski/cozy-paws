@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { CalendarDays, ChevronDown } from "lucide-react"
+import { CalendarDays, ChevronDown } from '@/components/ui/animated-icons'
 import type { DateRange } from "react-day-picker"
 
 import { Calendar } from "@/components/ui/calendar"

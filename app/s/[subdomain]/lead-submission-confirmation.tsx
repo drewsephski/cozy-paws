@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { Check } from '@/components/ui/animated-icons';
 import Link from 'next/link';
 import { ConversationMessages, ConversationReplyForm } from '@/components/conversation-thread';
 import type { LeadSubmissionState } from '@/app/actions';

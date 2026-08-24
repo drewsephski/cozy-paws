@@ -7,7 +7,7 @@ import { Spokes } from '@/components/ui/spokes';
 import { Card, CardContent } from '@/components/ui/card';
 import { Stepper, StepperDescription, StepperIndicator, StepperItem, StepperList, StepperSeparator, StepperTitle, StepperTrigger } from '@/components/ui/stepper';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, ArrowRight, CalendarDays, ChartNoAxesCombined, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, LayoutDashboard, MessageCircle, RotateCw, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CalendarDays, ChartNoAxesCombined, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, LayoutDashboard, MessageCircle, RotateCw, Users } from '@/components/ui/animated-icons';
 import Link from 'next/link';
 import { deleteSubdomainAction, refreshStripeStatusAction, startStripeOnboardingAction, type RefreshStripeStatusState } from '@/app/actions';
 import type { ConnectedAccountStatus } from '@/lib/connected-accounts';
@@ -38,6 +38,7 @@ type SiteProfile = {
   services?: string[];
   phone?: string;
   email?: string;
+  linkedinUrl?: string | null;
   profileImageUrl?: string;
   onboardingCompletedAt?: number | null;
   paymentLinkUrl?: string;
@@ -221,11 +222,11 @@ function formatPhoneNumber(value: string) {
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
-function ProfileField({ label, name, defaultValue, placeholder, type = 'text', className }: { label: string; name: string; defaultValue: string; placeholder: string; type?: string; className?: string }) {
+function ProfileField({ label, name, defaultValue, className, formatPhone = false, ...inputProps }: { label: string; name: string; defaultValue: string; className?: string; formatPhone?: boolean } & Omit<ComponentProps<'input'>, 'defaultValue' | 'name'>) {
   return (
     <div className={className}>
       <label htmlFor={name} className="mb-1.5 block text-xs font-medium text-muted-foreground">{label}</label>
-      <input id={name} name={name} type={type} defaultValue={name === 'phone' ? formatPhoneNumber(defaultValue) : defaultValue} placeholder={placeholder} onChange={name === 'phone' ? (event) => { event.currentTarget.value = formatPhoneNumber(event.currentTarget.value); } : undefined} inputMode={name === 'phone' ? 'tel' : undefined} className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none transition focus:border-emerald-500/70 focus:ring-4 focus:ring-emerald-500/10" />
+      <input id={name} name={name} defaultValue={formatPhone ? formatPhoneNumber(defaultValue) : defaultValue} onChange={formatPhone ? (event) => { event.currentTarget.value = formatPhoneNumber(event.currentTarget.value); } : undefined} className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none transition focus:border-emerald-500/70 focus:ring-4 focus:ring-emerald-500/10" {...inputProps} />
     </div>
   );
 }
@@ -252,8 +253,9 @@ function ProfileEditor({ site }: { site: SiteProfile }) {
           <SuggestionField label="One-sentence introduction" name="tagline" defaultValue={site.tagline || ''} placeholder="Reliable care for pets nearby." suggestions={profileSuggestions.tagline} hint="Choose a starting point or write your own." />
           <ServiceAreaField defaultValue={site.location || ''} />
           <ServicesField defaultValue={site.services || []} />
-          <ProfileField label="Phone" name="phone" type="tel" defaultValue={site.phone || ''} placeholder="(555) 123-4567" />
+          <ProfileField label="Phone" name="phone" type="tel" inputMode="tel" formatPhone defaultValue={site.phone || ''} placeholder="(555) 123-4567" />
           <ProfileField label="Email" name="email" type="email" defaultValue={site.email || ''} placeholder="hello@example.com" />
+          <ProfileField className="sm:col-span-2" label="LinkedIn profile (optional)" name="linkedinUrl" type="url" inputMode="url" maxLength={500} defaultValue={site.linkedinUrl || ''} placeholder="https://www.linkedin.com/in/your-name" />
           <div className="sm:col-span-2">
             <p className="mb-1.5 text-xs font-medium text-muted-foreground">Profile photo</p>
             <ProfileImageUpload subdomain={site.subdomain} currentImageUrl={site.profileImageUrl} />
@@ -298,19 +300,20 @@ function SiteGrid({
     <div className="mx-auto grid max-w-3xl gap-3 md:grid-cols-2 lg:max-w-none">
       {sites.map((site) => (
         <Card key={site.subdomain} className="group relative flex-row items-center gap-3 overflow-hidden rounded-xl p-3 shadow-sm transition-all hover:border-primary/40 hover:shadow-md focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-ring/30">
-          <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-muted text-emerald-700 transition-colors group-hover:bg-accent dark:text-emerald-400"><PetIcon value={site.emoji} className="size-6" fallbackClassName="text-2xl" /></div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" /><p className="truncate text-sm font-semibold">{site.businessName || site.sitterName || site.subdomain}</p></div>
-            <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-muted-foreground">{site.subdomain}.{rootDomain}<ExternalLink aria-hidden="true" className="size-3 opacity-0 transition-opacity group-hover:opacity-100" /></p>
-          </div>
           <a
             href={`${protocol}://${site.subdomain}.${rootDomain}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute inset-0 rounded-xl focus:outline-none"
+            className="flex min-w-0 flex-1 items-center gap-3 rounded-lg focus:outline-none"
             aria-label={`Open ${site.businessName || site.sitterName || site.subdomain} site`}
-          />
-          <div className="relative z-10 flex shrink-0 items-center gap-1">
+          >
+            <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-muted text-emerald-700 transition-colors group-hover:bg-accent dark:text-emerald-400"><PetIcon value={site.emoji} className="size-6" fallbackClassName="text-2xl" /></div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" /><p className="truncate text-sm font-semibold">{site.businessName || site.sitterName || site.subdomain}</p></div>
+              <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-muted-foreground">{site.subdomain}.{rootDomain}<ExternalLink aria-hidden="true" className="size-3 opacity-0 transition-opacity group-hover:opacity-100" /></p>
+            </div>
+          </a>
+          <div className="flex shrink-0 items-center gap-1">
             <ShareSiteButton url={`${protocol}://${site.subdomain}.${rootDomain}`} name={site.businessName || site.sitterName || site.subdomain} />
               <DeleteSiteDialog
                 subdomain={site.subdomain}

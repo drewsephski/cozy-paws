@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
-import { Check, Mail, MapPin, PawPrint, Pencil, Plus, Users } from 'lucide-react';
+import { Check, Mail, MapPin, PawPrint, Pencil, Plus, Users } from '@/components/ui/animated-icons';
 import { addClientPetAction, updateClientHouseholdAction, updateClientPetAction, type EditClientState } from '@/app/actions';
 import type { ClientHousehold, ClientPet } from '@/lib/client-households';
 import { Spokes } from '@/components/ui/spokes';

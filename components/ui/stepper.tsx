@@ -1,6 +1,6 @@
 "use client";
 
-import { Check } from "lucide-react";
+import { Check } from '@/components/ui/animated-icons';
 import {
   Direction as DirectionPrimitive,
   Slot as SlotPrimitive,

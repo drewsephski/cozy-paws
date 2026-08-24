@@ -4,16 +4,12 @@
 // MIT License: https://github.com/pqoqubbw/icons
 
 import type { Transition, Variants } from 'motion/react';
-import { motion, useAnimation } from 'motion/react';
-import type { HTMLAttributes, MouseEvent } from 'react';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { motion, useAnimation, useReducedMotion } from 'motion/react';
+import type { HTMLAttributes } from 'react';
+import { useRef } from 'react';
 
+import { useContainingControlAnimation } from '@/components/ui/animated-icon';
 import { cn } from '@/lib/utils';
-
-export interface DeleteIconHandle {
-  startAnimation: () => void;
-  stopAnimation: () => void;
-}
 
 interface DeleteIconProps extends HTMLAttributes<HTMLDivElement> {
   size?: number;
@@ -30,63 +26,35 @@ const SPRING_TRANSITION: Transition = {
   damping: 30
 };
 
-const DeleteIcon = forwardRef<DeleteIconHandle, DeleteIconProps>(
-  ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-    const controls = useAnimation();
-    const isControlledRef = useRef(false);
+function DeleteIcon({ className, size = 28, ...props }: DeleteIconProps) {
+  const controls = useAnimation();
+  const reducedMotion = useReducedMotion();
+  const iconRef = useRef<HTMLDivElement>(null);
 
-    useImperativeHandle(
-      ref,
-      () => {
-        isControlledRef.current = true;
+  useContainingControlAnimation(iconRef, controls, reducedMotion);
 
-        return {
-          startAnimation: () => controls.start('animate'),
-          stopAnimation: () => controls.start('normal')
-        };
-      },
-      [controls]
-    );
-
-    const handleMouseEnter = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onMouseEnter?.(event);
-        if (!isControlledRef.current) void controls.start('animate');
-      },
-      [controls, onMouseEnter]
-    );
-
-    const handleMouseLeave = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onMouseLeave?.(event);
-        if (!isControlledRef.current) void controls.start('normal');
-      },
-      [controls, onMouseLeave]
-    );
-
-    return (
-      <div
-        className={cn('inline-flex items-center justify-center', className)}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        {...props}
+  return (
+    <div
+      ref={iconRef}
+      className={cn('inline-flex items-center justify-center', className)}
+      {...props}
+    >
+      <svg
+        fill="none"
+        height={size}
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+        width={size}
+        xmlns="http://www.w3.org/2000/svg"
       >
-        <svg
-          fill="none"
-          height={size}
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          width={size}
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <motion.g animate={controls} transition={SPRING_TRANSITION} variants={LID_VARIANTS}>
-            <path d="M3 6h18" />
-            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-          </motion.g>
-          <motion.path
+        <motion.g animate={controls} transition={SPRING_TRANSITION} variants={LID_VARIANTS}>
+          <path d="M3 6h18" />
+          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+        </motion.g>
+        <motion.path
             animate={controls}
             d="M19 8v12c0 1-1 2-2 2H7c-1 0-2-1-2-2V8"
             transition={SPRING_TRANSITION}
@@ -94,8 +62,8 @@ const DeleteIcon = forwardRef<DeleteIconHandle, DeleteIconProps>(
               normal: { d: 'M19 8v12c0 1-1 2-2 2H7c-1 0-2-1-2-2V8' },
               animate: { d: 'M19 9v12c0 1-1 2-2 2H7c-1 0-2-1-2-2V9' }
             }}
-          />
-          <motion.line
+        />
+        <motion.line
             animate={controls}
             transition={SPRING_TRANSITION}
             variants={{
@@ -106,8 +74,8 @@ const DeleteIcon = forwardRef<DeleteIconHandle, DeleteIconProps>(
             x2="10"
             y1="11"
             y2="17"
-          />
-          <motion.line
+        />
+        <motion.line
             animate={controls}
             transition={SPRING_TRANSITION}
             variants={{
@@ -118,13 +86,10 @@ const DeleteIcon = forwardRef<DeleteIconHandle, DeleteIconProps>(
             x2="14"
             y1="11"
             y2="17"
-          />
-        </svg>
-      </div>
-    );
-  }
-);
-
-DeleteIcon.displayName = 'DeleteIcon';
+        />
+      </svg>
+    </div>
+  );
+}
 
 export { DeleteIcon };

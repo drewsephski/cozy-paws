@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from '@/components/ui/animated-icons';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';

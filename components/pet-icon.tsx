@@ -1,4 +1,4 @@
-import { Bird, Cat, Dog, Fish, Rabbit, Rat, Squirrel, Turtle, type LucideIcon } from 'lucide-react';
+import { Bird, Cat, Dog, Fish, Rabbit, Rat, Squirrel, Turtle, type LucideIcon } from '@/components/ui/animated-icons';
 import { isPetIconId, type PetIconId } from '@/lib/pet-icons';
 import { cn } from '@/lib/utils';
 

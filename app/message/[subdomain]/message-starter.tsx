@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Send } from 'lucide-react';
+import { Send } from '@/components/ui/animated-icons';
 import { createAuthenticatedLeadAction, type LeadSubmissionState } from '@/app/actions';
 import { Spokes } from '@/components/ui/spokes';
 

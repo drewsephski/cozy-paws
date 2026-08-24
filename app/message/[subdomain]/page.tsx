@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from '@/components/ui/animated-icons';
 import { randomBytes } from 'node:crypto';
 import { getSession } from '@/lib/session';
 import { profiles } from '@/lib/profiles';

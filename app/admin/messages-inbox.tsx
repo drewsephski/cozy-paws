@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from '@/components/ui/animated-icons';
 import { markLeadReadAction } from '@/app/actions';
 import { ConversationMessages, ConversationReplyForm } from '@/components/conversation-thread';
 import type { ConversationMessage } from '@/lib/conversations';

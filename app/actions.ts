@@ -18,6 +18,7 @@ import { addOwnedClientPet, createClientHouseholdFromOwnedLead, updateOwnedClien
 import { createOwnedBooking, transitionOwnedBooking } from '@/lib/bookings';
 import { submitAuthenticatedLead } from '@/lib/authenticated-lead-intake';
 import { rememberConversationReturn } from '@/lib/conversation-return';
+import { normalizeLinkedInProfileUrl } from '@/lib/domain/linkedin-profile';
 
 async function requireUser(callbackURL = '/admin') {
   const session = await getSession();
@@ -83,6 +84,14 @@ export async function saveProfileAction(
 
   if (formData.has('services')) {
     updates.services = normalizeServices(String(formData.get('services') || '').split(','));
+  }
+
+  if (formData.has('linkedinUrl')) {
+    try {
+      updates.linkedinUrl = normalizeLinkedInProfileUrl(formData.get('linkedinUrl'));
+    } catch (error) {
+      return { error: error instanceof Error ? error.message : 'Enter a valid LinkedIn personal profile URL.' };
+    }
   }
 
   const updated = await profiles.updateOwned(user.id, subdomain, updates);

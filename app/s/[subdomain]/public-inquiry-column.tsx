@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, MessageCircle } from 'lucide-react';
+import { ArrowRight, MessageCircle } from '@/components/ui/animated-icons';
 import { NoiseTexture } from '@/components/ui/noise-texture';
 import { LeadForm } from './lead-form';
 

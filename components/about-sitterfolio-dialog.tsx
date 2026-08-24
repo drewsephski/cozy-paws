@@ -13,7 +13,7 @@ import {
   MessageCircleReply,
   PawPrint,
   Share2
-} from 'lucide-react';
+} from '@/components/ui/animated-icons';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,

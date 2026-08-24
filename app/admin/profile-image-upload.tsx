@@ -3,7 +3,7 @@
 import { upload } from '@vercel/blob/client';
 import { useState } from 'react';
 import { saveProfileImageAction } from '@/app/actions';
-import { Camera, CheckCircle2 } from 'lucide-react';
+import { Camera, CheckCircle2 } from '@/components/ui/animated-icons';
 import { Spokes } from '@/components/ui/spokes';
 import {
   isProfileImageContentType,

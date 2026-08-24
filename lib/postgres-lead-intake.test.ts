@@ -6,7 +6,8 @@ const profileRow = {
   site_id: 'site-1', business_id: 'business-1', owner_id: 'owner-1', subdomain: 'happy-tails', emoji: 'dog',
   site_created_at: new Date('2026-08-23T12:00:00Z'), sitter_name: 'Drew', business_name: 'Happy Tails',
   tagline: null, location: null, services: ['Dog walking'], phone: null, email: 'sitter@example.com',
-  profile_image_url: null, onboarding_completed_at: null, payment_link_url: null
+  linkedin_url: 'https://www.linkedin.com/in/drew-sepeczi', profile_image_url: null,
+  onboarding_completed_at: null, payment_link_url: null
 };
 
 const input = {
@@ -41,7 +42,11 @@ describe('PostgreSQL Lead and Conversation intake', () => {
       created: true,
       conversationToken: 'customer-token',
       lead: { id: 'lead-1', name: 'Sam', email: 'sam@example.com' },
-      profile: { ownerId: 'owner-1', businessName: 'Happy Tails' }
+      profile: {
+        ownerId: 'owner-1',
+        businessName: 'Happy Tails',
+        linkedinUrl: 'https://www.linkedin.com/in/drew-sepeczi'
+      }
     });
     expect(client.query.mock.calls[0][0]).toContain('for update of s');
     expect(client.query.mock.calls[2][0]).toContain('insert into lead');

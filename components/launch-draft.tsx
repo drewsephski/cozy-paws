@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Globe2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Globe2 } from '@/components/ui/animated-icons';
 import { Button } from '@/components/ui/button';
 import { PetIcon } from '@/components/pet-icon';
 import { Spokes } from '@/components/ui/spokes';

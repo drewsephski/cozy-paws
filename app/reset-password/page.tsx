@@ -1,4 +1,4 @@
-import { PawPrint } from 'lucide-react';
+import { PawPrint } from '@/components/ui/animated-icons';
 import { Suspense } from 'react';
 import { ResetPasswordForm } from '@/components/reset-password-form';
 import { SiteHeader } from '@/components/site-header';

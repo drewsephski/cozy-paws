@@ -1,9 +1,8 @@
 'use client';
 
-import { useRef } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/components/ui/animated-icons';
 import { Button } from '@/components/ui/button';
-import { DeleteIcon, type DeleteIconHandle } from '@/components/ui/delete-icon';
+import { DeleteIcon } from '@/components/ui/delete-icon';
 import { Spokes } from '@/components/ui/spokes';
 import {
   Dialog,
@@ -27,9 +26,6 @@ export function DeleteSiteDialog({
   action: (formData: FormData) => void;
   isPending: boolean;
 }) {
-  const triggerIconRef = useRef<DeleteIconHandle>(null);
-  const submitIconRef = useRef<DeleteIconHandle>(null);
-
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -38,12 +34,8 @@ export function DeleteSiteDialog({
           size="icon"
           className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
           aria-label={`Delete ${subdomain}`}
-          onMouseEnter={() => triggerIconRef.current?.startAnimation()}
-          onMouseLeave={() => triggerIconRef.current?.stopAnimation()}
-          onFocus={() => triggerIconRef.current?.startAnimation()}
-          onBlur={() => triggerIconRef.current?.stopAnimation()}
         >
-          <DeleteIcon ref={triggerIconRef} aria-hidden="true" className="size-4" size={16} />
+          <DeleteIcon aria-hidden="true" className="size-4" size={16} />
         </Button>
       </DialogTrigger>
       <DialogContent className="gap-0 overflow-hidden rounded-xl border-border p-0 shadow-2xl sm:max-w-sm">
@@ -75,12 +67,8 @@ export function DeleteSiteDialog({
               variant="destructive"
               disabled={isPending}
               className={`w-full transition-transform duration-150 active:scale-95 sm:w-auto ${isPending ? 'animate-pulse' : ''}`}
-              onMouseEnter={() => submitIconRef.current?.startAnimation()}
-              onMouseLeave={() => submitIconRef.current?.stopAnimation()}
-              onFocus={() => submitIconRef.current?.startAnimation()}
-              onBlur={() => submitIconRef.current?.stopAnimation()}
             >
-              {isPending ? <Spokes aria-hidden="true" /> : <DeleteIcon ref={submitIconRef} aria-hidden="true" className="size-4" size={16} />}
+              {isPending ? <Spokes aria-hidden="true" /> : <DeleteIcon aria-hidden="true" className="size-4" size={16} />}
               {isPending ? 'Deleting...' : 'Delete site'}
             </Button>
           </form>

@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2 } from '@/components/ui/animated-icons';
 import { Button } from '@/components/ui/button';
 import { PetIcon } from '@/components/pet-icon';
 import { rootDomain } from '@/lib/utils';

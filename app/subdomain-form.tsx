@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState, useEffect, useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check } from '@/components/ui/animated-icons';
 import { useRouter } from 'next/navigation';
 import { checkDraftAddressAction, type DraftAddressState } from '@/app/actions';
 import { PetIcon } from '@/components/pet-icon';

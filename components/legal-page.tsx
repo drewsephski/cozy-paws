@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { PawPrint } from 'lucide-react';
+import { PawPrint } from '@/components/ui/animated-icons';
 import { SiteHeader } from '@/components/site-header';
 
 export type LegalSection = {

@@ -6,7 +6,7 @@ import { useActionState } from 'react';
 import type { OwnedLead } from '@/lib/profile-ownership';
 import { canReopenLead, canRequestPayment, canSaveClientFromLead } from '@/lib/domain/leads';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Check, ChevronDown, Copy, UserRoundPlus } from 'lucide-react';
+import { Check, ChevronDown, Copy, UserRoundPlus } from '@/components/ui/animated-icons';
 import { ConversationMessages, ConversationReplyForm } from '@/components/conversation-thread';
 import type { ConversationMessage } from '@/lib/conversations';
 import { buildSiteFilterOptions, formatInquiryDateRange, formatReceivedDate, groupLeadsByEmail, type InboxSite } from './lead-inbox-model';

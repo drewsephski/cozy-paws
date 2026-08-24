@@ -65,6 +65,21 @@ describe('profile ownership', () => {
     expect(await profiles.listOwned('owner-1')).toEqual([]);
   });
 
+  it('persists and clears the optional LinkedIn profile through the ownership interface', async () => {
+    const profiles = createProfileOwnership(new MemoryProfileRepository());
+    await profiles.create('owner-1', 'happy-tails', {
+      emoji: 'dog',
+      createdAt: 100,
+      linkedinUrl: 'https://www.linkedin.com/in/drew-sepeczi'
+    });
+
+    expect((await profiles.get('happy-tails'))?.linkedinUrl).toBe(
+      'https://www.linkedin.com/in/drew-sepeczi'
+    );
+    await profiles.updateOwned('owner-1', 'happy-tails', { linkedinUrl: null });
+    expect((await profiles.get('happy-tails'))?.linkedinUrl).toBeNull();
+  });
+
   it('filters stale owner-index entries and caps canonical lead history at 100', async () => {
     const repository = new MemoryProfileRepository();
     repository.owners.set('owner-1', new Set(['missing', 'other-site']));

@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { PawPrint } from 'lucide-react';
+import { PawPrint } from '@/components/ui/animated-icons';
 import { AuthForm } from '@/components/auth-form';
 import { SiteHeader } from '@/components/site-header';
 import { getSession } from '@/lib/session';

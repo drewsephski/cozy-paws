@@ -9,6 +9,7 @@ export type BusinessProfile = {
   services?: string[];
   phone?: string;
   email?: string;
+  linkedinUrl?: string | null;
   profileImageUrl?: string;
   onboardingCompletedAt?: number | null;
   paymentLinkUrl?: string;

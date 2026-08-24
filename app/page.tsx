@@ -1,6 +1,6 @@
 import { HeroStartButton, SubdomainForm } from './subdomain-form';
 import Link from 'next/link';
-import { ArrowRight, Check, Inbox, Link2, MapPin, PawPrint, Send } from 'lucide-react';
+import { ArrowRight, Check, Inbox, Link2, MapPin, PawPrint, Send } from '@/components/ui/animated-icons';
 import { SiteHeader } from '@/components/site-header';
 import { getSession } from '@/lib/session';
 import { NoiseTexture } from '@/components/ui/noise-texture';

@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { profiles } from '@/lib/profiles';
 import { protocol, rootDomain } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Check, MapPin } from 'lucide-react';
+import { Check, LinkedIn, MapPin } from '@/components/ui/animated-icons';
 import { PetIcon } from '@/components/pet-icon';
 import { AboutSitterfolioDialog } from '@/components/about-sitterfolio-dialog';
 import { PublicPaymentSection } from './public-payment-section';
@@ -71,7 +71,8 @@ export default async function SubdomainPage({
     url: `${protocol}://${subdomain}.${rootDomain}`,
     image: subdomainData.profileImageUrl || undefined,
     areaServed: subdomainData.location || undefined,
-    knowsAbout: services.length ? services : undefined
+    knowsAbout: services.length ? services : undefined,
+    sameAs: subdomainData.linkedinUrl ? [subdomainData.linkedinUrl] : undefined
   };
 
   return (
@@ -95,6 +96,17 @@ export default async function SubdomainPage({
             <div className="min-w-0">
               <h1 className="max-w-2xl text-4xl font-semibold tracking-[-.03em] text-balance sm:text-5xl">{businessDisplayName}</h1>
               {subdomainData.sitterName && subdomainData.businessName && <p className="mt-2 text-base font-medium text-emerald-700 dark:text-emerald-300">Pet care by {subdomainData.sitterName}</p>}
+              {subdomainData.linkedinUrl && (
+                <a
+                  href={subdomainData.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                >
+                  <LinkedIn className="size-4" aria-hidden="true" />
+                  LinkedIn profile
+                </a>
+              )}
               <p className="mt-3 flex items-start gap-2 text-sm leading-6 text-muted-foreground"><MapPin className="mt-1 size-4 shrink-0 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />{subdomainData.location || 'Serving local pet families'}</p>
             </div>
           </div>

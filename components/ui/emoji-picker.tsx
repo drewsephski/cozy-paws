@@ -6,7 +6,7 @@ import {
   type EmojiPickerListRowProps,
   EmojiPicker as EmojiPickerPrimitive,
 } from "frimousse";
-import { SearchIcon } from "lucide-react";
+import { SearchIcon } from '@/components/ui/animated-icons';
 import type * as React from "react";
 
 import { cn } from "@/lib/utils";

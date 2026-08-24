@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { rootDomain, protocol } from '@/lib/utils';
 import { SiteHeader } from '@/components/site-header';
-import { PawPrint } from 'lucide-react';
+import { PawPrint } from '@/components/ui/animated-icons';
 
 export default function NotFound() {
   const [subdomain, setSubdomain] = useState<string | null>(null);

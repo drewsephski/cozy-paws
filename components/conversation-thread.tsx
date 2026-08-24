@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Send } from 'lucide-react';
+import { Send } from '@/components/ui/animated-icons';
 import {
   sendCustomerConversationMessageAction,
   sendSitterConversationMessageAction,

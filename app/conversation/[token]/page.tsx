@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from '@/components/ui/animated-icons';
 import { getCustomerConversation } from '@/lib/conversations';
 import { ConversationMessages, ConversationReplyForm } from '@/components/conversation-thread';
 import { rootDomain } from '@/lib/utils';

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Check, LoaderCircle, MessageCircle } from 'lucide-react';
+import { Check, LoaderCircle, MessageCircle } from '@/components/ui/animated-icons';
 import styles from './payment-result-card.module.css';
 
 const CONFETTI = [

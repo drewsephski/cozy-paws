@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Check, Copy, Globe2, Share2 } from 'lucide-react';
+import { Check, Copy, Globe2, Share2 } from '@/components/ui/animated-icons';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,

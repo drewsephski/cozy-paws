@@ -1,6 +1,6 @@
 'use client';
 
-import { CreditCard } from 'lucide-react';
+import { CreditCard } from '@/components/ui/animated-icons';
 import { useState } from 'react';
 import { Spokes } from '@/components/ui/spokes';
 

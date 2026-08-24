@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, CircleDollarSign, Mail, PawPrint } from 'lucide-react';
+import { ArrowRight, BadgeCheck, CircleDollarSign, Mail, PawPrint } from '@/components/ui/animated-icons';
 import { Stat, StatDescription, StatIndicator, StatLabel, StatSeparator, StatTrend, StatValue } from '@/components/ui/stat';
 
 export type RevenueSnapshot = {

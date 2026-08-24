@@ -17,6 +17,7 @@ type SiteRow = {
   services: string[];
   phone: string | null;
   email: string | null;
+  linkedin_url: string | null;
   profile_image_url: string | null;
   onboarding_completed_at: Date | null;
   payment_link_url: string | null;
@@ -74,6 +75,7 @@ const profileFromRow = (row: SiteRow): ProfileRecord => ({
   services: row.services,
   phone: row.phone ?? undefined,
   email: row.email ?? undefined,
+  linkedinUrl: row.linkedin_url,
   profileImageUrl: row.profile_image_url ?? undefined,
   onboardingCompletedAt: row.onboarding_completed_at?.getTime() ?? null,
   paymentLinkUrl: row.payment_link_url ?? undefined
@@ -103,7 +105,7 @@ export function createPostgresLeadPersister(runTransaction: TransactionRunner = 
     return runTransaction(async (client) => {
       const siteResult = await client.query<SiteRow>(
         `select s.id site_id,s.business_id,b.owner_user_id owner_id,s.subdomain,s.emoji,s.created_at site_created_at,
-                s.sitter_name,s.business_name,s.tagline,s.location,s.services,s.phone,s.email,s.profile_image_url,
+                s.sitter_name,s.business_name,s.tagline,s.location,s.services,s.phone,s.email,s.linkedin_url,s.profile_image_url,
                 s.onboarding_completed_at,b.payment_link_url
          from site s join business b on b.id=s.business_id
          where s.subdomain=$1 and s.deleted_at is null
