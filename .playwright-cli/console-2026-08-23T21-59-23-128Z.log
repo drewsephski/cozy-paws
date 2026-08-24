@@ -677,3 +677,37 @@ https://nextjs.org/docs/messages/module-not-found @ http://drew.localhost:3000/_
 [64187117ms] [LOG] [Fast Refresh] done in 111ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [64187537ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [64187587ms] [LOG] [Fast Refresh] done in 151ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64386845ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64389843ms] [LOG] [HMR] connected @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64393466ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://drew.localhost:3000/:0
+[64393524ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64393552ms] [LOG] [HMR] connected @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64393574ms] [ERROR] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:3318
+[64393641ms] error: column s.availability_status does not exist
+    at readPostgresProfile (about://React/Server/file:///Users/drewsepeczi/platforms/.next/dev/server/chunks/ssr/%5Broot-of-the-server%5D__1kyjcqf._.js?0:392:20)
+    at Object.readProfile (about://React/Server/file:///Users/drewsepeczi/platforms/.next/dev/server/chunks/ssr/%5Broot-of-the-server%5D__1kyjcqf._.js?1:477:25)
+    at Object.get (about://React/Server/file:///Users/drewsepeczi/platforms/.next/dev/server/chunks/ssr/%5Broot-of-the-server%5D__1kyjcqf._.js?2:48:25)
+    at SubdomainPage (about://React/Server/file:///Users/drewsepeczi/platforms/.next/dev/server/chunks/ssr/%5Broot-of-the-server%5D__0x3-seh._.js?3:1320:27)
+    at resolveErrorDev (http://drew.localhost:3000/_next/static/chunks/1154_next_dist_compiled_react-server-dom-turbopack_06cd8qh._.js:1919:105)
+    at processFullStringRow (http://drew.localhost:3000/_next/static/chunks/1154_next_dist_compiled_react-server-dom-turbopack_06cd8qh._.js:2434:29)
+    at processFullBinaryRow (http://drew.localhost:3000/_next/static/chunks/1154_next_dist_compiled_react-server-dom-turbopack_06cd8qh._.js:2393:9)
+    at processBinaryChunk (http://drew.localhost:3000/_next/static/chunks/1154_next_dist_compiled_react-server-dom-turbopack_06cd8qh._.js:2502:221)
+    at progress (http://drew.localhost:3000/_next/static/chunks/1154_next_dist_compiled_react-server-dom-turbopack_06cd8qh._.js:2689:13)
+[64393667ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64393744ms] [LOG] [Fast Refresh] done in 180ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64417196ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64443882ms] [LOG] [Fast Refresh] done in 18028ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64443954ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64456861ms] [WARNING] [Fast Refresh] performing full reload
+
+Fast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.
+You might have a file which exports a React component but also exports a value that is imported by a non-React component file.
+Consider migrating the non-React component export to a separate file and importing it into both files.
+
+It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.
+Fast Refresh requires at least one parent function component in your React tree. @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64456863ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64456864ms] [LOG] [Fast Refresh] done in 12287ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64456971ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64499058ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://drew.localhost:3000/:0
+[64517536ms] [ERROR] Failed to load resource: net::ERR_CONTENT_LENGTH_MISMATCH @ http://drew.localhost:3000/_next/static/chunks/platforms_pages__app_0du2_q-._.js:0
