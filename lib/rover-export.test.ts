@@ -114,6 +114,20 @@ describe('Rover export extraction', () => {
 });
 
 describe('Browserless Rover page loader', () => {
+  it('rejects non-Browserless endpoint overrides before attaching credentials', async () => {
+    const fetcher = vi.fn<typeof fetch>();
+    const loader = createBrowserlessRoverPageLoader({
+      token: 'secret-token',
+      endpoint: 'https://example.com/content',
+      fetcher
+    });
+
+    await expect(loader.load(profileUrl, new AbortController().signal)).rejects.toMatchObject({
+      code: 'PROVIDER_NOT_CONFIGURED'
+    });
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
   it('uses a headful residential browser, blocks media bytes, and returns bounded HTML', async () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(hydrationHtml(), {
       status: 200,
@@ -129,7 +143,7 @@ describe('Browserless Rover page loader', () => {
     expect(providerUrl.searchParams.get('proxy')).toBe('residential');
     expect(providerUrl.searchParams.get('timeout')).toBe('40000');
     expect(providerUrl.searchParams.has('token')).toBe(false);
-    expect(new Headers(request?.headers).get('authorization')).toBe('Bearer secret-token');
+    expect(new Headers(request?.headers).get('authorization')).toBe('Basic c2VjcmV0LXRva2Vu');
     expect(JSON.parse(String(request?.body))).toMatchObject({
       url: profileUrl,
       gotoOptions: { waitUntil: 'domcontentloaded' },

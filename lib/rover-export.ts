@@ -2,6 +2,11 @@ import { canonicalizeRoverProfileUrl } from './domain/rover-profile-url';
 
 const MAX_HTML_BYTES = 3 * 1024 * 1024;
 const QUERY_STATE_MARKER = 'window.__REACT_QUERY_STATE__';
+const BROWSERLESS_CONTENT_HOSTS = new Set([
+  'production-sfo.browserless.io',
+  'production-lon.browserless.io',
+  'production-ams.browserless.io'
+]);
 
 export const ROVER_EXPORT_ERROR_CODES = [
   'INVALID_PROFILE_URL',
@@ -33,6 +38,28 @@ function retryAfterSeconds(headers: Headers, fallback: number) {
   if (!raw || !/^\d{1,4}$/.test(raw)) return fallback;
   const seconds = Number(raw);
   return seconds >= 1 && seconds <= 3_600 ? seconds : fallback;
+}
+
+function browserlessContentEndpoint(value: string) {
+  let endpoint: URL;
+  try {
+    endpoint = new URL(value);
+  } catch {
+    throw new RoverExportError('PROVIDER_NOT_CONFIGURED');
+  }
+  if (
+    endpoint.protocol !== 'https:' ||
+    endpoint.port ||
+    endpoint.username ||
+    endpoint.password ||
+    endpoint.pathname !== '/content' ||
+    !BROWSERLESS_CONTENT_HOSTS.has(endpoint.hostname)
+  ) {
+    throw new RoverExportError('PROVIDER_NOT_CONFIGURED');
+  }
+  endpoint.search = '';
+  endpoint.hash = '';
+  return endpoint;
 }
 
 type JsonRecord = Record<string, unknown>;
@@ -325,9 +352,7 @@ export function createBrowserlessRoverPageLoader({
 
   return {
     async load(url, signal) {
-      const providerUrl = new URL(endpoint);
-      if (providerUrl.protocol !== 'https:') throw new RoverExportError('PROVIDER_NOT_CONFIGURED');
-      providerUrl.searchParams.delete('token');
+      const providerUrl = browserlessContentEndpoint(endpoint);
       providerUrl.searchParams.set('headless', 'false');
       providerUrl.searchParams.set('proxy', 'residential');
       providerUrl.searchParams.set('proxyCountry', 'us');
@@ -342,7 +367,7 @@ export function createBrowserlessRoverPageLoader({
         const response = await fetcher(providerUrl, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Basic ${Buffer.from(token, 'utf8').toString('base64')}`,
             'Cache-Control': 'no-cache',
             'Content-Type': 'application/json'
           },
