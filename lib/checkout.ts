@@ -35,7 +35,7 @@ export function checkoutCreationIdempotencyKey(row: Pick<CheckoutRow, 'id' | 'st
 export async function createOrReuseCheckoutSession(publicToken: string) {
   return transaction(async (client) => {
     await client.query('select pg_advisory_xact_lock(hashtext($1))', [publicToken]);
-    const result = await client.query<CheckoutRow>(`select pr.*,b.stripe_account_id from payment_request pr join business b on b.id=pr.business_id where pr.public_token=$1 for update of pr`, [publicToken]);
+    const result = await client.query<CheckoutRow>(`select pr.* from payment_request pr where pr.public_token=$1 for update`, [publicToken]);
     const row = result.rows[0];
     if (!row || row.status !== 'OPEN' || !row.stripe_account_id) throw new Error('Payment request is not available');
     const account = await getStripe().v2.core.accounts.retrieve(row.stripe_account_id, { include: ['configuration.merchant'] });

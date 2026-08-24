@@ -30,14 +30,29 @@ export function DateRangePicker({
   compact = false,
   required = false,
   className,
+  defaultStartDate,
+  defaultEndDate,
 }: {
   compact?: boolean
   required?: boolean
   className?: string
+  defaultStartDate?: string
+  defaultEndDate?: string
 }) {
-  const [range, setRange] = React.useState<DateRange | undefined>()
+  const initialRange = React.useMemo<DateRange | undefined>(() => {
+    if (!defaultStartDate) return undefined
+    const from = new Date(`${defaultStartDate}T00:00:00`)
+    const to = defaultEndDate ? new Date(`${defaultEndDate}T00:00:00`) : from
+    return Number.isNaN(from.getTime()) || Number.isNaN(to.getTime()) ? undefined : { from, to }
+  }, [defaultEndDate, defaultStartDate])
+  const [range, setRange] = React.useState<DateRange | undefined>(initialRange)
   const [open, setOpen] = React.useState(false)
   const [selectingEnd, setSelectingEnd] = React.useState(false)
+
+  React.useEffect(() => {
+    setRange(initialRange)
+    setSelectingEnd(false)
+  }, [initialRange])
 
   function selectRange(next: DateRange | undefined) {
     setRange(next)

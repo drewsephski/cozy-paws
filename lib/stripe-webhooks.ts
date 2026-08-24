@@ -15,7 +15,8 @@ async function stripeObjects(accountId: string, intentValue: string | Stripe.Pay
   let intent = typeof intentValue === 'object' && intentValue ? intentValue : null;
   const intentId = objectId(intentValue);
   if (!intent && intentId) intent = await getStripe().paymentIntents.retrieve(intentId, { expand: ['latest_charge.application_fee'] }, { stripeAccount: accountId });
-  if (!intent?.metadata.paymentRequestId) throw new Error('PaymentIntent has no Sitterfolio request metadata');
+  if (intent?.metadata.paymentRequestId && intent.metadata.publicPaymentId) throw new Error('PaymentIntent claims multiple Sitterfolio payment aggregates');
+  if (!intent?.metadata.paymentRequestId) return null;
   const chargeId = objectId(chargeValue) ?? objectId(intent.latest_charge);
   if (!chargeId) throw new Error('PaymentIntent has no Charge');
   const charge = await getStripe().charges.retrieve(chargeId, { expand: ['application_fee'] }, { stripeAccount: accountId });
@@ -27,7 +28,7 @@ async function stripeObjects(accountId: string, intentValue: string | Stripe.Pay
 
 async function lockedRow(client: PoolClient, requestId: string) {
   await client.query('select pg_advisory_xact_lock(hashtext($1))', [requestId]);
-  const result = await client.query<Row>(`select pr.*,b.stripe_account_id from payment_request pr join business b on b.id=pr.business_id where pr.id=$1 for update of pr`, [requestId]);
+  const result = await client.query<Row>(`select pr.* from payment_request pr where pr.id=$1 for update`, [requestId]);
   if (!result.rows[0]?.stripe_account_id) throw new Error('No payment request exists for this Stripe object');
   return result.rows[0];
 }
@@ -48,6 +49,14 @@ export async function processStripeEvent(event: Stripe.Event) {
   const handled = [...checkoutEvents, 'charge.refunded', 'charge.dispute.created', 'charge.dispute.closed'].includes(event.type);
   if (!handled) { await transaction(async (client) => { await client.query(`insert into stripe_webhook_event(event_id,event_type) values($1,$2) on conflict do nothing`, [event.id, event.type]); }); return; }
   if (!accountId) throw new Error('Expected a connected-account Stripe event');
+  const acknowledgeUnrelated = async () => transaction(async (client) => {
+    await client.query(`insert into stripe_webhook_event(event_id,event_type) values($1,$2) on conflict do nothing`, [event.id, event.type]);
+  });
+  if (checkoutEvents.includes(event.type)) {
+    const metadata = (event.data.object as Stripe.Checkout.Session).metadata;
+    if (!metadata?.paymentRequestId && !metadata?.publicPaymentId) return acknowledgeUnrelated();
+    if (metadata.paymentRequestId && metadata.publicPaymentId) throw new Error('Checkout Session claims multiple Sitterfolio payment aggregates');
+  }
   if (await maybeProcessPublicPaymentEvent(event, accountId)) return;
 
   let objects; let signal; let paidAt: Date | null = null;
@@ -67,17 +76,19 @@ export async function processStripeEvent(event: Stripe.Event) {
       return;
     }
     objects = await stripeObjects(accountId, typeof session.payment_intent === 'string' ? session.payment_intent : null, null);
-    if (objects.requestId !== requestId) throw new Error('Checkout and PaymentIntent metadata disagree');
+    if (!objects || objects.requestId !== requestId) throw new Error('Checkout and PaymentIntent metadata disagree');
     paidAt = new Date(objects.charge.created * 1000);
     signal = { kind: 'checkout' as const, requestId, connectedAccountId: accountId, amountCents: session.amount_total ?? -1, currency: session.currency ?? '', checkoutSessionId: session.id, paymentIntentId: objects.paymentIntentId, chargeId: objects.charge.id };
   } else if (event.type === 'charge.refunded') {
     const charge = event.data.object as Stripe.Charge;
     objects = await stripeObjects(accountId, charge.payment_intent, charge);
+    if (!objects) return acknowledgeUnrelated();
     signal = { kind: 'refund' as const, requestId: objects.requestId, connectedAccountId: accountId, amountCents: charge.amount, currency: charge.currency, paymentIntentId: objects.paymentIntentId, chargeId: charge.id, refundedAmountCents: charge.amount_refunded };
   } else {
     const eventDispute = event.data.object as Stripe.Dispute;
     const dispute = await getStripe().disputes.retrieve(eventDispute.id, {}, { stripeAccount: accountId });
     objects = await stripeObjects(accountId, dispute.payment_intent, dispute.charge);
+    if (!objects) return acknowledgeUnrelated();
     const outcome = dispute.status === 'lost' ? 'lost' as const : ['won', 'prevented', 'warning_closed'].includes(dispute.status) ? 'won' as const : undefined;
     if (event.type === 'charge.dispute.closed' && !outcome) throw new Error(`Unsupported closed dispute status: ${dispute.status}`);
     signal = { kind: outcome ? 'dispute_closed' as const : 'dispute_created' as const, requestId: objects.requestId, connectedAccountId: accountId, amountCents: objects.charge.amount, currency: objects.charge.currency, paymentIntentId: objects.paymentIntentId, chargeId: objects.charge.id, disputeOutcome: outcome };

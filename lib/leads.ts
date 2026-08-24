@@ -1,13 +1,13 @@
 import { headers } from 'next/headers';
 import { profiles } from './profiles';
-import { redis } from './redis';
+import { getRedis } from './redis';
 import { createLeadIntake } from './lead-intake';
 import { sendNewLeadNotification } from './email';
 import { persistPostgresLeadWithConversation } from './postgres-lead-intake';
 import { createHash } from 'node:crypto';
 
 const maySubmit = async (key: string) =>
-  Boolean(await redis.set(`lead-rate:${key}`, Date.now(), { nx: true, ex: 30 }));
+  Boolean(await getRedis().set(`lead-rate:${key}`, Date.now(), { nx: true, ex: 30 }));
 
 export const leadIntake = createLeadIntake(profiles, maySubmit, sendNewLeadNotification, persistPostgresLeadWithConversation);
 
@@ -23,5 +23,5 @@ export async function leadRateLimitKey(subdomain: string) {
 
 export async function maySendConversationMessage(publicToken: string) {
   const tokenKey = createHash('sha256').update(publicToken).digest('hex').slice(0, 24);
-  return Boolean(await redis.set(`conversation-rate:${tokenKey}:${await requestAddress()}`, Date.now(), { nx: true, ex: 3 }));
+  return Boolean(await getRedis().set(`conversation-rate:${tokenKey}:${await requestAddress()}`, Date.now(), { nx: true, ex: 3 }));
 }

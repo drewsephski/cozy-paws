@@ -89,7 +89,7 @@ Local subdomains use addresses such as `happy-tails.localhost:3000`. Keep `NEXT_
 
 ## Database setup and migrations
 
-SQL migrations in `migrations/` are applied manually; there is no ORM migration runner. Start with `migrations/auth.sql`, then inspect the remaining migration files and their dependencies before applying the schema required by the target environment.
+SQL migrations in `migrations/` are applied manually; there is no ORM migration runner. [`migrations/manifest.json`](migrations/manifest.json) is the complete canonical order for every migration. Follow the identity checks, guarded settings, deployment order, and read-only verification queries in [`migrations/README.md`](migrations/README.md). Do not apply application migrations from CI.
 
 The inquiry-to-revenue migration and Redis backfill have guarded scripts:
 
@@ -117,10 +117,13 @@ Use test-mode credentials locally and keep preview and production destinations i
 pnpm lint
 pnpm typecheck
 pnpm test
+TEST_DATABASE_URL=postgresql://localhost/sitterfolio_test pnpm test:integration
 pnpm build
 ```
 
-Run focused tests for changed domain or ownership behavior before the full checks. Browser QA, provider configuration, deployment health, and real customer/device behavior are separate gates; a green build does not establish them.
+Fast unit tests remain the local default. The PostgreSQL integration command refuses remote databases and requires an unmistakably test-only local database; CI provides a disposable PostgreSQL service. Run focused tests for changed domain or ownership behavior before the full checks. Browser QA, provider configuration, deployment health, signed webhook delivery, and real customer/device behavior are separate gates; green CI or a green build does not establish them.
+
+The repository intentionally does not install the Vercel CLI as an application dependency. Use the approved external deployment environment or an explicitly reviewed one-off development tool; no package script relies on `pnpm vercel`.
 
 ## Architecture and contributor guidance
 
@@ -129,6 +132,6 @@ Run focused tests for changed domain or ownership behavior before the full check
 - `app/` contains routes, Server Components, Server Actions, and API handlers.
 - `lib/` contains domain rules, ownership-aware services, persistence, and external integrations.
 - `migrations/` contains manually applied SQL migrations.
-- `tests/` contains domain, service, ownership, and route-level tests.
+- Fast unit/component tests are colocated with source as `*.test.ts` or `*.test.tsx`; `tests/support/` contains shared fixtures and `tests/integration/` contains the isolated PostgreSQL suite.
 
 Start a change at its route or action, trace it through the owning service and domain module, then inspect the repository, migration, and tests. Keep framework code thin, preserve server-derived ownership, and add new business rules to testable domain code.

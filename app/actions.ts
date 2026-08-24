@@ -19,6 +19,9 @@ import { createOwnedBooking, transitionOwnedBooking } from '@/lib/bookings';
 import { submitAuthenticatedLead } from '@/lib/authenticated-lead-intake';
 import { rememberConversationReturn } from '@/lib/conversation-return';
 import { normalizeLinkedInProfileUrl } from '@/lib/domain/linkedin-profile';
+import { isCalendarDate } from '@/lib/calendar-date';
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 async function requireUser(callbackURL = '/admin') {
   const session = await getSession();
@@ -69,7 +72,9 @@ export async function saveProfileAction(
     ['tagline', 160],
     ['location', 240],
     ['phone', 40],
-    ['email', 120]
+    ['email', 120],
+    ['meetAndGreetExpectations', 500],
+    ['cancellationExpectations', 500]
   ] as const;
 
   for (const [name, maximumLength] of textFields) {
@@ -93,6 +98,25 @@ export async function saveProfileAction(
       return { error: error instanceof Error ? error.message : 'Enter a valid LinkedIn personal profile URL.' };
     }
   }
+
+  if (formData.has('availabilityStatus')) {
+    const status = String(formData.get('availabilityStatus') || '');
+    if (!['ACCEPTING', 'LIMITED', 'UNAVAILABLE'].includes(status)) return { error: 'Choose a valid availability status.' };
+    updates.availabilityStatus = status as NonNullable<BusinessProfile['availabilityStatus']>;
+  }
+  if (formData.has('availabilityUntil')) {
+    const value = String(formData.get('availabilityUntil') || '');
+    if (value && !isCalendarDate(value)) return { error: 'Choose a valid availability date.' };
+    updates.availabilityUntil = value || null;
+  }
+  if (formData.has('yearsExperience')) {
+    const value = String(formData.get('yearsExperience') || '').trim();
+    const years = value === '' ? null : Number(value);
+    if (years !== null && (!Number.isInteger(years) || years < 0 || years > 80)) return { error: 'Years of experience must be from 0 to 80.' };
+    updates.yearsExperience = years;
+  }
+  if (formData.has('careCapabilities')) updates.careCapabilities = normalizeServices(String(formData.get('careCapabilities') || '').split(','), 12);
+  if (formData.has('selfReportedCredentials')) updates.selfReportedCredentials = normalizeServices(String(formData.get('selfReportedCredentials') || '').split(','), 12);
 
   const updated = await profiles.updateOwned(user.id, subdomain, updates);
   if (!updated) return { error: 'This site could not be found. Refresh and try again.' };
@@ -273,12 +297,12 @@ export async function saveProfileImageAction(formData: FormData): Promise<void> 
   revalidatePath(`/s/${updated.subdomain}`);
 }
 
-export async function markLeadReadAction(formData: FormData): Promise<void> {
+export async function markLeadGroupReadAction(formData: FormData): Promise<void> {
   const user = await requireUser();
-  const subdomain = String(formData.get('subdomain') || '');
-  const leadId = String(formData.get('leadId') || '');
-  const marked = await profiles.markLeadRead(user.id, subdomain, leadId);
-  if (marked) revalidatePath('/admin');
+  const leadIds = [...new Set(formData.getAll('leadIds').map(String))];
+  if (leadIds.length > 100 || leadIds.some((id) => !UUID.test(id))) return;
+  const marked = await profiles.markLeadsRead(user.id, leadIds);
+  if (marked.length) revalidatePath('/admin');
 }
 
 export async function updateLeadStatusAction(formData: FormData): Promise<void> {
@@ -288,13 +312,13 @@ export async function updateLeadStatusAction(formData: FormData): Promise<void> 
   revalidatePath('/admin');
 }
 
-export type SaveClientState = { success?: string; error?: string; savedAt?: number };
+export type SaveClientState = { success?: string; error?: string; savedAt?: number; householdId?: string };
 export async function saveClientFromLeadAction(_state: SaveClientState, formData: FormData): Promise<SaveClientState> {
   const user = await requireUser();
   try {
     const household = await createClientHouseholdFromOwnedLead(user.id, String(formData.get('leadId') || ''));
     revalidatePath('/admin');
-    return { success: `${household.name} is now saved as a client.`, savedAt: Date.now() };
+    return { success: `${household.name} is now saved as a client.`, savedAt: Date.now(), householdId: household.id };
   } catch (error) {
     return { error: error instanceof Error ? error.message : 'Unable to save this client.' };
   }

@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from 'react';
 import { MessageCircle } from '@/components/ui/animated-icons';
-import { markLeadReadAction } from '@/app/actions';
+import { markLeadGroupReadAction } from '@/app/actions';
 import { ConversationMessages, ConversationReplyForm } from '@/components/conversation-thread';
 import type { ConversationMessage } from '@/lib/conversations';
 import type { OwnedLead } from '@/lib/profile-ownership';
@@ -25,12 +25,9 @@ export function MessagesInbox({ leads, conversationMessages }: { leads: OwnedLea
     const unreadLeads = groupedLeads.filter((lead) => !lead.readAt);
     if (!unreadLeads.length) return;
     startTransition(() => {
-      for (const lead of unreadLeads) {
-        const formData = new FormData();
-        formData.set('subdomain', lead.subdomain);
-        formData.set('leadId', lead.id);
-        void markLeadReadAction(formData);
-      }
+      const formData = new FormData();
+      for (const lead of unreadLeads) formData.append('leadIds', lead.id);
+      void markLeadGroupReadAction(formData);
     });
   }
 

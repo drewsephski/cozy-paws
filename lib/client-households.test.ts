@@ -109,7 +109,7 @@ describe('client households', () => {
     expect(households).toHaveLength(1);
     expect(households[0].pets.map((pet) => pet.name)).toEqual(['Milo', 'Luna']);
     expect(queryMock.mock.calls[0][0]).toContain('b.owner_user_id=$1');
-    expect(queryMock.mock.calls[0][1]).toEqual(['owner-1']);
+    expect(queryMock.mock.calls[0][1]).toEqual(['owner-1', 100]);
   });
 
   it('updates reusable household details only through the owning sitter', async () => {
