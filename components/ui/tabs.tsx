@@ -23,7 +23,7 @@ function TabsTrigger({ className, children, ...props }: React.ComponentProps<typ
       {children}
       <motion.span
         layoutId="tabs-active-indicator"
-        className="absolute inset-x-1 bottom-0 h-px bg-foreground group-data-[state=inactive]:hidden"
+        className="absolute inset-x-1 bottom-0 h-px bg-foreground opacity-0 transition-opacity duration-150 group-data-[state=active]:opacity-100"
         transition={{ type: 'spring', stiffness: 500, damping: 35 }}
         aria-hidden="true"
       />

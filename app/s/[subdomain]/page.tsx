@@ -79,7 +79,11 @@ export default async function SubdomainPage({
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
       <header className="border-b border-border/70">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <AboutSitterfolioDialog businessName={subdomainData.businessName || subdomainData.sitterName || `${subdomain}'s pet care`} />
+          <AboutSitterfolioDialog
+            businessName={businessDisplayName}
+            siteHref={`${protocol}://${subdomain}.${rootDomain}`}
+            sitterfolioHref={`${protocol}://${rootDomain}`}
+          />
           <ThemeToggle />
         </div>
       </header>
