@@ -190,17 +190,19 @@ type HouseholdListRow = {
   pet_care_notes: string | null;
 };
 
-export async function listOwnerClientHouseholds(ownerUserId: string) {
+export async function listOwnerClientHouseholds(ownerUserId: string, limit = 100) {
   const result = await query<HouseholdListRow>(
-    `select h.id household_id,h.business_id,h.source_lead_id,h.name household_name,h.email,h.postal_code,
+    `with recent_households as (
+       select h.* from client_household h join business b on b.id=h.business_id
+       where b.owner_user_id=$1 order by h.updated_at desc limit $2
+     )
+     select h.id household_id,h.business_id,h.source_lead_id,h.name household_name,h.email,h.postal_code,
             h.care_notes household_care_notes,h.created_at household_created_at,h.updated_at household_updated_at,
             p.id pet_id,p.name pet_name,p.type pet_type,p.care_notes pet_care_notes
-     from client_household h
-     join business b on b.id=h.business_id
+     from recent_households h
      left join client_pet p on p.household_id=h.id
-     where b.owner_user_id=$1
      order by h.updated_at desc,p.created_at,p.id`,
-    [ownerUserId]
+    [ownerUserId, limit]
   );
   const households = new Map<string, ClientHousehold>();
   for (const row of result.rows) {

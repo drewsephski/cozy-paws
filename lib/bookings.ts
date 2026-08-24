@@ -1,5 +1,6 @@
 import { query, transaction } from './db';
 import { allowedBookingTransitions, parseBookingStatus, type BookingStatus } from './domain/bookings';
+import { isCalendarDate } from './calendar-date';
 export type { BookingStatus } from './domain/bookings';
 
 export type BookingPet = { id: string; name: string; type: string };
@@ -55,12 +56,6 @@ type BookingRow = {
 
 const dateText = (value: string | Date) => typeof value === 'string' ? value : value.toISOString().slice(0, 10);
 
-function isDateText(value: string) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const parsed = new Date(`${value}T00:00:00.000Z`);
-  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
-}
-
 function mapBooking(row: BookingRow, householdName: string, pets: BookingPet[]): Booking {
   return {
     id: row.id,
@@ -83,7 +78,7 @@ export async function createOwnedBooking(ownerUserId: string, input: CreateBooki
   const petIds = [...new Set(input.petIds)];
   const notes = input.notes?.trim() || '';
   if (!petIds.length) throw new Error('Choose at least one pet.');
-  if (!isDateText(input.startDate) || !isDateText(input.endDate)) throw new Error('Enter valid booking dates.');
+  if (!isCalendarDate(input.startDate) || !isCalendarDate(input.endDate)) throw new Error('Enter valid booking dates.');
   if (input.endDate < input.startDate) throw new Error('The end date cannot be before the start date.');
   if (!Number.isInteger(input.amountCents) || input.amountCents < 100 || input.amountCents > 1_000_000) {
     throw new Error('Enter a whole-cent amount between $1 and $10,000.');
@@ -138,8 +133,8 @@ type BookingListRow = {
 };
 
 export async function listOwnerBookings(ownerUserId: string, range?: { startDate?: string; endDate?: string }): Promise<Booking[]> {
-  if (range?.startDate && !isDateText(range.startDate)) throw new Error('Enter a valid range start date.');
-  if (range?.endDate && !isDateText(range.endDate)) throw new Error('Enter a valid range end date.');
+  if (range?.startDate && !isCalendarDate(range.startDate)) throw new Error('Enter a valid range start date.');
+  if (range?.endDate && !isCalendarDate(range.endDate)) throw new Error('Enter a valid range end date.');
   if (range?.startDate && range?.endDate && range.endDate < range.startDate) throw new Error('The range end cannot be before its start.');
   const result = await query<BookingListRow>(
     `select bk.id booking_id,bk.business_id,bk.household_id,bk.source_lead_id,bk.start_date,bk.end_date,

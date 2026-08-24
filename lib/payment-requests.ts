@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import { query, transaction } from './db';
-import { calculatePlatformFeeCents, revenueFromPayments, type PaymentStatus } from './domain/payments';
+import { calculatePlatformFeeCents, type PaymentStatus } from './domain/payments';
 import { getConnectedAccountStatus, refreshConnectedAccountReadiness } from './connected-accounts';
 import { sendPaymentRequestNotification, type EmailSender } from './email';
 
@@ -8,7 +8,7 @@ export type PaymentRequest = { id: string; publicToken: string; businessId: stri
 type PaymentRow = { id: string; public_token: string; business_id: string; lead_id: string; amount_cents: number; platform_fee_cents: number; currency: string; description: string; customer_note: string | null; customer_email: string | null; status: PaymentStatus; refunded_amount_cents: number; stripe_account_id: string | null; stripe_ready: boolean; customer_notified_at: Date | null };
 const mapPaymentRequestRow = (row: PaymentRow): PaymentRequest => ({ id: row.id, publicToken: row.public_token, businessId: row.business_id, leadId: row.lead_id, amountCents: row.amount_cents, platformFeeCents: row.platform_fee_cents, currency: row.currency, description: row.description, customerNote: row.customer_note, customerEmail: row.customer_email, status: row.status, refundedAmountCents: row.refunded_amount_cents, stripeAccountId: row.stripe_account_id, stripeReady: row.stripe_ready, customerNotifiedAt: row.customer_notified_at });
 
-export async function getPaymentRequest(publicToken: string) { const result = await query<PaymentRow>(`select pr.*,b.stripe_account_id,b.stripe_ready from payment_request pr join business b on b.id=pr.business_id where pr.public_token=$1`, [publicToken]); return result.rows[0] ? mapPaymentRequestRow(result.rows[0]) : null; }
+export async function getPaymentRequest(publicToken: string) { const result = await query<PaymentRow>(`select pr.*,b.stripe_ready from payment_request pr join business b on b.id=pr.business_id where pr.public_token=$1`, [publicToken]); return result.rows[0] ? mapPaymentRequestRow(result.rows[0]) : null; }
 
 export async function getPaidPaymentConversation(publicToken: string) {
   const result = await query<{ conversation_token: string; sitter_name: string }>(
@@ -38,9 +38,9 @@ export async function createPaymentRequestForLead(ownerUserId: string, input: { 
     if (!lead) throw new Error('Lead does not belong to this user');
     if (!['QUALIFIED', 'QUOTED'].includes(lead.status)) throw new Error('Qualify this inquiry before requesting payment');
     if (!lead.stripe_account_id || !lead.stripe_ready) throw new Error('Complete Stripe setup before requesting payment');
-    const existing = await client.query<PaymentRow>(`select pr.*,b.stripe_account_id,b.stripe_ready from payment_request pr join business b on b.id=pr.business_id where pr.lead_id=$1 and pr.status='OPEN'`, [input.leadId]);
+    const existing = await client.query<PaymentRow>(`select pr.*,b.stripe_ready from payment_request pr join business b on b.id=pr.business_id where pr.lead_id=$1 and pr.status='OPEN'`, [input.leadId]);
     if (existing.rows[0]) return mapPaymentRequestRow(existing.rows[0]);
-    const created = await client.query<PaymentRow>(`insert into payment_request(business_id,lead_id,public_token,amount_cents,platform_fee_cents,description,customer_note,customer_email) values($1,$2,$3,$4,$5,$6,$7,$8) returning *, $9::text stripe_account_id, true stripe_ready`, [lead.business_id, lead.lead_id, token, input.amountCents, fee, input.description.trim(), input.customerNote?.trim() || null, lead.customer_email, lead.stripe_account_id]);
+    const created = await client.query<PaymentRow>(`insert into payment_request(business_id,lead_id,public_token,amount_cents,platform_fee_cents,description,customer_note,customer_email,stripe_account_id) values($1,$2,$3,$4,$5,$6,$7,$8,$9) returning *, true stripe_ready`, [lead.business_id, lead.lead_id, token, input.amountCents, fee, input.description.trim(), input.customerNote?.trim() || null, lead.customer_email, lead.stripe_account_id]);
     await client.query(`update lead set status='QUOTED',updated_at=now() where id=$1`, [lead.lead_id]);
     await client.query(`insert into lead_event(lead_id,kind) values($1,'PAYMENT_REQUEST_CREATED')`, [lead.lead_id]);
     return mapPaymentRequestRow(created.rows[0]);
@@ -49,7 +49,7 @@ export async function createPaymentRequestForLead(ownerUserId: string, input: { 
 
 export async function deliverPaymentRequest(paymentRequestId: string, sender?: EmailSender) {
   return transaction(async (client) => {
-    const result = await client.query<PaymentRow & { business_name: string; site_email: string | null }>(`select pr.*,b.stripe_account_id,b.stripe_ready,b.name business_name,s.email site_email from payment_request pr join business b on b.id=pr.business_id join lead l on l.id=pr.lead_id join site s on s.id=l.site_id where pr.id=$1 for update`, [paymentRequestId]);
+    const result = await client.query<PaymentRow & { business_name: string; site_email: string | null }>(`select pr.*,b.stripe_ready,b.name business_name,s.email site_email from payment_request pr join business b on b.id=pr.business_id join lead l on l.id=pr.lead_id join site s on s.id=l.site_id where pr.id=$1 for update`, [paymentRequestId]);
     const payment = result.rows[0];
     if (!payment) throw new Error('Payment request not found');
     if (payment.customer_notified_at) return { delivered: true, payment: mapPaymentRequestRow(payment) };
@@ -61,12 +61,24 @@ export async function deliverPaymentRequest(paymentRequestId: string, sender?: E
 }
 
 export async function getOwnerRevenue(ownerUserId: string) {
-  const payments = await query<{ id: string; status: PaymentStatus; amount_cents: number; refunded_amount_cents: number }>(`select p.id,p.status,p.amount_cents,p.refunded_amount_cents from (select id,business_id,status,amount_cents,refunded_amount_cents from payment_request union all select id,business_id,status,amount_cents,refunded_amount_cents from public_payment) p join business b on b.id=p.business_id where b.owner_user_id=$1`, [ownerUserId]);
-  const totals = revenueFromPayments(payments.rows.map((row) => ({ id: row.id, status: row.status, amountCents: row.amount_cents, refundedAmountCents: row.refunded_amount_cents })));
-  const funnel = await query<{ inquiries: string; qualified: string; requests: string; booked: string }>(`select count(distinct l.id)::text inquiries,count(distinct l.id) filter(where l.status in ('QUALIFIED','QUOTED','BOOKED'))::text qualified,count(distinct pr.id)::text requests,count(distinct l.id) filter(where l.status='BOOKED')::text booked from business b join site s on s.business_id=b.id left join lead l on l.site_id=s.id left join payment_request pr on pr.lead_id=l.id where b.owner_user_id=$1`, [ownerUserId]);
-  const sources = await query<{ source: string; generated_revenue_cents: string }>(`select source,sum(generated_revenue_cents)::text generated_revenue_cents from (select l.source,case when pr.status in ('PAID','PARTIALLY_REFUNDED','REFUNDED') then pr.amount_cents-pr.refunded_amount_cents else 0 end generated_revenue_cents from business b join site s on s.business_id=b.id join lead l on l.site_id=s.id left join payment_request pr on pr.lead_id=l.id where b.owner_user_id=$1 union all select 'public site' source,case when pp.status in ('PAID','PARTIALLY_REFUNDED','REFUNDED') then pp.amount_cents-pp.refunded_amount_cents else 0 end from public_payment pp join business b on b.id=pp.business_id where b.owner_user_id=$1) attributed group by source order by 2 desc`, [ownerUserId]);
-  const sites = await query<{ subdomain: string; generated_revenue_cents: string }>(`select s.subdomain,(coalesce((select sum(pr.amount_cents-pr.refunded_amount_cents) from payment_request pr join lead l on l.id=pr.lead_id where l.site_id=s.id and pr.status in ('PAID','PARTIALLY_REFUNDED','REFUNDED')),0)+coalesce((select sum(pp.amount_cents-pp.refunded_amount_cents) from public_payment pp where pp.site_id=s.id and pp.status in ('PAID','PARTIALLY_REFUNDED','REFUNDED')),0))::text generated_revenue_cents from business b join site s on s.business_id=b.id where b.owner_user_id=$1 and s.deleted_at is null order by 2 desc`, [ownerUserId]);
-  return { ...totals, inquiries: Number(funnel.rows[0]?.inquiries ?? 0), qualified: Number(funnel.rows[0]?.qualified ?? 0), paymentRequests: Number(funnel.rows[0]?.requests ?? 0), booked: Number(funnel.rows[0]?.booked ?? 0), sources: sources.rows.map((row) => ({ source: row.source, generatedRevenueCents: Number(row.generated_revenue_cents) })), sites: sites.rows.map((row) => ({ subdomain: row.subdomain, generatedRevenueCents: Number(row.generated_revenue_cents) })) };
+  const [totals, funnel, sources, sites] = await Promise.all([
+    query<{ successful_payments: string; gross_paid_cents: string; generated_revenue_cents: string }>(`select count(*) filter(where p.status in ('PAID','PARTIALLY_REFUNDED','REFUNDED'))::text successful_payments,coalesce(sum(p.amount_cents) filter(where p.status in ('PAID','PARTIALLY_REFUNDED','REFUNDED')),0)::text gross_paid_cents,coalesce(sum(p.amount_cents-p.refunded_amount_cents) filter(where p.status in ('PAID','PARTIALLY_REFUNDED','REFUNDED')),0)::text generated_revenue_cents from (select business_id,status,amount_cents,refunded_amount_cents from payment_request union all select business_id,status,amount_cents,refunded_amount_cents from public_payment) p join business b on b.id=p.business_id where b.owner_user_id=$1`, [ownerUserId]),
+    query<{ inquiries: string; qualified: string; requests: string; booked: string }>(`select count(distinct l.id)::text inquiries,count(distinct l.id) filter(where l.status in ('QUALIFIED','QUOTED','BOOKED'))::text qualified,count(distinct pr.id)::text requests,count(distinct l.id) filter(where l.status='BOOKED')::text booked from business b join site s on s.business_id=b.id left join lead l on l.site_id=s.id left join payment_request pr on pr.lead_id=l.id where b.owner_user_id=$1`, [ownerUserId]),
+    query<{ source: string; generated_revenue_cents: string }>(`select source,sum(generated_revenue_cents)::text generated_revenue_cents from (select l.source,case when pr.status in ('PAID','PARTIALLY_REFUNDED','REFUNDED') then pr.amount_cents-pr.refunded_amount_cents else 0 end generated_revenue_cents from business b join site s on s.business_id=b.id join lead l on l.site_id=s.id left join payment_request pr on pr.lead_id=l.id where b.owner_user_id=$1 union all select 'public site' source,case when pp.status in ('PAID','PARTIALLY_REFUNDED','REFUNDED') then pp.amount_cents-pp.refunded_amount_cents else 0 end from public_payment pp join business b on b.id=pp.business_id where b.owner_user_id=$1) attributed group by source order by 2 desc`, [ownerUserId]),
+    query<{ subdomain: string; generated_revenue_cents: string }>(`select s.subdomain,(coalesce((select sum(pr.amount_cents-pr.refunded_amount_cents) from payment_request pr join lead l on l.id=pr.lead_id where l.site_id=s.id and pr.status in ('PAID','PARTIALLY_REFUNDED','REFUNDED')),0)+coalesce((select sum(pp.amount_cents-pp.refunded_amount_cents) from public_payment pp where pp.site_id=s.id and pp.status in ('PAID','PARTIALLY_REFUNDED','REFUNDED')),0))::text generated_revenue_cents from business b join site s on s.business_id=b.id where b.owner_user_id=$1 and s.deleted_at is null order by 2 desc`, [ownerUserId]),
+  ]);
+  const total = totals.rows[0];
+  return {
+    successfulPayments: Number(total?.successful_payments ?? 0),
+    grossPaidCents: Number(total?.gross_paid_cents ?? 0),
+    generatedRevenueCents: Number(total?.generated_revenue_cents ?? 0),
+    inquiries: Number(funnel.rows[0]?.inquiries ?? 0),
+    qualified: Number(funnel.rows[0]?.qualified ?? 0),
+    paymentRequests: Number(funnel.rows[0]?.requests ?? 0),
+    booked: Number(funnel.rows[0]?.booked ?? 0),
+    sources: sources.rows.map((row) => ({ source: row.source, generatedRevenueCents: Number(row.generated_revenue_cents) })),
+    sites: sites.rows.map((row) => ({ subdomain: row.subdomain, generatedRevenueCents: Number(row.generated_revenue_cents) })),
+  };
 }
 
 export async function getOwnerPaymentSetup(ownerUserId: string) {

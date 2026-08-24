@@ -121,15 +121,20 @@ export async function getOwnerConversation(ownerId: string, leadId: string) {
   return assembleConversation(row, await readMessages('c.lead_id', leadId));
 }
 
-export async function getOwnerConversationMessages(ownerId: string) {
+export async function getOwnerConversationMessages(ownerId: string, limit = 500) {
   const result = await query<({ lead_id: string } & Partial<MessageRow>)>(
-    `select c.lead_id,m.id,m.sender,m.body,m.created_at
-     from lead_conversation c
-     left join lead_conversation_message m on m.conversation_id=c.id
-     join business b on b.id=c.business_id
-     where b.owner_user_id=$1
-     order by c.created_at,m.created_at,m.id`,
-    [ownerId]
+    `with recent as (
+       select c.lead_id,m.id,m.sender,m.body,m.created_at,c.created_at conversation_created_at
+       from lead_conversation c
+       left join lead_conversation_message m on m.conversation_id=c.id
+       join business b on b.id=c.business_id
+       where b.owner_user_id=$1
+       order by coalesce(m.created_at,c.created_at) desc,m.id desc
+       limit $2
+     )
+     select lead_id,id,sender,body,created_at from recent
+     order by conversation_created_at,created_at,id`,
+    [ownerId, limit]
   );
   return result.rows.reduce<Record<string, ConversationMessage[]>>((grouped, row) => {
     const messages = (grouped[row.lead_id] ||= []);

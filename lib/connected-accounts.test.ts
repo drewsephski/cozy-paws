@@ -1,16 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Stripe from 'stripe';
 
-const { queryMock, retrieveAccountMock } = vi.hoisted(() => ({ queryMock: vi.fn(), retrieveAccountMock: vi.fn() }));
+const { queryMock, retrieveAccountMock, createAccountMock, createAccountLinkMock } = vi.hoisted(() => ({ queryMock: vi.fn(), retrieveAccountMock: vi.fn(), createAccountMock: vi.fn(), createAccountLinkMock: vi.fn() }));
 vi.mock('./db', () => ({ query: queryMock }));
-vi.mock('./stripe', () => ({ getStripe: () => ({ v2: { core: { accounts: { retrieve: retrieveAccountMock } } } }) }));
+vi.mock('./stripe', () => ({ getStripe: () => ({ v2: { core: { accounts: { retrieve: retrieveAccountMock, create: createAccountMock }, accountLinks: { create: createAccountLinkMock } } } }) }));
 
-import { buildConnectedAccountParams, connectedAccountStatus, getConnectedAccountStatus, isConnectedAccountStatusEvent, processConnectedAccountStatusEvent, statementDescriptorForBusiness } from './connected-accounts';
+import { buildConnectedAccountParams, connectedAccountStatus, createOrContinueOnboarding, getConnectedAccountStatus, isConnectedAccountStatusEvent, processConnectedAccountStatusEvent, statementDescriptorForBusiness } from './connected-accounts';
 
 describe('Stripe connected-account prefill', () => {
   beforeEach(() => {
     queryMock.mockReset();
     retrieveAccountMock.mockReset();
+    createAccountMock.mockReset();
+    createAccountLinkMock.mockReset();
   });
   it('classifies pet-care businesses before hosted onboarding', () => {
     const params = buildConnectedAccountParams({
@@ -93,5 +95,19 @@ describe('Stripe connected-account prefill', () => {
     })).rejects.toThrow('Stripe unavailable');
 
     expect(queryMock).not.toHaveBeenCalledWith(expect.stringContaining('insert into stripe_webhook_event'), expect.anything());
+  });
+
+  it('refuses account replacement when either payment aggregate has financial history', async () => {
+    queryMock
+      .mockResolvedValueOnce({ rows: [{ id: 'business-1', name: 'Happy Tails', email: 'sitter@example.com', stripe_account_id: 'acct_old', subdomain: 'happy-tails' }] })
+      .mockResolvedValueOnce({ rows: [{ has_history: true }] });
+    retrieveAccountMock.mockRejectedValue({ code: 'resource_missing', statusCode: 404 });
+
+    await expect(createOrContinueOnboarding('owner-1', 'business-1')).rejects.toThrow(/payment history/);
+    const historySql = queryMock.mock.calls[1][0] as string;
+    expect(historySql).toContain('payment_request');
+    expect(historySql).toContain('public_payment');
+    expect(historySql).toContain('owned.owner_user_id=$2');
+    expect(createAccountMock).not.toHaveBeenCalled();
   });
 });

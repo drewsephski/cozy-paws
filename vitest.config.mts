@@ -6,5 +6,6 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('.', import.meta.url))
     }
-  }
+  },
+  test: { exclude: ['tests/integration/**', '**/node_modules/**', '**/.git/**'] }
 });

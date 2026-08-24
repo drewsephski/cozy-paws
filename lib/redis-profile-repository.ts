@@ -1,4 +1,4 @@
-import { redis } from './redis';
+import { getRedis } from './redis';
 import type { BusinessProfile, Lead, ProfileRepository } from './profile-ownership';
 
 const profileKey = (subdomain: string) => `subdomain:${subdomain}`;
@@ -7,43 +7,71 @@ const leadsKey = (subdomain: string) => `leads:${subdomain}`;
 
 export const redisProfileRepository: ProfileRepository = {
   async readProfile(subdomain) {
-    return redis.get<BusinessProfile>(profileKey(subdomain));
+    return getRedis().get<BusinessProfile>(profileKey(subdomain));
   },
 
   async readProfiles(subdomains) {
     if (!subdomains.length) return [];
-    return redis.mget<BusinessProfile[]>(...subdomains.map(profileKey));
+    return getRedis().mget<BusinessProfile[]>(...subdomains.map(profileKey));
   },
 
   async createProfile(subdomain, profile) {
-    return Boolean(await redis.set(profileKey(subdomain), profile, { nx: true }));
+    return Boolean(await getRedis().set(profileKey(subdomain), profile, { nx: true }));
   },
 
   async writeProfile(subdomain, profile) {
-    await redis.set(profileKey(subdomain), profile);
+    await getRedis().set(profileKey(subdomain), profile);
   },
 
   async deleteProfile(subdomain) {
-    return (await redis.del(profileKey(subdomain))) > 0;
+    return (await getRedis().del(profileKey(subdomain))) > 0;
   },
 
   async listOwnerSubdomains(ownerId) {
-    return redis.smembers<string[]>(ownerKey(ownerId));
+    return getRedis().smembers<string[]>(ownerKey(ownerId));
   },
 
   async addOwnerSubdomain(ownerId, subdomain) {
-    await redis.sadd(ownerKey(ownerId), subdomain);
+    await getRedis().sadd(ownerKey(ownerId), subdomain);
   },
 
   async removeOwnerSubdomain(ownerId, subdomain) {
-    await redis.srem(ownerKey(ownerId), subdomain);
+    await getRedis().srem(ownerKey(ownerId), subdomain);
   },
 
   async readLeads(subdomain) {
-    return (await redis.get<Lead[]>(leadsKey(subdomain))) ?? [];
+    return (await getRedis().get<Lead[]>(leadsKey(subdomain))) ?? [];
   },
 
   async writeLeads(subdomain, leads) {
-    await redis.set(leadsKey(subdomain), leads);
+    await getRedis().set(leadsKey(subdomain), leads);
+  },
+
+  async readOwnerLeads(ownerId, profiles) {
+    const grouped = await Promise.all(profiles.filter((profile) => profile.ownerId === ownerId).map(async (profile) =>
+      (await this.readLeads(profile.subdomain)).map((lead) => ({
+        ...lead,
+        subdomain: profile.subdomain,
+        siteName: profile.businessName || profile.sitterName || profile.subdomain
+      }))
+    ));
+    return grouped.flat().sort((a, b) => b.createdAt - a.createdAt);
+  },
+
+  async markLeadsRead(ownerId, leadIds, readAt) {
+    const selected = new Set(leadIds);
+    const marked: string[] = [];
+    for (const subdomain of await this.listOwnerSubdomains(ownerId)) {
+      const profile = await this.readProfile(subdomain);
+      if (profile?.ownerId !== ownerId) continue;
+      const leads = await this.readLeads(subdomain);
+      const updated = leads.map((lead) => {
+        if (!selected.has(lead.id)) return lead;
+        marked.push(lead.id);
+        return { ...lead, readAt };
+      });
+      if (updated.some((lead, index) => lead !== leads[index])) await this.writeLeads(subdomain, updated);
+    }
+    return marked;
   }
 };

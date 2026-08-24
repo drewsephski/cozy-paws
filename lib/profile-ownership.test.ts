@@ -116,6 +116,37 @@ describe('profile ownership', () => {
     expect(await profiles.markLeadRead('owner-2', 'second-site', allLeads[0].id)).toBe(false);
   });
 
+  it('atomically marks a selected group across owned Sites without changing Lead status', async () => {
+    const repository = new MemoryProfileRepository();
+    const profiles = createProfileOwnership(repository);
+    await profiles.create('owner-1', 'first-site', { emoji: 'dog', createdAt: 100 });
+    await profiles.create('owner-1', 'second-site', { emoji: 'cat', createdAt: 100 });
+    await profiles.create('owner-2', 'other-site', { emoji: 'cat', createdAt: 100 });
+    await profiles.recordLead('first-site', { name: 'Sam', email: 'sam@example.com', dates: '', message: '', status: 'QUALIFIED' }, 100);
+    await profiles.recordLead('second-site', { name: 'Sam', email: 'sam@example.com', dates: '', message: '', status: 'QUOTED' }, 200);
+    await profiles.recordLead('other-site', { name: 'Other', email: 'other@example.com', dates: '', message: '', status: 'BOOKED' }, 300);
+    const ownerLeads = await profiles.getOwnedLeadsForAllSites('owner-1');
+    const otherLead = (await profiles.getOwnedLeadsForAllSites('owner-2'))[0];
+
+    await expect(profiles.markLeadsRead('owner-1', [...ownerLeads.map((lead) => lead.id), otherLead.id], 400)).resolves.toEqual(expect.arrayContaining(ownerLeads.map((lead) => lead.id)));
+    expect((await profiles.getOwnedLeadsForAllSites('owner-1')).map((lead) => [lead.status, lead.readAt])).toEqual([
+      ['QUOTED', 400],
+      ['QUALIFIED', 400]
+    ]);
+    expect((await profiles.getOwnedLeadsForAllSites('owner-2'))[0]).toMatchObject({ status: 'BOOKED', readAt: null });
+  });
+
+  it('reuses an already loaded owned Site collection for the owner Lead set query', async () => {
+    const repository = new MemoryProfileRepository();
+    const profiles = createProfileOwnership(repository);
+    await profiles.create('owner-1', 'first-site', { emoji: 'dog', createdAt: 100 });
+    await profiles.recordLead('first-site', { name: 'Sam', email: 'sam@example.com', dates: '', message: '' }, 100);
+    const sites = await profiles.listOwned('owner-1');
+    repository.listOwnerSubdomains = () => { throw new Error('Site collection should not be loaded twice'); };
+
+    await expect(profiles.getOwnedLeadsForSites('owner-1', sites)).resolves.toHaveLength(1);
+  });
+
   it('normalizes legacy Leads as new and persists the stable identity', async () => {
     const repository = new MemoryProfileRepository();
     await repository.createProfile('legacy-site', { ownerId: 'owner-1', emoji: 'dog', createdAt: 100 });

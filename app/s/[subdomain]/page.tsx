@@ -14,6 +14,7 @@ import { NoiseTexture } from '@/components/ui/noise-texture';
 import { normalizeServices } from '@/lib/profile-ownership';
 import { PublicInquiryColumn } from './public-inquiry-column';
 import { getConversationReturnToken } from '@/lib/conversation-return';
+import { PublicProfileDetails } from './profile-details';
 
 export async function generateMetadata({
   params
@@ -107,6 +108,7 @@ export default async function SubdomainPage({
             <h2 className="text-lg font-semibold">Care offered</h2>
             {services.length > 0 ? <div className="mt-4 flex flex-wrap gap-2.5">{services.map((service) => <span key={service} className="rounded-full bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200">{service}</span>)}</div> : <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">Ask about the care your pet needs. {sitterDisplayName} can confirm services and availability directly.</p>}
           </div>
+          <PublicProfileDetails profile={subdomainData} />
           <PublicPaymentSection subdomain={subdomain} enabled={publicPaymentsEnabled} error={paymentError} />
         </section>
         <PublicInquiryColumn subdomain={subdomain} sitterName={sitterDisplayName} services={services} submissionToken={randomBytes(24).toString('base64url')} initialConversationToken={initialConversationToken ?? undefined} />

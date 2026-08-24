@@ -12,6 +12,10 @@ import { safeAuthCallbackURL } from '@/lib/auth-callback';
 
 type Mode = 'sign-in' | 'sign-up' | 'forgot-password';
 
+export function clientAuthCallbackURL(searchParams: Pick<URLSearchParams, 'get'>) {
+  return safeAuthCallbackURL(searchParams.get('callbackURL'));
+}
+
 export function AuthForm({
   initialMode = 'sign-in',
   googleEnabled = false,
@@ -27,8 +31,7 @@ export function AuthForm({
   const [error, setError] = useState(oauthError ? 'Google sign-in could not be completed. Please try again.' : '');
   const [success, setSuccess] = useState('');
 
-  const requestedCallback = searchParams.get('callbackURL');
-  const callbackURL = safeAuthCallbackURL(requestedCallback);
+  const callbackURL = clientAuthCallbackURL(searchParams);
   const isStartingConversation = callbackURL.startsWith('/message/');
 
   async function handleGoogleSignIn() {

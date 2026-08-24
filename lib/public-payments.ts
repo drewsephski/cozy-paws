@@ -5,7 +5,7 @@ import { getAppOrigin } from './app-url';
 import { query } from './db';
 import { refreshConnectedAccountReadiness } from './connected-accounts';
 import { getStripe } from './stripe';
-import { redis } from './redis';
+import { getRedis } from './redis';
 
 export type PublicPaymentCheckout = { id: string; publicToken: string; amountCents: number; platformFeeCents: number; currency: string; businessName: string; subdomain: string };
 
@@ -18,7 +18,7 @@ export function parsePublicPaymentAmount(value: unknown) {
 }
 
 export async function mayCreatePublicPayment(subdomain: string, address: string) {
-  return Boolean(await redis.set(`public-payment-rate:${subdomain}:${address}`, Date.now(), { nx: true, ex: 10 }));
+  return Boolean(await getRedis().set(`public-payment-rate:${subdomain}:${address}`, Date.now(), { nx: true, ex: 10 }));
 }
 
 export function buildPublicCheckoutParams(payment: PublicPaymentCheckout): Stripe.Checkout.SessionCreateParams {
@@ -48,7 +48,7 @@ export async function createPublicPaymentCheckout(subdomain: string, amountValue
   const stripeAccountId = business.stripe_account_id;
   const publicToken = randomBytes(18).toString('base64url');
   const platformFeeCents = calculatePlatformFeeCents(amountCents);
-  const created = await query<{ id: string }>(`insert into public_payment(business_id,site_id,public_token,amount_cents,platform_fee_cents) values($1,$2,$3,$4,$5) returning id`, [business.id, business.site_id, publicToken, amountCents, platformFeeCents]);
+  const created = await query<{ id: string }>(`insert into public_payment(business_id,site_id,public_token,amount_cents,platform_fee_cents,stripe_account_id) values($1,$2,$3,$4,$5,$6) returning id`, [business.id, business.site_id, publicToken, amountCents, platformFeeCents, stripeAccountId]);
   const payment = { id: created.rows[0].id, publicToken, amountCents, platformFeeCents, currency: 'usd', businessName: business.name, subdomain };
   const session = await getStripe().checkout.sessions.create(buildPublicCheckoutParams(payment), { stripeAccount: stripeAccountId, idempotencyKey: `sitterfolio-public-payment-${payment.id}` });
   if (!session.url) throw new Error('Stripe did not return a Checkout URL.');

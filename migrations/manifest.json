@@ -1,0 +1,17 @@
+[
+  { "file": "auth.sql" },
+  { "file": "2026-08-21-add-auth-session.sql" },
+  { "file": "2026-08-21-inquiry-to-revenue.sql" },
+  { "file": "2026-08-22-payment-request-delivery.sql" },
+  { "file": "2026-08-23-stripe-checkout-retry.sql" },
+  { "file": "2026-08-23-lead-conversations.sql" },
+  { "file": "2026-08-23-conversation-lifecycle.sql" },
+  { "file": "2026-08-23-client-households.sql" },
+  { "file": "2026-08-23-bookings.sql", "confirmationSetting": "sitterfolio.confirm_booking_migration" },
+  { "file": "2026-08-23-public-payments.sql" },
+  { "file": "2026-08-23-public-profile-identity.sql" },
+  { "file": "2026-08-24-legacy-profile-migration-boundary.sql" },
+  { "file": "2026-08-24-payment-account-snapshot-preparation.sql" },
+  { "file": "2026-08-24-payment-account-snapshots.sql", "confirmationSetting": "sitterfolio.confirm_payment_account_snapshot_migration" },
+  { "file": "2026-08-24-site-availability-trust.sql" }
+]

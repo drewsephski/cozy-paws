@@ -56,4 +56,30 @@ export class MemoryProfileRepository implements ProfileRepository {
     this.leads.set(subdomain, leads);
     return Promise.resolve();
   }
+
+  readOwnerLeads(ownerId: string, profiles: Array<BusinessProfile & { subdomain: string }>) {
+    return Promise.resolve(profiles.flatMap((profile) =>
+      profile.ownerId === ownerId
+        ? (this.leads.get(profile.subdomain) ?? []).map((lead) => ({
+            ...lead,
+            subdomain: profile.subdomain,
+            siteName: profile.businessName || profile.sitterName || profile.subdomain
+          }))
+        : []
+    ).sort((a, b) => b.createdAt - a.createdAt));
+  }
+
+  markLeadsRead(ownerId: string, leadIds: string[], readAt: number) {
+    const selected = new Set(leadIds);
+    const marked: string[] = [];
+    for (const [subdomain, leads] of this.leads) {
+      if (this.profiles.get(subdomain)?.ownerId !== ownerId) continue;
+      this.leads.set(subdomain, leads.map((lead) => {
+        if (!selected.has(lead.id)) return lead;
+        marked.push(lead.id);
+        return { ...lead, readAt };
+      }));
+    }
+    return Promise.resolve(marked);
+  }
 }

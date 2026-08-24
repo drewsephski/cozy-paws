@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // This repository maintains its own reviewed AGENTS.md instructions.
+  agentRules: false,
   /* config options here */
   experimental: {
     // Enable experimental features if needed
