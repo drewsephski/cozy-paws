@@ -915,3 +915,689 @@ TypeError: Cannot read properties of undefined (reading 'components')
     at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
     at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
 [79141448ms] [LOG] [Fast Refresh] done in 2075ms @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79217515ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79217549ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79217550ms] [LOG] [Fast Refresh] done in 103ms @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79217566ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false,"/mcp":true}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224104ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224107ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224109ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224199ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224280ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224281ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224282ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224288ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224305ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224323ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224347ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224369ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224396ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224408ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224412ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224414ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224637ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224658ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224956ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224970ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79224997ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225027ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225029ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225031ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225303ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225349ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225364ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225408ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225412ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225430ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225470ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225472ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225569ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225599ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79225999ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226021ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226177ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226179ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226214ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226215ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226448ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226469ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226652ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226675ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226692ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226736ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226751ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226753ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226756ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226799ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226853ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226855ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226856ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79226858ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79252547ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79252590ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false,"/mcp":true}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79430336ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79430367ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79430466ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79430492ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79430921ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79430924ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79430955ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79431015ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79431017ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79431019ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79431566ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79431609ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79431641ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79431644ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79431702ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79431750ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79431753ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79431755ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432147ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432172ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432203ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432225ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432755ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432801ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432805ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432850ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432852ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432855ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432961ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432965ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432966ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432967ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79432976ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433005ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433014ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433039ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433152ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433154ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433201ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433203ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433210ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433231ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433666ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433693ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433850ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433865ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433976ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79433981ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79434357ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79434360ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79434385ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79434497ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79434502ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79434504ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79451788ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
+[79451914ms] [WARNING] [HMR] Invalid message: {"type":"isrManifest","data":{"/mcp":true,"/admin":false}}
+TypeError: Cannot read properties of undefined (reading 'components')
+    at handleStaticIndicator (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2826:46)
+    at processMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2840:17)
+    at http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2714:13
+    at WebSocket.handleMessage (http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2346:17) @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_1r3lec8._.js:1248
