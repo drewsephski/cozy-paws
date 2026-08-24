@@ -62,7 +62,7 @@ Read `docs/adr/0001-postgres-inquiry-to-revenue.md` before changing financial co
 
 ## Authentication and authorization
 
-Better Auth (`lib/auth.ts`) uses email/password accounts, automatic sign-in, no required email verification, an eight-character minimum password, database-backed sessions, and a 30-day session lifetime. `/admin` redirects unauthenticated users to `/auth`.
+Better Auth (`lib/auth.ts`) uses email/password accounts plus credential-gated Google OAuth, automatic sign-in, no required email verification, an eight-character minimum password, database-backed sessions, and a 30-day session lifetime. Google OAuth uses `/api/auth/callback/google` and is enabled only when both `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are configured. `/admin` redirects unauthenticated users to `/auth`.
 
 Every private operation must derive ownership from the authenticated user and server-side Business joins. Never trust a submitted subdomain, Lead ID, Business ID, Stripe account ID, or Payment token as ownership proof. Public Lead intake is unauthenticated, so preserve input bounds, validation, and rate limiting. Upload authorization must validate the authenticated owner and Site before issuing a Blob token.
 
@@ -73,7 +73,7 @@ The repository is transitioning from Redis ownership sets to PostgreSQL Business
 Use pnpm (`pnpm@10.12.4`). Relevant variables are:
 
 ```text
-DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL, BETTER_AUTH_TRUSTED_ORIGINS
+DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL, BETTER_AUTH_TRUSTED_ORIGINS, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 NEXT_PUBLIC_ROOT_DOMAIN, KV_REST_API_URL, KV_REST_API_TOKEN, BLOB_READ_WRITE_TOKEN
 STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_ACCOUNT_WEBHOOK_SECRET
 ```

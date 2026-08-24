@@ -10,11 +10,22 @@ const baseURL =
   process.env.BETTER_AUTH_URL ||
   (process.env.NODE_ENV === 'production' ? 'https://sitterfolio.com' : 'http://localhost:3000');
 
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
 export const auth = betterAuth({
   appName: 'Sitterfolio',
   baseURL,
   database: pool,
   trustedOrigins,
+  socialProviders: googleClientId && googleClientSecret
+    ? {
+        google: {
+          clientId: googleClientId,
+          clientSecret: googleClientSecret
+        }
+      }
+    : {},
   emailAndPassword: {
     enabled: true,
     // Accounts are usable immediately; no verification email is sent or required.

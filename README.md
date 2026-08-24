@@ -1,134 +1,134 @@
 # Sitterfolio
 
-## Inquiry-to-revenue database migration
+Sitterfolio gives independent pet sitters a professional public site and a simple place to run direct client work. A sitter can publish their services, receive availability inquiries, continue each conversation, save qualified clients and pets, plan bookings, and request payment through their own Stripe connected account.
 
-Site, Lead, connected-account, and payment records are stored in PostgreSQL. After independently confirming that `DATABASE_URL` targets the intended environment, apply the idempotent schema migration with:
+Sitterfolio is a direct-business tool for solo sitters. It is not a marketplace, staff scheduler, route optimizer, or replacement for the sitter's relationship with their clients.
+
+## Product flow
+
+1. A sitter claims a memorable address such as `happy-tails.sitterfolio.com` and creates an account.
+2. The guided dashboard collects the business name, introduction, service areas, services, contact details, and an optional profile image.
+3. The public site presents that profile and lets a pet owner submit an availability inquiry.
+4. The inquiry becomes a Lead and starts a private one-to-one Conversation. The pet owner can return through an account-free private link, while the sitter replies from the authenticated dashboard.
+5. The sitter can qualify the Lead, send a fixed-amount Payment request, and promote the household and its pets into reusable client records.
+6. A saved Client household can receive dated, priced Bookings that move from draft through confirmed and completed states.
+
+Public Site payments are also available when the sitter's Stripe account is ready. These customer-entered payments are intentionally separate from Lead-attributed Payment requests and do not change a Booking or Lead status.
+
+## Main surfaces
+
+- **Product home:** explains Sitterfolio and starts Site creation.
+- **Authentication:** email-and-password sign-up, sign-in, and password recovery through Better Auth.
+- **Sitter dashboard:** edits the public Site, manages Leads and Conversations, connects Stripe, requests payment, maintains Clients and Pet profiles, and plans Bookings.
+- **Public sitter Site:** a responsive subdomain with the sitter's profile, services, and availability form.
+- **Pet-owner Conversation:** a private, account-free thread linked from an inquiry.
+- **Hosted payment:** an idempotent Stripe Checkout flow for a Payment request or direct public Site payment.
+
+## Technical foundation
+
+- [Next.js](https://nextjs.org/) 16 App Router, React 19, and TypeScript
+- Tailwind CSS 4 and shared shadcn-style UI primitives
+- Better Auth with database-backed sessions
+- PostgreSQL for accounts, ownership, Sites, Leads, Conversations, Clients, Pets, Bookings, connected accounts, Payment requests, and reconciled webhook state
+- Upstash Redis for legacy profile compatibility, rate limits, and caches
+- Stripe Connect and hosted Checkout for sitter-owned payments
+- Resend for transactional notifications
+- Vercel Blob for profile images
+- OpenStreetMap Nominatim for cached, rate-limited service-area suggestions
+- Vercel Analytics and Speed Insights
+
+The durable ownership graph is:
+
+```text
+User -> Business -> Site -> Lead -> Payment request
+                 \-> Connected Stripe account
+                 \-> Client household -> Pet profile
+                                      \-> Booking <-/
+```
+
+Private operations derive ownership from the authenticated User and server-side Business relationships. Stripe webhooks own financial transitions; a success page is not payment proof.
+
+## Local development
+
+This repository requires pnpm and uses the version declared in `package.json`.
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Create `.env.local` with the services needed for the flow you are running:
+
+```dotenv
+DATABASE_URL=postgresql://...
+BETTER_AUTH_SECRET=generate-a-random-secret-of-at-least-32-characters
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_TRUSTED_ORIGINS=http://localhost:3000
+GOOGLE_CLIENT_ID=your-google-oauth-client-id
+GOOGLE_CLIENT_SECRET=your-google-oauth-client-secret
+NEXT_PUBLIC_ROOT_DOMAIN=localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+KV_REST_API_URL=https://...
+KV_REST_API_TOKEN=...
+BLOB_READ_WRITE_TOKEN=vercel_blob_...
+
+RESEND_API_KEY=re_...
+SITTERFOLIO_FROM_EMAIL="Sitterfolio <notifications@example.com>"
+
+STRIPE_SECRET_KEY=sk_test_or_restricted_key
+STRIPE_WEBHOOK_SECRET=whsec_payment_event_destination
+STRIPE_ACCOUNT_WEBHOOK_SECRET=whsec_accounts_v2_thin_event_destination
+```
+
+Generate a local Better Auth secret with `openssl rand -base64 32`. Never commit credentials. Keep local, preview, and production databases and Stripe modes isolated.
+
+Google sign-in is enabled only when both Google OAuth values are configured. Create a Web application OAuth client in Google Cloud and authorize `http://localhost:3000/api/auth/callback/google` locally and `https://sitterfolio.com/api/auth/callback/google` in production. Use separate credentials for preview environments when their callback origins differ.
+
+Local subdomains use addresses such as `happy-tails.localhost:3000`. Keep `NEXT_PUBLIC_ROOT_DOMAIN` aligned with `BETTER_AUTH_URL`; successful localhost routing does not prove preview or production host configuration.
+
+## Database setup and migrations
+
+SQL migrations in `migrations/` are applied manually; there is no ORM migration runner. Start with `migrations/auth.sql`, then inspect the remaining migration files and their dependencies before applying the schema required by the target environment.
+
+The inquiry-to-revenue migration and Redis backfill have guarded scripts:
 
 ```bash
 CONFIRM_FINANCIAL_MIGRATION=yes pnpm db:migrate:revenue
 CONFIRM_FINANCIAL_MIGRATION=yes pnpm db:backfill:revenue
 ```
 
-Do not run it against preview or production until database isolation and the rollback expectations in `docs/adr/0001-postgres-inquiry-to-revenue.md` are verified. Existing Redis Site and Lead records are backfilled lazily and remain available as a temporary compatibility source.
+Before running either command, independently confirm that `DATABASE_URL` points to the intended isolated environment. The confirmation variable is only a safety gate; it is not proof of database identity or isolation. Read [`docs/adr/0001-postgres-inquiry-to-revenue.md`](docs/adr/0001-postgres-inquiry-to-revenue.md) before changing or migrating financial data.
 
-Before deploying the asynchronous Checkout retry handling, apply `migrations/2026-08-23-stripe-checkout-retry.sql` to the isolated target database.
+PostgreSQL is authoritative for current business and financial state. Redis remains a compatibility source for legacy profiles plus cache and rate-limit infrastructure; do not delete legacy Redis data until migration completeness has been established for every environment.
 
-Sitterfolio is a simple, shareable online home for independent pet sitters. It helps a sitter turn the essentials of their business—who they are, where they work, what they offer, and how to reach them—into one polished page they can send to pet owners.
+## Stripe event destinations
 
-The product is designed for the moment when a sitter needs a professional web presence without spending time designing or maintaining a full website. A sitter chooses a memorable address, adds their profile details and photo, and gets a public page where prospective clients can learn about their care and ask about availability.
+Stripe uses two signed event destinations with distinct secrets:
 
-## How Sitterfolio works
+- `/api/webhook` reconciles connected-account Checkout, payment, refund, and dispute events.
+- `/api/stripe/account-events` receives Accounts v2 thin events for account requirements and merchant capability status.
 
-### 1. Claim a memorable site address
+Use test-mode credentials locally and keep preview and production destinations isolated. Provider configuration, signed webhook delivery, account readiness, and a real completed Checkout are separate verification gates.
 
-The home page lets a sitter choose a unique site name, such as `happy-tails`. That name becomes a shareable address in the form `happy-tails.<root-domain>`. Each site also starts with a pet icon that represents the business and can later be complemented by a profile photo.
+## Verification
 
-Site names are normalized and validated before they are created. They use lowercase letters, numbers, and hyphens, must be between 3 and 30 characters, and cannot already belong to another site.
-
-### 2. Build the profile in a guided flow
-
-The dashboard walks the sitter through a short onboarding sequence. It collects:
-
-- Business name
-- A one-sentence introduction
-- Service areas
-- Services offered
-- Contact email
-- Optional phone number
-- Optional profile photo
-
-The profile is saved as the sitter moves through the flow, and a live preview shows how the public page is taking shape. Service areas can be searched and selected from location suggestions, while services can be selected from common options or entered by the sitter. Up to five service areas and eight services can be displayed.
-
-When onboarding is complete, the sitter can open the live page or return to the dashboard to make changes.
-
-### 3. Give pet owners one clear place to learn more
-
-Each public Sitterfolio page presents the sitter’s profile in a focused, mobile-friendly layout. It can show:
-
-- Profile photo or pet icon
-- Business name
-- Service area
-- Short introduction
-- Services offered
-- A direct availability request form
-
-Pet owners can send their name, email address, dates they need care, and a description of their pet or care request. The request is associated with the specific Sitterfolio page they used.
-
-Sitterfolio connects pet owners with sitters; it does not book, schedule, or confirm care on a sitter’s behalf.
-
-### 4. Review inquiries and share the site
-
-The sitter dashboard displays recent messages submitted through the public page, including the sender’s contact information, requested dates, and care details. The sitter can open the live site, copy or share its link, and keep the profile current as their business changes.
-
-Profile photos are uploaded through the product and displayed on both the dashboard preview and the public page. A sitter can also delete a site from the dashboard.
-
-## Product surfaces
-
-- **Public home page:** Explains the product and starts site creation.
-- **Authentication:** Email and password sign-up and sign-in for sitters.
-- **Sitter dashboard:** Guides profile creation, previews changes, edits profile information, shares the site, and shows recent inquiries.
-- **Public sitter page:** A dedicated subdomain for the sitter’s business and its availability request form.
-- **Location search:** Helps sitters find and select the cities, neighborhoods, or areas they serve.
-- **Responsive presentation:** Public pages and dashboard screens adapt to smaller screens and support light and dark themes.
-
-## Technical foundation
-
-Sitterfolio is a Next.js application built with the App Router and React. The main technical pieces are:
-
-- **Next.js 16** for the application, server-rendered pages, server actions, API routes, and subdomain routing through `proxy.ts`.
-- **React 19** for interactive onboarding, profile editing, sharing controls, image upload, dialogs, and form states.
-- **TypeScript** for application and data-model typing.
-- **Tailwind CSS 4** and **shadcn/ui-style components** for the responsive visual system and accessible UI primitives.
-- **Better Auth** with PostgreSQL for email-and-password accounts.
-- **PostgreSQL** for Better Auth, businesses, sites, leads, connected Stripe accounts, payment requests, and reconciled webhook state.
-- **Upstash Redis** for legacy profile compatibility, cached location results, and rate limits.
-- **Vercel Blob** for profile-image uploads, restricted to common web image formats and a 5 MB maximum upload size.
-- **OpenStreetMap Nominatim** for location search suggestions. Results are normalized, cached in Redis, and rate-limited before external lookup.
-- **Vercel Analytics and Speed Insights** for product usage and performance visibility.
-
-## Local configuration
-
-Use pnpm for this repository. Install dependencies with `pnpm install`, then configure these values in `.env.local`:
-
-```dotenv
-DATABASE_URL=postgresql://...
-BETTER_AUTH_SECRET=generate-a-random-secret-of-at-least-32-characters
-BETTER_AUTH_URL=http://localhost:3000
-KV_REST_API_URL=https://...
-KV_REST_API_TOKEN=...
-RESEND_API_KEY=re_...
-SITTERFOLIO_FROM_EMAIL="Sitterfolio <notifications@example.com>"
-STRIPE_SECRET_KEY=sk_test_or_restricted_key
-STRIPE_WEBHOOK_SECRET=whsec_payment_event_destination
-STRIPE_ACCOUNT_WEBHOOK_SECRET=whsec_accounts_v2_thin_event_destination
+```bash
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
 ```
 
-Generate a local secret with `openssl rand -base64 32`. Do not commit it. Before starting the app for the first time, apply [`migrations/auth.sql`](migrations/auth.sql) to the PostgreSQL database. Production must use its canonical HTTPS root URL for `BETTER_AUTH_URL` and its own secret and database credentials.
+Run focused tests for changed domain or ownership behavior before the full checks. Browser QA, provider configuration, deployment health, and real customer/device behavior are separate gates; a green build does not establish them.
 
-Stripe uses separate signed event destinations: `/api/webhook` receives connected-account payment snapshot events (including `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, refund, and dispute events), while `/api/stripe/account-events` receives Accounts v2 thin events for `v2.core.account[requirements].updated` and `v2.core.account[configuration.merchant].capability_status_updated`. Use distinct signing secrets and isolated Stripe credentials and databases for Sandbox/preview and live production.
+## Architecture and contributor guidance
 
-## Feature behavior in the application
+- [`CONTEXT.md`](CONTEXT.md) is the current coding-agent handoff and domain map.
+- [`docs/adr/`](docs/adr/) records decisions for payments, public Site payments, Client households, and Bookings.
+- `app/` contains routes, Server Components, Server Actions, and API handlers.
+- `lib/` contains domain rules, ownership-aware services, persistence, and external integrations.
+- `migrations/` contains manually applied SQL migrations.
+- `tests/` contains domain, service, ownership, and route-level tests.
 
-### Subdomain-based sites
-
-The proxy identifies a sitter’s subdomain and rewrites its root URL to the corresponding public profile. The same behavior supports local hostnames, production domains, and Vercel preview-style hostnames. The root domain remains the product home and dashboard surface, while each sitter’s subdomain acts as their public site.
-
-### Profile and inquiry data
-
-Site, profile, and availability-request data is stored in PostgreSQL. Legacy Redis profile records can be migrated lazily for compatibility. Profile updates preserve existing fields and revalidate the public page after saving.
-
-### Image handling
-
-Profile images are uploaded to Vercel Blob using a server-authorized upload route. The application accepts JPEG, PNG, and WebP images, adds a random suffix to uploaded paths, and stores the resulting HTTPS URL with the sitter’s profile.
-
-### Location suggestions
-
-The dashboard’s service-area picker calls the application’s location API rather than contacting the geocoder directly from the browser. The API validates the query length, caches repeated searches for 30 days, limits request frequency, and converts geocoder results into concise place-and-region labels for the profile.
-
-### Authentication boundary
-
-Sitterfolio includes Better Auth routes and session-aware navigation so signed-in users can access the sitter experience. The dashboard and site actions are the current product surfaces for managing profiles and inquiries.
-
-## Product scope
-
-Sitterfolio is intentionally focused: it creates a trustworthy presence, helps a pet owner start a conversation, and lets an independent sitter send a Lead-attributed payment request through their own Stripe connected account. It is not a marketplace, calendar, booking engine, or replacement for the sitter’s own client relationship.
+Start a change at its route or action, trace it through the owning service and domain module, then inspect the repository, migration, and tests. Keep framework code thin, preserve server-derived ownership, and add new business rules to testable domain code.
