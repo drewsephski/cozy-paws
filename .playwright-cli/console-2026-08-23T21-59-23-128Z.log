@@ -347,3 +347,284 @@
 [59979479ms] [LOG] [Fast Refresh] done in 276ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [60009070ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [60009172ms] [LOG] [Fast Refresh] done in 204ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60103452ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60103616ms] [LOG] [Fast Refresh] done in 265ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60129647ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60129682ms] [LOG] [Fast Refresh] done in 136ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60131498ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60131526ms] [LOG] [Fast Refresh] done in 129ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60131910ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60131920ms] [LOG] [Fast Refresh] done in 112ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60132565ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60132613ms] [LOG] [Fast Refresh] done in 148ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60134834ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60135053ms] [LOG] [Fast Refresh] done in 320ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60135311ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60135313ms] [LOG] [Fast Refresh] done in 103ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60135695ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60135701ms] [LOG] [Fast Refresh] done in 108ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60136116ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60136145ms] [LOG] [Fast Refresh] done in 131ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60137781ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60137799ms] [LOG] [Fast Refresh] done in 120ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60138362ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60138373ms] [LOG] [Fast Refresh] done in 112ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60139431ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60139514ms] [LOG] [Fast Refresh] done in 184ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60143556ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60143673ms] [LOG] [Fast Refresh] done in 218ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60148294ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60148399ms] [LOG] [Fast Refresh] done in 208ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60148540ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60148647ms] [LOG] [Fast Refresh] done in 210ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60217459ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60217727ms] [LOG] [Fast Refresh] done in 372ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60220616ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60222634ms] [ERROR] ./platforms/components/ui/tabs.tsx:5:1
+Module not found: Can't resolve 'framer-motion'
+  3 | import * as React from 'react';
+  4 | import { Tabs as TabsPrimitive } from 'radix-ui';
+> 5 | import { motion } from 'framer-motion';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import { cn } from '@/lib/utils';
+  7 |
+  8 | function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
+
+Import traces:
+  Client Component Browser:
+    ./platforms/components/ui/tabs.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./platforms/components/ui/tabs.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:3318
+[60222739ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60222763ms] [ERROR] ./platforms/components/ui/tabs.tsx:5:1
+Module not found: Can't resolve 'framer-motion'
+  3 | import * as React from 'react';
+  4 | import { Tabs as TabsPrimitive } from 'radix-ui';
+> 5 | import { motion } from 'framer-motion';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import { cn } from '@/lib/utils';
+  7 |
+  8 | function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
+
+Import traces:
+  Client Component Browser:
+    ./platforms/components/ui/tabs.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./platforms/components/ui/tabs.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:3318
+[60222864ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60223109ms] [ERROR] ./platforms/components/ui/tabs.tsx:5:1
+Module not found: Can't resolve 'framer-motion'
+  3 | import * as React from 'react';
+  4 | import { Tabs as TabsPrimitive } from 'radix-ui';
+> 5 | import { motion } from 'framer-motion';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import { cn } from '@/lib/utils';
+  7 |
+  8 | function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
+
+Import traces:
+  Client Component Browser:
+    ./platforms/components/ui/tabs.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./platforms/components/ui/tabs.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:3318
+[60223225ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://drew.localhost:3000/?_rsc=EBsojCOOsvOlEzQa:0
+[60223338ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60223412ms] [ERROR] ./platforms/components/ui/tabs.tsx:5:1
+Module not found: Can't resolve 'framer-motion'
+  3 | import * as React from 'react';
+  4 | import { Tabs as TabsPrimitive } from 'radix-ui';
+> 5 | import { motion } from 'framer-motion';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import { cn } from '@/lib/utils';
+  7 |
+  8 | function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
+
+Import traces:
+  Client Component Browser:
+    ./platforms/components/ui/tabs.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./platforms/components/ui/tabs.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:3318
+[60223515ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://drew.localhost:3000/?_rsc=EBsojCOOsvOlEzQa:0
+[60223540ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60223588ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://drew.localhost:3000/:0
+[60223901ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://drew.localhost:3000/_next/static/chunks/0-xt_react-dom_1a3j9bp._.js:15305
+[60224018ms] Error: ./platforms/components/ui/tabs.tsx:5:1
+Module not found: Can't resolve 'framer-motion'
+  3 | import * as React from 'react';
+  4 | import { Tabs as TabsPrimitive } from 'radix-ui';
+> 5 | import { motion } from 'framer-motion';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import { cn } from '@/lib/utils';
+  7 |
+  8 | function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./platforms/components/ui/tabs.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./platforms/components/ui/tabs.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (Error: ./platforms/components/ui/tabs.tsx:5:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at Object.getCompilationErrors (file:///Users/drewsepeczi/platforms/node_modules/.pnpm/next@16.2.10_@babel+core@7.29.7_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/server/dev/hot-reloader-turbopack.js:1186:59)
+    at DevBundlerService.getCompilationError (file:///Users/drewsepeczi/platforms/node_modules/.pnpm/next@16.2.10_@babel+core@7.29.7_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/server/lib/dev-bundler-service.js:44:55)
+    at DevServer.getCompilationError (file:///Users/drewsepeczi/platforms/node_modules/.pnpm/next@16.2.10_@babel+core@7.29.7_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/server/dev/next-dev-server.js:720:42)
+    at DevServer.findPageComponents (file:///Users/drewsepeczi/platforms/node_modules/.pnpm/next@16.2.10_@babel+core@7.29.7_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/server/dev/next-dev-server.js:690:43)
+    at async DevServer.renderErrorToResponseImpl (file:///Users/drewsepeczi/platforms/node_modules/.pnpm/next@16.2.10_@babel+core@7.29.7_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/server/base-server.js:1753:26)
+[60224009ms] [LOG] [HMR] connected @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_1i2bhsh._.js:1226
+[60224014ms] [ERROR] ./platforms/components/ui/tabs.tsx:5:1
+Module not found: Can't resolve 'framer-motion'
+  3 | import * as React from 'react';
+  4 | import { Tabs as TabsPrimitive } from 'radix-ui';
+> 5 | import { motion } from 'framer-motion';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import { cn } from '@/lib/utils';
+  7 |
+  8 | function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
+
+Import traces:
+  Client Component Browser:
+    ./platforms/components/ui/tabs.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./platforms/components/ui/tabs.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_1i2bhsh._.js:1945
+[60224074ms] [ERROR] ./platforms/components/ui/tabs.tsx:5:1
+Module not found: Can't resolve 'framer-motion'
+  3 | import * as React from 'react';
+  4 | import { Tabs as TabsPrimitive } from 'radix-ui';
+> 5 | import { motion } from 'framer-motion';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import { cn } from '@/lib/utils';
+  7 |
+  8 | function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
+
+Import traces:
+  Client Component Browser:
+    ./platforms/components/ui/tabs.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./platforms/components/ui/tabs.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_1i2bhsh._.js:1945
+[60224176ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_1i2bhsh._.js:1226
+[60224256ms] [ERROR] ./platforms/components/ui/tabs.tsx:5:1
+Module not found: Can't resolve 'framer-motion'
+  3 | import * as React from 'react';
+  4 | import { Tabs as TabsPrimitive } from 'radix-ui';
+> 5 | import { motion } from 'framer-motion';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import { cn } from '@/lib/utils';
+  7 |
+  8 | function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
+
+Import traces:
+  Client Component Browser:
+    ./platforms/components/ui/tabs.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Client Component Browser]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./platforms/components/ui/tabs.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Client Component SSR]
+    ./platforms/app/admin/dashboard.tsx [Server Component]
+    ./platforms/app/admin/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_1i2bhsh._.js:1945
+[60258421ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_1i2bhsh._.js:1226
+[60262509ms] [LOG] [Fast Refresh] done in 523ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_1i2bhsh._.js:1226
+[60264888ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_1i2bhsh._.js:1226
+[60265912ms] [LOG] [Fast Refresh] done in 1126ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_1i2bhsh._.js:1226
+[60266527ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_1i2bhsh._.js:1226
+[60266727ms] [LOG] [Fast Refresh] done in 302ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_1i2bhsh._.js:1226
+[60267623ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60267757ms] [LOG] [HMR] connected @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60268026ms] [LOG] %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60278575ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60278865ms] [LOG] [Fast Refresh] done in 391ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60279337ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60279375ms] [LOG] [Fast Refresh] done in 139ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60311994ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60311997ms] [LOG] [Fast Refresh] done in 105ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60353764ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60354243ms] [LOG] [Fast Refresh] done in 581ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60362831ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60362855ms] [LOG] [Fast Refresh] done in 125ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60382558ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60383126ms] [LOG] [Fast Refresh] done in 670ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60384751ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60384768ms] [LOG] [Fast Refresh] done in 119ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60417746ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60417797ms] [LOG] [Fast Refresh] done in 153ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60418022ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60418063ms] [LOG] [Fast Refresh] done in 141ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60556926ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60561277ms] [LOG] [Fast Refresh] done in 4457ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60674847ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60675206ms] [LOG] [Fast Refresh] done in 459ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60675752ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60675779ms] [LOG] [Fast Refresh] done in 129ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60676177ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[60676186ms] [LOG] [Fast Refresh] done in 111ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
