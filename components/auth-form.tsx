@@ -8,26 +8,27 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spokes } from '@/components/ui/spokes';
+import { safeAuthCallbackURL } from '@/lib/auth-callback';
 
 type Mode = 'sign-in' | 'sign-up' | 'forgot-password';
 
 export function AuthForm({
   initialMode = 'sign-in',
-  googleEnabled = false
+  googleEnabled = false,
+  oauthError
 }: {
   initialMode?: Mode;
   googleEnabled?: boolean;
+  oauthError?: string;
 }) {
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<Mode>(initialMode);
   const [isPending, setIsPending] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(oauthError ? 'Google sign-in could not be completed. Please try again.' : '');
   const [success, setSuccess] = useState('');
 
   const requestedCallback = searchParams.get('callbackURL');
-  const callbackURL = requestedCallback?.startsWith('/') && !requestedCallback.startsWith('//')
-    ? requestedCallback
-    : '/admin';
+  const callbackURL = safeAuthCallbackURL(requestedCallback);
   const isStartingConversation = callbackURL.startsWith('/message/');
 
   async function handleGoogleSignIn() {
@@ -38,7 +39,8 @@ export function AuthForm({
     try {
       const result = await authClient.signIn.social({
         provider: 'google',
-        callbackURL
+        callbackURL,
+        errorCallbackURL: `/auth?callbackURL=${encodeURIComponent(callbackURL)}`
       });
 
       if (result.error) {

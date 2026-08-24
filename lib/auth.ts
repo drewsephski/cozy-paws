@@ -26,6 +26,16 @@ export const auth = betterAuth({
         }
       }
     : {},
+  account: {
+    accountLinking: {
+      enabled: true,
+      // Legacy password accounts were created without email verification.
+      // Treat Google's verified identity as sufficient proof to link the
+      // matching account so existing users can adopt Google sign-in.
+      requireLocalEmailVerified: false,
+      trustedProviders: ['google']
+    }
+  },
   emailAndPassword: {
     enabled: true,
     // Accounts are usable immediately; no verification email is sent or required.

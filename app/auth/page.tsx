@@ -5,17 +5,14 @@ import { SiteHeader } from '@/components/site-header';
 import { getSession } from '@/lib/session';
 import { profiles } from '@/lib/profiles';
 import { privatePageMetadata } from '@/lib/seo';
+import { safeAuthCallbackURL } from '@/lib/auth-callback';
 
 export const metadata = privatePageMetadata;
 
-function safeCallbackURL(value?: string) {
-  return value?.startsWith('/') && !value.startsWith('//') ? value : '/admin';
-}
-
-export default async function AuthPage({ searchParams }: { searchParams: Promise<{ callbackURL?: string; mode?: string }> }) {
+export default async function AuthPage({ searchParams }: { searchParams: Promise<{ callbackURL?: string; error?: string; mode?: string }> }) {
   const session = await getSession();
-  const { callbackURL, mode } = await searchParams;
-  const requestedCallback = safeCallbackURL(callbackURL);
+  const { callbackURL, error, mode } = await searchParams;
+  const requestedCallback = safeAuthCallbackURL(callbackURL);
 
   if (session) {
     if (requestedCallback.startsWith('/message/')) redirect(requestedCallback);
@@ -46,6 +43,7 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
             <AuthForm
               initialMode={mode === 'sign-up' ? 'sign-up' : mode === 'forgot-password' ? 'forgot-password' : 'sign-in'}
               googleEnabled={Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)}
+              oauthError={error}
             />
           </div>
         </section>
