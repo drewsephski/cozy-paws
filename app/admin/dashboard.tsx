@@ -7,7 +7,7 @@ import { Spokes } from '@/components/ui/spokes';
 import { Card, CardContent } from '@/components/ui/card';
 import { Stepper, StepperDescription, StepperIndicator, StepperItem, StepperList, StepperSeparator, StepperTitle, StepperTrigger } from '@/components/ui/stepper';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, ArrowRight, CalendarDays, ChartNoAxesCombined, Check, CheckCircle2, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, LayoutDashboard, MessageCircle, RotateCw, Users } from '@/components/ui/animated-icons';
+import { ArrowLeft, ArrowRight, CalendarDays, Camera, ChartNoAxesCombined, Check, CheckCircle2, ChevronDown, CircleAlert, Clock3, CreditCard, ExternalLink, Globe2, HeartHandshake, LayoutDashboard, Mail, MessageCircle, PawPrint, RotateCw, Users, type LucideIcon } from '@/components/ui/animated-icons';
 import Link from 'next/link';
 import { deleteSubdomainAction, refreshStripeStatusAction, startStripeOnboardingAction, type RefreshStripeStatusState } from '@/app/actions';
 import type { ConnectedAccountStatus } from '@/lib/connected-accounts';
@@ -29,7 +29,7 @@ import type { Booking } from '@/lib/bookings';
 import { editableSiteOptions, reviewedBookingDraft, type ReviewedBookingDraft } from './site-editing-model';
 import type { ProfileRecord } from '@/lib/profile-ownership';
 import { RoverImportCard } from '@/components/rover-import-card';
-import { ProfileRichFields } from './profile-rich-fields';
+import { ProfileCareFields, ProfileServiceFields } from './profile-rich-fields';
 
 type SiteProfile = ProfileRecord;
 
@@ -236,9 +236,24 @@ function ProfileTextArea({ label, name, defaultValue, placeholder }: { label: st
   return <div className="sm:col-span-2"><label htmlFor={name} className="mb-1.5 block text-xs font-medium text-muted-foreground">{label}</label><textarea id={name} name={name} defaultValue={defaultValue} placeholder={placeholder} maxLength={500} rows={3} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-emerald-500/70 focus:ring-4 focus:ring-emerald-500/10" /></div>;
 }
 
+function ProfileEditorSection({ title, description, summary, icon: Icon, defaultOpen = false, children }: { title: string; description: string; summary: string; icon: LucideIcon; defaultOpen?: boolean; children: React.ReactNode }) {
+  return (
+    <details open={defaultOpen} className="group overflow-hidden rounded-xl border border-border bg-background">
+      <summary className="flex min-h-16 cursor-pointer list-none items-center gap-3 px-4 py-3 outline-none transition hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40 marker:hidden sm:px-5">
+        <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"><Icon className="size-4.5" aria-hidden="true" /></span>
+        <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{title}</span><span className="mt-0.5 block text-xs leading-5 text-muted-foreground">{description}</span></span>
+        <span className="hidden max-w-48 truncate text-right text-xs text-muted-foreground sm:block">{summary}</span>
+        <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+      </summary>
+      <div className="grid gap-4 border-t border-border bg-muted/10 p-4 sm:grid-cols-2 sm:p-5">{children}</div>
+    </details>
+  );
+}
+
 function ProfileEditor({ site, roverImportEnabled }: { site: SiteProfile; roverImportEnabled: boolean }) {
   const [state, saveAction, isSaving] = useActionState<SaveProfileState, FormData>(saveProfileAction, {});
   const [showSaved, setShowSaved] = useState(false);
+  const formId = `profile-editor-${site.subdomain}`;
 
   useEffect(() => {
     if (!state.success || !state.savedAt) return;
@@ -249,34 +264,54 @@ function ProfileEditor({ site, roverImportEnabled }: { site: SiteProfile; roverI
 
   return (
     <section className="space-y-3">
-      <div><h2 className="text-xl font-semibold">Edit what pet owners see</h2><p className="mt-1 text-sm text-muted-foreground">Keep the essentials current. Changes appear after you save.</p></div>
-      {roverImportEnabled && <div><Button asChild variant="outline" size="sm"><Link href={`/admin/import/rover?site=${encodeURIComponent(site.subdomain)}`}>Import from Rover</Link></Button></div>}
-      <form action={saveAction} className="rounded-xl bg-card ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)]">
-        <input type="hidden" name="subdomain" value={site.subdomain} />
-        <div className="grid gap-4 p-5 sm:grid-cols-2">
-          <SuggestionField label="Your name" name="sitterName" defaultValue={site.sitterName || ''} placeholder="Jamie" suggestions={profileSuggestions.sitterName} hint="The name pet owners will see first." />
-          <SuggestionField label="Business name" name="businessName" defaultValue={site.businessName || ''} placeholder="Happy Tails Pet Care" suggestions={profileSuggestions.businessName} hint="Choose a suggestion or type your own." />
-          <SuggestionField label="One-sentence introduction" name="tagline" defaultValue={site.tagline || ''} placeholder="Reliable care for pets nearby." suggestions={profileSuggestions.tagline} hint="Choose a starting point or write your own." />
-          <ServiceAreaField defaultValue={site.location || ''} />
-          <ServicesField defaultValue={site.services || []} />
-          <ProfileField label="Phone" name="phone" type="tel" inputMode="tel" formatPhone defaultValue={site.phone || ''} placeholder="(555) 123-4567" />
-          <ProfileField label="Email" name="email" type="email" defaultValue={site.email || ''} placeholder="hello@example.com" />
-          <ProfileField className="sm:col-span-2" label="LinkedIn profile (optional)" name="linkedinUrl" type="url" inputMode="url" maxLength={500} defaultValue={site.linkedinUrl || ''} placeholder="https://www.linkedin.com/in/your-name" />
-          <div><label htmlFor="availabilityStatus-editor" className="mb-1.5 block text-xs font-medium text-muted-foreground">Availability</label><select id="availabilityStatus-editor" name="availabilityStatus" defaultValue={site.availabilityStatus || 'ACCEPTING'} className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm"><option value="ACCEPTING">Accepting inquiries</option><option value="LIMITED">Limited availability</option><option value="UNAVAILABLE">Currently unavailable</option></select></div>
-          <ProfileField label="Unavailable or limited until (optional)" name="availabilityUntil" type="date" defaultValue={site.availabilityUntil || ''} placeholder="" />
-          <ProfileField label="Years of experience (self-reported)" name="yearsExperience" type="number" defaultValue={site.yearsExperience?.toString() || ''} placeholder="5" />
-          <ProfileField label="Care capabilities (comma separated)" name="careCapabilities" defaultValue={(site.careCapabilities || []).join(', ')} placeholder="Senior pets, medication, puppies" />
-          <ProfileTextArea label="Meet-and-greet expectations" name="meetAndGreetExpectations" defaultValue={site.meetAndGreetExpectations || ''} placeholder="Share what a new client should expect before care begins." />
-          <ProfileTextArea label="Cancellation expectations" name="cancellationExpectations" defaultValue={site.cancellationExpectations || ''} placeholder="Explain your usual notice and cancellation expectations." />
-          <ProfileField label="Self-reported credentials (comma separated)" name="selfReportedCredentials" defaultValue={(site.selfReportedCredentials || []).join(', ')} placeholder="Pet first aid course, insured" className="sm:col-span-2" />
-          <ProfileRichFields site={site} />
-          <div className="sm:col-span-2">
-            <p className="mb-1.5 text-xs font-medium text-muted-foreground">Profile photo</p>
-            <ProfileImageUpload subdomain={site.subdomain} currentImageUrl={site.profileImageUrl} />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div><h2 className="text-xl font-semibold">Edit what pet owners see</h2><p className="mt-1 text-sm text-muted-foreground">Open a section, make your changes, then save once.</p></div>
+        <div className="flex flex-col items-start gap-1.5 sm:items-end">
+          <div className="flex flex-wrap items-center gap-2">
+            {roverImportEnabled && <Button asChild variant="outline" size="sm"><Link href={`/admin/import/rover?site=${encodeURIComponent(site.subdomain)}`}>Import from Rover</Link></Button>}
+            <Button type="submit" form={formId} size="sm" disabled={isSaving} className={`min-w-28 ${showSaved ? 'bg-emerald-600 text-white hover:bg-emerald-600' : ''}`}>{isSaving ? <><Spokes aria-hidden="true" />Saving...</> : showSaved ? <><Check aria-hidden="true" />Saved</> : 'Save changes'}</Button>
           </div>
+          {state.error && <p role="alert" className="max-w-sm text-xs text-destructive sm:text-right">{state.error}</p>}
         </div>
-        <div className="flex min-h-14 items-center justify-between gap-4 border-t border-border bg-muted/20 px-5 py-3">
-          <p role="status" className={`text-xs transition-opacity ${state.error ? 'text-destructive' : 'text-muted-foreground'} ${state.error || showSaved ? 'opacity-100' : 'opacity-0'}`}>
+      </div>
+      <form id={formId} action={saveAction} className="rounded-xl bg-card p-2 ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)] sm:p-3">
+        <input type="hidden" name="subdomain" value={site.subdomain} />
+        <div className="space-y-2">
+          <ProfileEditorSection title="Profile basics" description="The first details pet owners see." summary="Name, intro, and service area" icon={Users} defaultOpen>
+            <SuggestionField label="Your name" name="sitterName" defaultValue={site.sitterName || ''} placeholder="Jamie" suggestions={profileSuggestions.sitterName} hint="The name pet owners will see first." />
+            <SuggestionField label="Business name" name="businessName" defaultValue={site.businessName || ''} placeholder="Happy Tails Pet Care" suggestions={profileSuggestions.businessName} hint="Choose a suggestion or type your own." />
+            <SuggestionField className="sm:col-span-2" label="One-sentence introduction" name="tagline" defaultValue={site.tagline || ''} placeholder="Reliable care for pets nearby." suggestions={profileSuggestions.tagline} hint="Choose a starting point or write your own." />
+            <ServiceAreaField className="sm:col-span-2" defaultValue={site.location || ''} />
+          </ProfileEditorSection>
+
+          <ProfileEditorSection title="Services and pricing" description="Choose what you offer, then describe each service." summary="Services, descriptions, and starting prices" icon={PawPrint}>
+            <ServicesField className="sm:col-span-2" defaultValue={site.services || []} />
+            <ProfileServiceFields site={site} />
+          </ProfileEditorSection>
+
+          <ProfileEditorSection title="Care and experience" description="Help clients understand your routine and fit." summary="Routine, experience, and expectations" icon={HeartHandshake}>
+            <ProfileField label="Years of experience (self-reported)" name="yearsExperience" type="number" min={0} max={80} defaultValue={site.yearsExperience?.toString() || ''} placeholder="5" />
+            <ProfileField label="Care capabilities (comma separated)" name="careCapabilities" defaultValue={(site.careCapabilities || []).join(', ')} placeholder="Senior pets, medication, puppies" />
+            <ProfileCareFields site={site} />
+            <ProfileTextArea label="Meet-and-greet expectations" name="meetAndGreetExpectations" defaultValue={site.meetAndGreetExpectations || ''} placeholder="Share what a new client should expect before care begins." />
+            <ProfileTextArea label="Cancellation expectations" name="cancellationExpectations" defaultValue={site.cancellationExpectations || ''} placeholder="Explain your usual notice and cancellation expectations." />
+            <ProfileField label="Self-reported credentials (comma separated)" name="selfReportedCredentials" defaultValue={(site.selfReportedCredentials || []).join(', ')} placeholder="Pet first aid course, insured" className="sm:col-span-2" />
+          </ProfileEditorSection>
+
+          <ProfileEditorSection title="Availability and contact" description="Set your current status and how clients reach you." summary="Availability, email, phone, and LinkedIn" icon={Mail}>
+            <div><label htmlFor="availabilityStatus-editor" className="mb-1.5 block text-xs font-medium text-muted-foreground">Availability</label><select id="availabilityStatus-editor" name="availabilityStatus" defaultValue={site.availabilityStatus || 'ACCEPTING'} className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm"><option value="ACCEPTING">Accepting inquiries</option><option value="LIMITED">Limited availability</option><option value="UNAVAILABLE">Currently unavailable</option></select></div>
+            <ProfileField label="Unavailable or limited until (optional)" name="availabilityUntil" type="date" defaultValue={site.availabilityUntil || ''} placeholder="" />
+            <ProfileField label="Email" name="email" type="email" defaultValue={site.email || ''} placeholder="hello@example.com" />
+            <ProfileField label="Phone" name="phone" type="tel" inputMode="tel" formatPhone defaultValue={site.phone || ''} placeholder="(555) 123-4567" />
+            <ProfileField className="sm:col-span-2" label="LinkedIn profile (optional)" name="linkedinUrl" type="url" inputMode="url" maxLength={500} defaultValue={site.linkedinUrl || ''} placeholder="https://www.linkedin.com/in/your-name" />
+          </ProfileEditorSection>
+
+          <ProfileEditorSection title="Profile photo" description="Add a clear, recent photo to build recognition." summary={site.profileImageUrl ? 'Photo added' : 'No photo yet'} icon={Camera}>
+            <div className="sm:col-span-2"><ProfileImageUpload subdomain={site.subdomain} currentImageUrl={site.profileImageUrl} /></div>
+          </ProfileEditorSection>
+        </div>
+        <div className="mt-2 flex min-h-14 items-center justify-between gap-4 rounded-lg bg-muted/30 px-4 py-3 sm:px-5">
+          <p role={state.error ? undefined : 'status'} className={`text-xs transition-opacity ${state.error ? 'text-destructive' : 'text-muted-foreground'} ${state.error || showSaved ? 'opacity-100' : 'opacity-0'}`}>
             {state.error || (showSaved ? 'Your public site is up to date.' : 'Changes saved.')}
           </p>
           <Button type="submit" size="sm" disabled={isSaving} className={`min-w-28 overflow-hidden transition-colors ${showSaved ? 'bg-emerald-600 text-white hover:bg-emerald-600' : ''}`}>
