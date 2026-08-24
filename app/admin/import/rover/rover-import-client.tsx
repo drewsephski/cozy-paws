@@ -259,6 +259,6 @@ export function RoverImportClient({ site }: { site: Site }) {
       </aside>
     </div>}
     {status === 'error' && <div role="alert" className="mt-10 max-w-2xl rounded-2xl border border-red-300 bg-red-50 p-6 text-red-900"><AlertCircle className="size-6" /><h2 className="mt-3 font-semibold">Import stopped safely</h2><p className="mt-2 text-sm">{error} Your current Sitterfolio was not changed.</p><div className="mt-5 flex gap-3"><Button onClick={() => void start()}>Try again</Button><Button variant="ghost" onClick={() => router.push('/admin')}>Enter details myself</Button></div></div>}
-    {status === 'success' && <div role="status" className="mt-10 max-w-2xl rounded-2xl border border-emerald-300 bg-emerald-50 p-8"><CheckCircle2 className="size-8 text-emerald-700" /><h2 className="mt-4 text-2xl font-semibold">Your imported details are saved.</h2><Button className="mt-6" onClick={() => router.push('/admin')}>Continue setup</Button></div>}
+    {status === 'success' && <div role="status" className="mt-10 max-w-2xl rounded-2xl border border-emerald-300 bg-emerald-50 p-8"><CheckCircle2 className="size-8 text-emerald-700" /><h2 className="mt-4 text-2xl font-semibold text-emerald-950">Your imported details are saved.</h2><Button className="mt-6" onClick={() => router.push('/admin')}>Continue setup</Button></div>}
   </main>;
 }
