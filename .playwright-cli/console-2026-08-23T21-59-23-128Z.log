@@ -677,6 +677,16 @@ https://nextjs.org/docs/messages/module-not-found @ http://drew.localhost:3000/_
 [64187117ms] [LOG] [Fast Refresh] done in 111ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [64187537ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [64187587ms] [LOG] [Fast Refresh] done in 151ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64322228ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64322269ms] [LOG] [Fast Refresh] done in 147ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64322723ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64322844ms] [LOG] [Fast Refresh] done in 224ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64324876ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64324877ms] [LOG] [Fast Refresh] done in 103ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64362223ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64362225ms] [LOG] [Fast Refresh] done in 103ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64373367ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
+[64373392ms] [LOG] [Fast Refresh] done in 126ms @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [64386845ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [64389843ms] [LOG] [HMR] connected @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [64393466ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://drew.localhost:3000/:0
@@ -711,3 +721,19 @@ Fast Refresh requires at least one parent function component in your React tree.
 [64456971ms] [LOG] [Fast Refresh] rebuilding @ http://drew.localhost:3000/_next/static/chunks/1154_next_dist_036oat-._.js:2477
 [64499058ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://drew.localhost:3000/:0
 [64517536ms] [ERROR] Failed to load resource: net::ERR_CONTENT_LENGTH_MISMATCH @ http://drew.localhost:3000/_next/static/chunks/platforms_pages__app_0du2_q-._.js:0
+[64555500ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://drew.localhost:3000/_next/static/chunks/0-xt_react-dom_1a3j9bp._.js:15305
+[64555652ms] Error: Module [next]/entry/page-loader.ts { PAGE => "[project]/platforms/node_modules/.pnpm/next@16.2.10_@babel+core@7.29.7_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/app.js [client] (ecmascript)" } [client] (ecmascript) was instantiated because it was required from module [hmr-entry]/hmr-entry.js { ENTRY => "[project]/platforms/pages/_app" }, but the module factory is not available.
+This is often caused by a stale browser cache, misconfigured Cache-Control headers, or a service worker serving outdated responses.
+To fix this, make sure your Cache-Control headers allow revalidation of chunks and review your service worker configuration. As an immediate workaround, try hard-reloading the page, clearing the browser cache, or unregistering any service workers.
+    at instantiateModuleShared (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1272:15)
+    at instantiateModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1621:12)
+    at getOrInstantiateModuleFromParent (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1604:12)
+    at DevContext.commonJsRequire [as r] (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:299:12)
+    at module evaluation (http://drew.localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__0ph75ah._.js:472:23)
+    at http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1307:27
+    at runModuleExecutionHooks (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1636:13)
+    at instantiateModuleShared (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1305:9)
+    at instantiateModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1621:12)
+    at getOrInstantiateRuntimeModule (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1582:12)
+    at Object.registerChunk (http://drew.localhost:3000/_next/static/chunks/turbopack-platforms_pages__app_164ygge._.js:1988:21)
+[64795644ms] [ERROR] WebSocket connection to 'ws://drew.localhost:3000/_next/hmr' failed: WebSocket opening handshake timed out @ http://drew.localhost:3000/_next/static/chunks/1f47_next_dist_client_0kpj3t-._.js:2364
