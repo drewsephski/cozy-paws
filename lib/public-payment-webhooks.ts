@@ -16,6 +16,7 @@ async function paymentIntent(value: string | Stripe.PaymentIntent | null, accoun
 
 async function objectsForIntent(value: string | Stripe.PaymentIntent | null, chargeValue: string | Stripe.Charge | null, accountId: string): Promise<StripeObjects | null> {
   const intent = await paymentIntent(value, accountId);
+  if (intent?.metadata.paymentRequestId && intent.metadata.publicPaymentId) throw new Error('PaymentIntent claims multiple Sitterfolio payment aggregates');
   const publicPaymentId = intent?.metadata.publicPaymentId;
   if (!intent || !publicPaymentId) return null;
   const chargeId = objectId(chargeValue) ?? objectId(intent.latest_charge);
@@ -29,7 +30,7 @@ async function objectsForIntent(value: string | Stripe.PaymentIntent | null, cha
 
 async function lockedRow(client: PoolClient, id: string) {
   await client.query('select pg_advisory_xact_lock(hashtext($1))', [id]);
-  const result = await client.query<PublicRow>(`select pp.*,b.stripe_account_id from public_payment pp join business b on b.id=pp.business_id where pp.id=$1 for update of pp`, [id]);
+  const result = await client.query<PublicRow>(`select pp.* from public_payment pp where pp.id=$1 for update`, [id]);
   if (!result.rows[0]?.stripe_account_id) throw new Error('No public payment exists for this Stripe object');
   return result.rows[0];
 }

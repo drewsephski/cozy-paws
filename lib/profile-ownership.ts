@@ -13,6 +13,13 @@ export type BusinessProfile = {
   profileImageUrl?: string;
   onboardingCompletedAt?: number | null;
   paymentLinkUrl?: string;
+  availabilityStatus?: 'ACCEPTING' | 'LIMITED' | 'UNAVAILABLE';
+  availabilityUntil?: string | null;
+  yearsExperience?: number | null;
+  careCapabilities?: string[];
+  meetAndGreetExpectations?: string;
+  cancellationExpectations?: string;
+  selfReportedCredentials?: string[];
 };
 
 export type ProfileRecord = BusinessProfile & { subdomain: string };
@@ -49,6 +56,8 @@ export type ProfileRepository = {
   removeOwnerSubdomain(ownerId: string, subdomain: string): Promise<void>;
   readLeads(subdomain: string): Promise<Lead[]>;
   writeLeads(subdomain: string, leads: Lead[]): Promise<void>;
+  readOwnerLeads(ownerId: string, profiles: ProfileRecord[]): Promise<OwnedLead[]>;
+  markLeadsRead(ownerId: string, leadIds: string[], readAt: number): Promise<string[]>;
 };
 
 type LegacyLead = Omit<Lead, 'id' | 'readAt'> & Partial<Pick<Lead, 'id' | 'readAt'>>;
@@ -170,28 +179,24 @@ export function createProfileOwnership(repository: ProfileRepository) {
 
     async getOwnedLeadsForAllSites(ownerId: string) {
       const ownedProfiles = await this.listOwned(ownerId);
-      const siteLeads = await Promise.all(
-        ownedProfiles.map(async (profile) =>
-          (await this.getOwnedLeads(ownerId, profile.subdomain)).map((lead) => ({
-            ...lead,
-            subdomain: profile.subdomain,
-            siteName: profile.businessName || profile.sitterName || profile.subdomain
-          }))
-        )
-      );
-      return siteLeads.flat().sort((a, b) => b.createdAt - a.createdAt);
+      return repository.readOwnerLeads(ownerId, ownedProfiles);
+    },
+
+    async getOwnedLeadsForSites(ownerId: string, ownedProfiles: ProfileRecord[]) {
+      const verified = ownedProfiles.filter((profile) => profile.ownerId === ownerId);
+      return repository.readOwnerLeads(ownerId, verified);
+    },
+
+    async markLeadsRead(ownerId: string, leadIds: string[], readAt = Date.now()) {
+      const selected = [...new Set(leadIds.filter(Boolean))];
+      if (!selected.length) return [];
+      return repository.markLeadsRead(ownerId, selected, readAt);
     },
 
     async markLeadRead(ownerId: string, subdomain: string, leadId: string, readAt = Date.now()) {
       const profile = await getOwned(subdomain, ownerId);
       if (!profile) return false;
-      const stored = await repository.readLeads(profile.subdomain);
-      const normalized = normalizeLeads(stored);
-      const index = normalized.leads.findIndex((lead) => lead.id === leadId);
-      if (index < 0) return false;
-      normalized.leads[index] = { ...normalized.leads[index], readAt };
-      await repository.writeLeads(profile.subdomain, normalized.leads);
-      return true;
+      return (await repository.markLeadsRead(ownerId, [leadId], readAt)).includes(leadId);
     }
   };
 }

@@ -26,23 +26,10 @@ import { ClientHouseholds } from './client-households';
 import type { ClientHousehold } from '@/lib/client-households';
 import { Bookings } from './bookings';
 import type { Booking } from '@/lib/bookings';
+import { editableSiteOptions, reviewedBookingDraft, type ReviewedBookingDraft } from './site-editing-model';
+import type { ProfileRecord } from '@/lib/profile-ownership';
 
-type SiteProfile = {
-  subdomain: string;
-  emoji: string;
-  createdAt: number;
-  sitterName?: string;
-  businessName?: string;
-  tagline?: string;
-  location?: string;
-  services?: string[];
-  phone?: string;
-  email?: string;
-  linkedinUrl?: string | null;
-  profileImageUrl?: string;
-  onboardingCompletedAt?: number | null;
-  paymentLinkUrl?: string;
-};
+type SiteProfile = ProfileRecord;
 
 type DeleteState = {
   error?: string;
@@ -110,7 +97,8 @@ function ProfileOnboarding({ site }: { site: SiteProfile }) {
   });
   const [values, setValues] = useState<Record<string, string>>({
     sitterName: site.sitterName || '', businessName: site.businessName || '', tagline: site.tagline || '', location: site.location || '',
-    services: (site.services || []).join(', '), email: site.email || '', phone: site.phone || '', profileImageUrl: site.profileImageUrl || ''
+    services: (site.services || []).join(', '), email: site.email || '', phone: site.phone || '', profileImageUrl: site.profileImageUrl || '',
+    availabilityStatus: site.availabilityStatus || 'ACCEPTING', availabilityUntil: site.availabilityUntil || '', yearsExperience: site.yearsExperience?.toString() || ''
   });
   const [state, saveAction, isSaving] = useActionState<SaveProfileState, FormData>(saveProfileAction, {});
   const handledSave = useRef<number | undefined>(undefined);
@@ -169,6 +157,16 @@ function ProfileOnboarding({ site }: { site: SiteProfile }) {
                   <OnboardingField autoFocus className="sm:col-span-2" label="One-sentence introduction" name="tagline" value={values.tagline} onChange={updateValue} placeholder="Reliable visits for dogs and cats in Oak Park." maxLength={160} />
                   <OnboardingField label="Service area" name="location" value={values.location} onChange={updateValue} placeholder="Oak Park and nearby neighborhoods" />
                   <OnboardingField label="Services" name="services" value={values.services} onChange={updateValue} placeholder="Dog walking, drop-ins, overnight stays" hint="Separate services with commas." />
+                  <div>
+                    <label htmlFor="availabilityStatus" className="mb-2 block text-sm font-medium">Availability</label>
+                    <select id="availabilityStatus" name="availabilityStatus" value={values.availabilityStatus} onChange={(event) => updateValue('availabilityStatus', event.target.value)} className="h-14 w-full rounded-xl border border-input bg-background px-4 text-base">
+                      <option value="ACCEPTING">Accepting inquiries</option><option value="LIMITED">Limited availability</option><option value="UNAVAILABLE">Currently unavailable</option>
+                    </select>
+                  </div>
+                  {values.availabilityStatus === 'ACCEPTING'
+                    ? <input type="hidden" name="availabilityUntil" value="" />
+                    : <OnboardingField label={values.availabilityStatus === 'UNAVAILABLE' ? 'Unavailable until' : 'Limited until'} optional name="availabilityUntil" type="date" value={values.availabilityUntil} onChange={updateValue} placeholder="" />}
+                  <OnboardingField label="Years of experience" optional name="yearsExperience" type="number" min={0} max={80} value={values.yearsExperience} onChange={updateValue} placeholder="5" />
                 </div>
               ) : (
                 <div className="grid gap-5 sm:grid-cols-2">
@@ -231,6 +229,10 @@ function ProfileField({ label, name, defaultValue, className, formatPhone = fals
   );
 }
 
+function ProfileTextArea({ label, name, defaultValue, placeholder }: { label: string; name: string; defaultValue: string; placeholder: string }) {
+  return <div className="sm:col-span-2"><label htmlFor={name} className="mb-1.5 block text-xs font-medium text-muted-foreground">{label}</label><textarea id={name} name={name} defaultValue={defaultValue} placeholder={placeholder} maxLength={500} rows={3} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-emerald-500/70 focus:ring-4 focus:ring-emerald-500/10" /></div>;
+}
+
 function ProfileEditor({ site }: { site: SiteProfile }) {
   const [state, saveAction, isSaving] = useActionState<SaveProfileState, FormData>(saveProfileAction, {});
   const [showSaved, setShowSaved] = useState(false);
@@ -256,6 +258,13 @@ function ProfileEditor({ site }: { site: SiteProfile }) {
           <ProfileField label="Phone" name="phone" type="tel" inputMode="tel" formatPhone defaultValue={site.phone || ''} placeholder="(555) 123-4567" />
           <ProfileField label="Email" name="email" type="email" defaultValue={site.email || ''} placeholder="hello@example.com" />
           <ProfileField className="sm:col-span-2" label="LinkedIn profile (optional)" name="linkedinUrl" type="url" inputMode="url" maxLength={500} defaultValue={site.linkedinUrl || ''} placeholder="https://www.linkedin.com/in/your-name" />
+          <div><label htmlFor="availabilityStatus-editor" className="mb-1.5 block text-xs font-medium text-muted-foreground">Availability</label><select id="availabilityStatus-editor" name="availabilityStatus" defaultValue={site.availabilityStatus || 'ACCEPTING'} className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm"><option value="ACCEPTING">Accepting inquiries</option><option value="LIMITED">Limited availability</option><option value="UNAVAILABLE">Currently unavailable</option></select></div>
+          <ProfileField label="Unavailable or limited until (optional)" name="availabilityUntil" type="date" defaultValue={site.availabilityUntil || ''} placeholder="" />
+          <ProfileField label="Years of experience (self-reported)" name="yearsExperience" type="number" defaultValue={site.yearsExperience?.toString() || ''} placeholder="5" />
+          <ProfileField label="Care capabilities (comma separated)" name="careCapabilities" defaultValue={(site.careCapabilities || []).join(', ')} placeholder="Senior pets, medication, puppies" />
+          <ProfileTextArea label="Meet-and-greet expectations" name="meetAndGreetExpectations" defaultValue={site.meetAndGreetExpectations || ''} placeholder="Share what a new client should expect before care begins." />
+          <ProfileTextArea label="Cancellation expectations" name="cancellationExpectations" defaultValue={site.cancellationExpectations || ''} placeholder="Explain your usual notice and cancellation expectations." />
+          <ProfileField label="Self-reported credentials (comma separated)" name="selfReportedCredentials" defaultValue={(site.selfReportedCredentials || []).join(', ')} placeholder="Pet first aid course, insured" className="sm:col-span-2" />
           <div className="sm:col-span-2">
             <p className="mb-1.5 text-xs font-medium text-muted-foreground">Profile photo</p>
             <ProfileImageUpload subdomain={site.subdomain} currentImageUrl={site.profileImageUrl} />
@@ -272,6 +281,17 @@ function ProfileEditor({ site }: { site: SiteProfile }) {
       </form>
     </section>
   );
+}
+
+function SiteEditor({ sites }: { sites: SiteProfile[] }) {
+  const [selectedSubdomain, setSelectedSubdomain] = useState(sites[0]?.subdomain || '');
+  const selected = sites.find((site) => site.subdomain === selectedSubdomain) || sites[0];
+  if (!selected) return null;
+  const options = editableSiteOptions(sites);
+  return <section className="space-y-4">
+    {sites.length > 1 && <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted/20 p-4 sm:flex-row sm:items-center sm:justify-between"><div><label htmlFor="site-editor-select" className="text-sm font-semibold">Site to edit</label><p className="mt-1 text-xs text-muted-foreground">Choose any owned Site. Saving changes only this Site.</p></div><select id="site-editor-select" value={selected.subdomain} onChange={(event) => setSelectedSubdomain(event.target.value)} className="h-11 min-w-56 rounded-lg border border-input bg-background px-3 text-sm">{options.map((option) => <option key={option.value} value={option.value}>{option.label} · {option.value}</option>)}</select></div>}
+    <ProfileEditor key={selected.subdomain} site={selected} />
+  </section>;
 }
 
 function SiteGrid({
@@ -413,6 +433,19 @@ export function AdminDashboard({ sites, leads, conversationMessages, clientHouse
     deleteSubdomainAction,
     {}
   );
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [bookingDraft, setBookingDraft] = useState<ReviewedBookingDraft | null>(null);
+  const clientHouseholdByLead = Object.fromEntries(clientHouseholds.map((household) => [household.sourceLeadId, household.id]));
+
+  function createDraftBooking(leadId: string, householdId: string) {
+    const lead = leads.find((item) => item.id === leadId);
+    const household = clientHouseholds.find((item) => item.id === householdId);
+    if (!lead || !household) return;
+    const draft = reviewedBookingDraft(lead, household);
+    if (!draft) return;
+    setBookingDraft(draft);
+    setActiveTab('bookings');
+  }
 
   const onboardingSite = sites.find((site) => site.onboardingCompletedAt === null);
   if (onboardingSite) return <ProfileOnboarding site={onboardingSite} />;
@@ -420,7 +453,7 @@ export function AdminDashboard({ sites, leads, conversationMessages, clientHouse
   return (
     <div className="relative mx-auto w-full max-w-6xl px-5 pb-12 pt-8 lg:px-8 lg:pb-16 lg:pt-12">
       <DashboardHeader />
-      <Tabs defaultValue="dashboard" className="mt-7">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-7">
         <TabsList aria-label="Dashboard views">
           <TabsTrigger value="dashboard"><LayoutDashboard className="size-4" aria-hidden="true" />Dashboard</TabsTrigger>
           <TabsTrigger value="stats"><ChartNoAxesCombined className="size-4" aria-hidden="true" />Stats</TabsTrigger>
@@ -429,10 +462,10 @@ export function AdminDashboard({ sites, leads, conversationMessages, clientHouse
           <TabsTrigger value="bookings"><CalendarDays className="size-4" aria-hidden="true" />Bookings</TabsTrigger>
         </TabsList>
         <TabsContent value="dashboard" forceMount className="space-y-12 pt-8 data-[state=inactive]:hidden">
-          <section className="space-y-4"><div><h2 className="text-xl font-semibold">Requests</h2><p className="mt-1 text-sm text-muted-foreground">Read and reply to pet owners in one place.</p></div><LeadInbox sites={sites} leads={leads} conversationMessages={conversationMessages} clientLeadIds={clientHouseholds.map((household) => household.sourceLeadId)} /></section>
+          <section className="space-y-4"><div><h2 className="text-xl font-semibold">Requests</h2><p className="mt-1 text-sm text-muted-foreground">Read and reply to pet owners in one place.</p></div><LeadInbox sites={sites} leads={leads} conversationMessages={conversationMessages} clientHouseholdByLead={clientHouseholdByLead} onCreateDraftBooking={createDraftBooking} /></section>
           <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><SiteGrid sites={sites} action={action} isPending={isPending} /></section>
           {paymentSetup.some((business) => business.status !== 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
-          {sites[0] && <ProfileEditor site={sites[0]} />}
+          <SiteEditor sites={sites} />
           {paymentSetup.length > 0 && paymentSetup.every((business) => business.status === 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
         </TabsContent>
         <TabsContent value="stats" forceMount className="pt-8 data-[state=inactive]:hidden">
@@ -448,7 +481,7 @@ export function AdminDashboard({ sites, leads, conversationMessages, clientHouse
         </TabsContent>
         <TabsContent value="bookings" forceMount className="pt-8 data-[state=inactive]:hidden">
           <div className="mb-5"><h2 className="text-xl font-semibold">Bookings</h2><p className="mt-1 text-sm text-muted-foreground">Plan care for saved clients and keep each booking status current.</p></div>
-          <Bookings households={clientHouseholds} bookings={bookings} />
+          <Bookings households={clientHouseholds} bookings={bookings} draft={bookingDraft} />
         </TabsContent>
       </Tabs>
 

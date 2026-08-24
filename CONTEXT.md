@@ -42,10 +42,9 @@ User → Business → Site → Lead → Payment request
                                    └→ Booking ←┘
 ```
 
-`migrations/auth.sql` creates Better Auth tables. `migrations/2026-08-21-add-auth-session.sql` adds the session change. `migrations/2026-08-21-inquiry-to-revenue.sql` creates the Business/Site/Lead/Lead-event/Payment-request/Stripe-webhook tables and constraints. `migrations/2026-08-23-stripe-checkout-retry.sql` adds the durable Checkout retry generation used after asynchronous payment failure. `migrations/2026-08-23-client-households.sql` adds reusable Client-household and Pet-profile records. `migrations/2026-08-23-bookings.sql` adds guarded Booking and Booking-Pet tables; it requires explicit in-session confirmation after database identity and isolation are verified. `migrations/2026-08-23-conversation-lifecycle.sql` adds idempotent intake tokens plus Conversation closure and revocation timestamps. There is no ORM migration runner; these are manually applied SQL migrations.
-`migrations/2026-08-24-linkedin-profile.sql` adds the nullable personal LinkedIn profile URL stored on each Site. It is an isolated manual migration and must be applied before deploying code that selects `site.linkedin_url`.
+`migrations/manifest.json` is the canonical complete migration order; `migrations/README.md` documents prerequisites, guarded confirmation settings, and read-only verification. The sequence covers Better Auth and sessions, inquiry-to-revenue ownership, Payment-request delivery/retries, Conversations and lifecycle, Client households and Pet profiles, guarded Bookings, public Site payments, profile identity, LinkedIn profiles, staged and provider-verified immutable account snapshots for both payment aggregates, and Site availability/trust details. Historical payment accounts are never inferred from the mutable Business connection. There is no ORM migration runner; these are manually applied SQL migrations and no external environment is migrated without current authorization.
 
-`lib/profiles.ts` exposes the ownership service. `lib/profile-ownership.ts` handles normalization and owner checks. `lib/postgres-profile-repository.ts` is active and joins through Business ownership. `lib/redis-profile-repository.ts` is legacy compatibility only. If a record is absent in PostgreSQL, the PostgreSQL repository can lazily read its Redis record and migrate it. Redis remains for compatibility, rate limits, and caches; new financial state must not be written there. Do not delete legacy Redis data casually.
+`lib/profiles.ts` exposes the ownership service. `lib/profile-ownership.ts` handles normalization and owner checks. `lib/postgres-profile-repository.ts` is active and joins through Business ownership. `lib/redis-profile-repository.ts` is legacy compatibility only. Each pre-cutover owner receives one bounded Redis Site/Lead discovery pass recorded in `legacy_profile_migration_state`; PostgreSQL is authoritative after that explicit boundary. A directly requested Site absent from PostgreSQL can still be lazily migrated with its Leads. Redis remains for compatibility, rate limits, and caches; new financial state must not be written there. Do not delete legacy Redis data casually.
 
 Profile deletion is a PostgreSQL soft delete (`site.deleted_at`) so financial history remains. Composite Site/Business and Lead/Business foreign keys are deliberate ownership protections. Inspect current repository and migration state before changing deletion or compatibility behavior.
 
@@ -55,9 +54,9 @@ Profile deletion is a PostgreSQL soft delete (`site.deleted_at`) so financial hi
 - `lib/payment-requests.ts`: owner-authorized request creation and dashboard revenue queries.
 - `lib/connected-accounts.ts`: connected-account creation, onboarding links, readiness refresh.
 - `lib/checkout.ts`: locked, idempotent Checkout Session creation/reuse.
-- `lib/stripe-webhooks.ts`: signed-event reconciliation and event deduplication.
+- `lib/stripe-webhooks.ts`: signed-event ownership classification, reconciliation, and event deduplication. Unrelated connected-account events are acknowledged; events claiming Sitterfolio metadata fail closed on any mismatch.
 
-Amounts are integer cents, constrained to 100–1,000,000 cents. Stripe-hosted Checkout uses direct charges on the connected account with a server-derived 3% application fee. Clients never choose the account or fee. Stripe is authoritative for external payment facts; PostgreSQL is authoritative for reconciled application state and attribution. Webhooks are the only source for financial transitions. Refunds reconcile proportional application-fee refunds; lost disputes become `CHARGEBACK`; generated revenue excludes disputed/chargeback volume and subtracts refunds.
+Amounts are integer cents, constrained to 100–1,000,000 cents. Stripe-hosted Checkout uses direct charges on the connected account with a server-derived 3% application fee. Each Payment request and public Site payment immutably snapshots that provider account so later refunds and disputes do not follow a changed Business connection. Clients never choose the account or fee. Stripe is authoritative for external payment facts; PostgreSQL is authoritative for reconciled application state and attribution. Webhooks are the only source for financial transitions. Refunds reconcile proportional application-fee refunds; lost disputes become `CHARGEBACK`; generated revenue excludes disputed/chargeback volume and subtracts refunds.
 
 Read `docs/adr/0001-postgres-inquiry-to-revenue.md` before changing financial code. Confirm `DATABASE_URL` independently before running the guarded migration/backfill scripts; `CONFIRM_FINANCIAL_MIGRATION=yes` is a safety gate, not proof of isolation.
 
@@ -83,7 +82,7 @@ Upstash Redis backs compatibility, rate limiting, and location caching. Vercel B
 
 ## Code map
 
-`app/` contains routes, Server Components, Server Actions, API routes, and route-local clients. `components/` contains shared UI. `lib/` contains auth, sessions, persistence, domain rules, external integrations, and ownership services. `migrations/` contains manually applied SQL. `scripts/` contains guarded revenue migration/backfill. `docs/adr/` contains decisions; read the relevant ADR first. `tests/support/` contains test repositories and fixtures.
+`app/` contains routes, Server Components, Server Actions, API routes, and route-local clients. `components/` contains shared UI. `lib/` contains auth, sessions, persistence, domain rules, external integrations, and ownership services. Fast tests are colocated with their source; `tests/support/` contains repositories/fixtures and `tests/integration/` contains the isolated PostgreSQL suite. `migrations/` contains manually applied SQL, `scripts/` contains guarded revenue migration/backfill, and `docs/adr/` contains decisions; read the relevant ADR first.
 
 For a feature, start at its route/action, trace into the domain/service module, then the repository and migration. Keep framework code thin and business rules testable in `lib/domain`. Lead status changes should go through `transitionOwnedLead`; do not bypass its transition and event rules with direct updates.
 
@@ -99,6 +98,7 @@ pnpm dev
 pnpm lint
 pnpm typecheck
 pnpm test
+pnpm test:integration # only with a local, unmistakably test-only TEST_DATABASE_URL
 pnpm build
 ```
 
@@ -108,7 +108,7 @@ For financial or destructive browser tests, stop unless the exact commit/preview
 
 ## Current risks and handoff notes
 
-- `README.md` still contains older Redis-only and “not a payment processor” wording; this file and the ADR describe the current payment-enabled architecture.
+- Fast unit tests do not require PostgreSQL. The isolated integration suite applies the canonical manifest and tests database-enforced ownership, constraints, transactions, deduplication, and both payment settlement aggregates.
 - Migration/backfill is not evidence that every environment is migrated. Check row counts, ownership relationships, and the active database before removing Redis compatibility.
 - Public Site payments and internal Lead-attributed Payment requests are separate financial aggregates; never book a Lead from an unattributed public payment.
 - Webhook handling is metadata-, connected-account-, amount-, currency-, Checkout Session-, and Charge-sensitive. Preserve those checks.

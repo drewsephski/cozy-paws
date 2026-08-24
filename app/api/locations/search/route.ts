@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { NextResponse } from 'next/server';
-import { redis } from '@/lib/redis';
+import { getRedis } from '@/lib/redis';
 
 type NominatimResult = {
   place_id: number;
@@ -34,6 +34,7 @@ export async function GET(request: Request) {
   }
 
   const cacheKey = `location-search:${createHash('sha256').update(query.toLowerCase()).digest('hex')}`;
+  const redis = getRedis();
   const cached = await redis.get<LocationResult[]>(cacheKey);
   if (cached) return NextResponse.json({ results: cached });
 

@@ -9,6 +9,7 @@ import type { ClientHousehold } from '@/lib/client-households';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DateRangePicker } from '@/components/date-range-picker';
 import { Spokes } from '@/components/ui/spokes';
+import type { ReviewedBookingDraft } from './site-editing-model';
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
@@ -65,12 +66,13 @@ function localDateText(value: Date) {
   return `${year}-${month}-${day}`;
 }
 
-export function Bookings({ households, bookings }: { households: ClientHousehold[]; bookings: Booking[] }) {
-  const [householdId, setHouseholdId] = useState(households[0]?.id || '');
+export function Bookings({ households, bookings, draft }: { households: ClientHousehold[]; bookings: Booking[]; draft?: ReviewedBookingDraft | null }) {
+  const [householdId, setHouseholdId] = useState(draft?.householdId || households[0]?.id || '');
   const [today, setToday] = useState<string | null>(null);
   const [state, action, pending] = useActionState<CreateBookingState, FormData>(createBookingAction, {});
   const household = households.find((item) => item.id === householdId);
   useEffect(() => setToday(localDateText(new Date())), []);
+  useEffect(() => { if (draft?.householdId) setHouseholdId(draft.householdId); }, [draft]);
   const upcoming = today ? bookings.filter((booking) => booking.endDate >= today) : [];
   const past = today ? bookings.filter((booking) => booking.endDate < today).reverse() : [];
 
@@ -83,6 +85,7 @@ export function Bookings({ households, bookings }: { households: ClientHousehold
         </div>
         {!households.length ? <p className="mt-5 rounded-xl border border-dashed p-4 text-sm text-muted-foreground">Save a qualified inquiry as a client before creating a booking.</p> : (
           <form action={action} className="mt-5 space-y-4">
+            {draft && <p role="status" className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm leading-6 text-blue-900 dark:border-blue-900 dark:bg-blue-950/30 dark:text-blue-200">Drafted from the saved inquiry. Review the household, every pet, both dates, amount, and notes before saving. This will remain a draft.</p>}
             <div>
               <label htmlFor="booking-household" className="mb-1.5 block text-sm font-medium">Client household</label>
               <Select name="householdId" value={householdId} onValueChange={setHouseholdId}>
@@ -94,8 +97,8 @@ export function Bookings({ households, bookings }: { households: ClientHousehold
                 </SelectContent>
               </Select>
             </div>
-            <fieldset><legend className="text-sm font-medium">Pets</legend><div className="mt-2 grid gap-2 sm:grid-cols-2">{household?.pets.map((pet) => <label key={pet.id} className="flex min-h-11 items-center gap-2 rounded-lg border border-input px-3 text-sm"><input type="checkbox" name="petIds" value={pet.id} /><PawPrint className="size-4 text-emerald-600" aria-hidden="true" />{pet.name}</label>)}</div></fieldset>
-            <DateRangePicker required />
+            <fieldset key={`${householdId}-${draft?.sourceLeadId || 'manual'}`}><legend className="text-sm font-medium">Pets</legend><div className="mt-2 grid gap-2 sm:grid-cols-2">{household?.pets.map((pet) => <label key={pet.id} className="flex min-h-11 items-center gap-2 rounded-lg border border-input px-3 text-sm"><input type="checkbox" name="petIds" value={pet.id} defaultChecked={draft?.householdId === householdId && draft.petIds.includes(pet.id)} /><PawPrint className="size-4 text-emerald-600" aria-hidden="true" />{pet.name}</label>)}</div></fieldset>
+            <DateRangePicker key={draft?.sourceLeadId || 'manual'} required defaultStartDate={draft?.startDate} defaultEndDate={draft?.endDate} />
             <label className="block"><span className="mb-1.5 block text-sm font-medium">Agreed total</span><div className="relative"><span className="absolute left-3 top-2.5 text-muted-foreground">$</span><input required name="amount" inputMode="decimal" placeholder="240.00" className="h-11 w-full rounded-lg border border-input bg-background pl-7 pr-3" /></div></label>
             <label className="block"><span className="mb-1.5 block text-sm font-medium">Notes <span className="font-normal text-muted-foreground">(optional)</span></span><textarea name="notes" maxLength={2000} rows={3} className="w-full rounded-lg border border-input bg-background px-3 py-2" /></label>
             {state.error && <p role="alert" className="text-sm text-destructive">{state.error}</p>}

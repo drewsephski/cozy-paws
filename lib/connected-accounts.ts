@@ -108,8 +108,14 @@ export async function createOrContinueOnboarding(ownerUserId: string, businessId
       await getStripe().v2.core.accounts.retrieve(accountId, { include: ['configuration.merchant'] });
     } catch (error) {
       if (!isInaccessibleConnectedAccountError(error)) throw error;
-      const payments = await query<{ count: string }>(`select count(*)::text count from payment_request where business_id=$1`, [business.id]);
-      if (Number(payments.rows[0]?.count ?? 0) > 0) throw new Error('Contact support before reconnecting this Stripe account because it has payment history.');
+      const payments = await query<{ has_history: boolean }>(`select exists(
+        select 1 from business owned
+        where owned.id=$1 and owned.owner_user_id=$2 and (
+          exists(select 1 from payment_request pr where pr.business_id=owned.id)
+          or exists(select 1 from public_payment pp where pp.business_id=owned.id)
+        )
+      ) has_history`, [business.id, ownerUserId]);
+      if (payments.rows[0]?.has_history) throw new Error('Contact support before reconnecting this Stripe account because it has payment history.');
       const staleAccountId = accountId;
       const replacementAccountId = await createAccount();
       const replaced = await query<{ stripe_account_id: string }>(`update business set stripe_account_id=$2,stripe_ready=false,updated_at=now() where id=$1 and owner_user_id=$3 and stripe_account_id=$4 returning stripe_account_id`, [business.id, replacementAccountId, ownerUserId, staleAccountId]);
