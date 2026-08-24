@@ -1,7 +1,8 @@
 'use client';
 
-import { useActionState, useEffect, useRef, useState, type ComponentProps } from 'react';
+import { useActionState, useEffect, useId, useRef, useState, type ComponentProps } from 'react';
 import { useFormStatus } from 'react-dom';
+import { motion, useReducedMotion, type Transition, type Variants } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Spokes } from '@/components/ui/spokes';
 import { Card, CardContent } from '@/components/ui/card';
@@ -236,17 +237,34 @@ function ProfileTextArea({ label, name, defaultValue, placeholder }: { label: st
   return <div className="sm:col-span-2"><label htmlFor={name} className="mb-1.5 block text-xs font-medium text-muted-foreground">{label}</label><textarea id={name} name={name} defaultValue={defaultValue} placeholder={placeholder} maxLength={500} rows={3} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-emerald-500/70 focus:ring-4 focus:ring-emerald-500/10" /></div>;
 }
 
+const profileEditorPanelVariants: Variants = {
+  open: { height: 'auto', opacity: 1 },
+  closed: { height: 0, opacity: 0 }
+};
+
+const profileEditorPanelTransition: Transition = {
+  duration: 0.3,
+  ease: [0.22, 1, 0.36, 1]
+};
+
 function ProfileEditorSection({ title, description, summary, icon: Icon, defaultOpen = false, children }: { title: string; description: string; summary: string; icon: LucideIcon; defaultOpen?: boolean; children: React.ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const panelId = useId();
+  const reducedMotion = useReducedMotion();
+  const transition = reducedMotion ? { duration: 0 } : profileEditorPanelTransition;
+
   return (
-    <details open={defaultOpen} className="group overflow-hidden rounded-xl border border-border bg-background">
-      <summary className="flex min-h-16 cursor-pointer list-none items-center gap-3 px-4 py-3 outline-none transition hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40 marker:hidden sm:px-5">
+    <div className="overflow-hidden rounded-xl border border-border bg-background">
+      <button type="button" aria-expanded={open} aria-controls={panelId} onClick={() => setOpen((current) => !current)} className="flex min-h-16 w-full cursor-pointer items-center gap-3 px-4 py-3 text-left outline-none transition-colors hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40 sm:px-5">
         <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"><Icon className="size-4.5" aria-hidden="true" /></span>
         <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{title}</span><span className="mt-0.5 block text-xs leading-5 text-muted-foreground">{description}</span></span>
         <span className="hidden max-w-48 truncate text-right text-xs text-muted-foreground sm:block">{summary}</span>
-        <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
-      </summary>
-      <div className="grid gap-4 border-t border-border bg-muted/10 p-4 sm:grid-cols-2 sm:p-5">{children}</div>
-    </details>
+        <motion.span initial={false} animate={{ rotate: open ? 180 : 0 }} transition={transition} className="shrink-0 text-muted-foreground" aria-hidden="true"><ChevronDown className="size-4" /></motion.span>
+      </button>
+      <motion.div id={panelId} initial={false} animate={open ? 'open' : 'closed'} variants={profileEditorPanelVariants} transition={transition} className="overflow-hidden" aria-hidden={!open} inert={!open}>
+        <div className="grid gap-4 border-t border-border bg-muted/10 p-4 sm:grid-cols-2 sm:p-5">{children}</div>
+      </motion.div>
+    </div>
   );
 }
 
