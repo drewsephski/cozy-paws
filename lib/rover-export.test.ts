@@ -117,7 +117,7 @@ describe('Browserless Rover page loader', () => {
   it('uses a headful residential browser, blocks media bytes, and returns bounded HTML', async () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(hydrationHtml(), {
       status: 200,
-      headers: { 'Content-Type': 'text/html' }
+      headers: { 'Content-Type': 'text/html', 'X-Response-Code': '200' }
     }));
     const loader = createBrowserlessRoverPageLoader({ token: 'secret-token', fetcher });
 
@@ -127,6 +127,7 @@ describe('Browserless Rover page loader', () => {
     expect(providerUrl.origin + providerUrl.pathname).toBe('https://production-sfo.browserless.io/content');
     expect(providerUrl.searchParams.get('headless')).toBe('false');
     expect(providerUrl.searchParams.get('proxy')).toBe('residential');
+    expect(providerUrl.searchParams.get('timeout')).toBe('40000');
     expect(providerUrl.searchParams.has('token')).toBe(false);
     expect(new Headers(request?.headers).get('authorization')).toBe('Bearer secret-token');
     expect(JSON.parse(String(request?.body))).toMatchObject({
@@ -143,5 +144,117 @@ describe('Browserless Rover page loader', () => {
     await expect(loader.load(profileUrl, new AbortController().signal)).rejects.toEqual(
       new RoverExportError('PROVIDER_TIMEOUT')
     );
+  });
+
+  it('distinguishes provider authentication failures without returning provider details', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response('private provider detail', { status: 401 }));
+    const loader = createBrowserlessRoverPageLoader({ token: 'secret-token', fetcher });
+
+    await expect(loader.load(profileUrl, new AbortController().signal)).rejects.toMatchObject({
+      code: 'PROVIDER_AUTHENTICATION_FAILED',
+      message: 'PROVIDER_AUTHENTICATION_FAILED'
+    });
+  });
+
+  it('treats provider permission rejection separately from invalid credentials', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response('private provider detail', { status: 403 }));
+    const loader = createBrowserlessRoverPageLoader({ token: 'secret-token', fetcher });
+
+    await expect(loader.load(profileUrl, new AbortController().signal)).rejects.toMatchObject({
+      code: 'PROVIDER_REQUEST_REJECTED'
+    });
+  });
+
+  it('distinguishes provider capacity limits without returning provider details', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response('private provider detail', {
+      status: 429,
+      headers: { 'Retry-After': '17' }
+    }));
+    const loader = createBrowserlessRoverPageLoader({ token: 'secret-token', fetcher });
+
+    await expect(loader.load(profileUrl, new AbortController().signal)).rejects.toMatchObject({
+      code: 'PROVIDER_RATE_LIMITED',
+      message: 'PROVIDER_RATE_LIMITED',
+      retryAfterSeconds: 17
+    });
+  });
+
+  it('distinguishes provider request rejection without returning provider details', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response('private provider detail', { status: 400 }));
+    const loader = createBrowserlessRoverPageLoader({ token: 'secret-token', fetcher });
+
+    await expect(loader.load(profileUrl, new AbortController().signal)).rejects.toMatchObject({
+      code: 'PROVIDER_REQUEST_REJECTED'
+    });
+  });
+
+  it('rejects a Rover target denial even when Browserless itself returns success', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response('<main>denied</main>', {
+      status: 200,
+      headers: { 'X-Response-Code': '403' }
+    }));
+    const loader = createBrowserlessRoverPageLoader({ token: 'secret-token', fetcher });
+
+    await expect(loader.load(profileUrl, new AbortController().signal)).rejects.toMatchObject({
+      code: 'ROVER_BLOCKED_OR_CHALLENGED'
+    });
+  });
+
+  it('distinguishes Rover target rate limiting from a challenge', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response('<main>slow down</main>', {
+      status: 200,
+      headers: { 'X-Response-Code': '429' }
+    }));
+    const loader = createBrowserlessRoverPageLoader({ token: 'secret-token', fetcher });
+
+    await expect(loader.load(profileUrl, new AbortController().signal)).rejects.toMatchObject({
+      code: 'ROVER_RATE_LIMITED',
+      retryAfterSeconds: 300
+    });
+  });
+
+  it('distinguishes a missing or non-public Rover target', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response('<main>missing</main>', {
+      status: 200,
+      headers: { 'X-Response-Code': '404' }
+    }));
+    const loader = createBrowserlessRoverPageLoader({ token: 'secret-token', fetcher });
+
+    await expect(loader.load(profileUrl, new AbortController().signal)).rejects.toMatchObject({
+      code: 'PROFILE_NOT_PUBLIC_OR_NOT_FOUND'
+    });
+  });
+
+  it('fails explicitly when Browserless omits target response status', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(hydrationHtml(), { status: 200 }));
+    const loader = createBrowserlessRoverPageLoader({ token: 'secret-token', fetcher });
+
+    await expect(loader.load(profileUrl, new AbortController().signal)).rejects.toMatchObject({
+      code: 'PROVIDER_RESPONSE_INVALID'
+    });
+  });
+
+  it('fails explicitly when Browserless returns malformed target response status', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(hydrationHtml(), {
+      status: 200,
+      headers: { 'X-Response-Code': 'not-a-status' }
+    }));
+    const loader = createBrowserlessRoverPageLoader({ token: 'secret-token', fetcher });
+
+    await expect(loader.load(profileUrl, new AbortController().signal)).rejects.toMatchObject({
+      code: 'PROVIDER_RESPONSE_INVALID'
+    });
+  });
+
+  it('maps a Rover target timeout separately from Browserless transport success', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response('<main>timeout</main>', {
+      status: 200,
+      headers: { 'X-Response-Code': '504' }
+    }));
+    const loader = createBrowserlessRoverPageLoader({ token: 'secret-token', fetcher });
+
+    await expect(loader.load(profileUrl, new AbortController().signal)).rejects.toMatchObject({
+      code: 'PROVIDER_TIMEOUT'
+    });
   });
 });

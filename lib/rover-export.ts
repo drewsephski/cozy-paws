@@ -6,9 +6,15 @@ const QUERY_STATE_MARKER = 'window.__REACT_QUERY_STATE__';
 export const ROVER_EXPORT_ERROR_CODES = [
   'INVALID_PROFILE_URL',
   'PROVIDER_NOT_CONFIGURED',
+  'PROVIDER_AUTHENTICATION_FAILED',
+  'PROVIDER_RATE_LIMITED',
+  'PROVIDER_REQUEST_REJECTED',
+  'PROVIDER_RESPONSE_INVALID',
   'PROVIDER_TIMEOUT',
   'PROVIDER_FAILED',
+  'PROFILE_NOT_PUBLIC_OR_NOT_FOUND',
   'ROVER_BLOCKED_OR_CHALLENGED',
+  'ROVER_RATE_LIMITED',
   'UPSTREAM_SCHEMA_CHANGED',
   'GALLERY_INCOMPLETE'
 ] as const;
@@ -16,10 +22,17 @@ export const ROVER_EXPORT_ERROR_CODES = [
 export type RoverExportErrorCode = typeof ROVER_EXPORT_ERROR_CODES[number];
 
 export class RoverExportError extends Error {
-  constructor(readonly code: RoverExportErrorCode, message?: string) {
+  constructor(readonly code: RoverExportErrorCode, message?: string, readonly retryAfterSeconds?: number) {
     super(message ?? code);
     this.name = 'RoverExportError';
   }
+}
+
+function retryAfterSeconds(headers: Headers, fallback: number) {
+  const raw = headers.get('retry-after');
+  if (!raw || !/^\d{1,4}$/.test(raw)) return fallback;
+  const seconds = Number(raw);
+  return seconds >= 1 && seconds <= 3_600 ? seconds : fallback;
 }
 
 type JsonRecord = Record<string, unknown>;
@@ -298,13 +311,15 @@ type BrowserlessOptions = {
   endpoint?: string;
   fetcher?: typeof fetch;
   timeoutMs?: number;
+  providerTimeoutMs?: number;
 };
 
 export function createBrowserlessRoverPageLoader({
   token,
   endpoint = 'https://production-sfo.browserless.io/content',
   fetcher = fetch,
-  timeoutMs = 45_000
+  timeoutMs = 45_000,
+  providerTimeoutMs = 40_000
 }: BrowserlessOptions): RoverPageLoader {
   if (!token) throw new RoverExportError('PROVIDER_NOT_CONFIGURED');
 
@@ -317,6 +332,7 @@ export function createBrowserlessRoverPageLoader({
       providerUrl.searchParams.set('proxy', 'residential');
       providerUrl.searchParams.set('proxyCountry', 'us');
       providerUrl.searchParams.set('proxyLocaleMatch', 'true');
+      providerUrl.searchParams.set('timeout', String(providerTimeoutMs));
 
       const controller = new AbortController();
       const cancel = () => controller.abort(signal.reason);
@@ -344,7 +360,31 @@ export function createBrowserlessRoverPageLoader({
           signal: controller.signal
         });
         if (!response.ok) {
+          if (response.status === 401) {
+            throw new RoverExportError('PROVIDER_AUTHENTICATION_FAILED');
+          }
+          if (response.status === 429) {
+            throw new RoverExportError('PROVIDER_RATE_LIMITED', undefined, retryAfterSeconds(response.headers, 30));
+          }
           if (response.status === 408 || response.status === 504) throw new RoverExportError('PROVIDER_TIMEOUT');
+          if (response.status >= 400 && response.status < 500) {
+            throw new RoverExportError('PROVIDER_REQUEST_REJECTED');
+          }
+          throw new RoverExportError('PROVIDER_FAILED');
+        }
+        const rawTargetStatus = response.headers.get('x-response-code');
+        if (!rawTargetStatus || !/^\d{3}$/.test(rawTargetStatus)) {
+          throw new RoverExportError('PROVIDER_RESPONSE_INVALID');
+        }
+        const targetStatus = Number(rawTargetStatus);
+        if (targetStatus < 100 || targetStatus > 599) throw new RoverExportError('PROVIDER_RESPONSE_INVALID');
+        if (targetStatus === 401 || targetStatus === 403) {
+          throw new RoverExportError('ROVER_BLOCKED_OR_CHALLENGED');
+        }
+        if (targetStatus === 429) throw new RoverExportError('ROVER_RATE_LIMITED', undefined, 300);
+        if (targetStatus === 404) throw new RoverExportError('PROFILE_NOT_PUBLIC_OR_NOT_FOUND');
+        if (targetStatus === 408 || targetStatus === 504) throw new RoverExportError('PROVIDER_TIMEOUT');
+        if (Number.isFinite(targetStatus) && targetStatus >= 400) {
           throw new RoverExportError('PROVIDER_FAILED');
         }
         return await readBoundedText(response);
