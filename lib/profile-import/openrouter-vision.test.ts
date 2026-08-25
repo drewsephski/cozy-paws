@@ -29,10 +29,14 @@ describe('OpenRouter vision', () => {
     expect(result.serviceConfidence).toEqual({ Boarding: { name: 'high', description: 'medium', startingPrice: 'medium', billingUnit: 'high' } });
     expect(generate).toHaveBeenCalledWith(expect.objectContaining({ maxRetries: 0, timeout: { totalMs: 25_000 }, providerOptions: { openrouter: { provider: { require_parameters: true, allow_fallbacks: false, data_collection: 'deny', zdr: true } } } }));
     expect(generate.mock.calls[0]?.[0].messages).toEqual([expect.objectContaining({ content: expect.arrayContaining([
+      expect.objectContaining({ type: 'text', text: expect.stringMatching(/Slice 0 dimensions: 10x10 screenshot pixels/) }),
       expect.objectContaining({ type: 'file', data: new Uint8Array([1]), mediaType: 'image/jpeg' })
     ]) })]);
     expect(VISION_SYSTEM_PROMPT).toMatch(/untrusted data/i);
     expect(VISION_SYSTEM_PROMPT).toMatch(/ignore.*instruction/i);
+    expect(VISION_SYSTEM_PROMPT).toMatch(/photo pixels only/i);
+    expect(VISION_SYSTEM_PROMPT).toMatch(/exclude.*name.*rating/i);
+    expect(VISION_SYSTEM_PROMPT).toMatch(/actual screenshot pixels/i);
   });
 
   it('suppresses low-confidence or unevidenced output', async () => {

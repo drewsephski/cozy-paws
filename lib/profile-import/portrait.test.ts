@@ -7,9 +7,9 @@ describe('portrait processing', () => {
     const source = await sharp({ create: { width: 1_440, height: 6_000, channels: 3, background: '#c8a080' } }).jpeg().toBuffer();
     const slices = await createScreenshotSlices(source);
     expect(slices.map((slice) => [slice.index, slice.top, slice.height])).toEqual([[0, 0, 3200], [1, 3040, 2960]]);
-    const portrait = await cropVisiblePortrait(slices, { sliceIndex: 1, confidence: 'high', box: { x: 100, y: 100, width: 300, height: 400 } });
+    const portrait = await cropVisiblePortrait(slices, { sliceIndex: 0, confidence: 'high', box: { x: 100, y: 100, width: 300, height: 300 } });
     expect(portrait?.mediaType).toBe('image/webp');
-    expect((await sharp(portrait!.bytes).metadata()).width).toBeLessThanOrEqual(1024);
+    await expect(sharp(portrait!.bytes).metadata()).resolves.toMatchObject({ width: 300, height: 300 });
   });
 
   it('downscales oversized screenshots before creating bounded vision slices', async () => {
@@ -34,6 +34,39 @@ describe('portrait processing', () => {
     const source = await sharp({ create: { width: 500, height: 500, channels: 3, background: 'white' } }).jpeg().toBuffer();
     const slices = await createScreenshotSlices(source);
     await expect(cropVisiblePortrait(slices, { sliceIndex: 0, confidence: 'low', box: { x: 0, y: 0, width: 1, height: 1 } })).resolves.toBeUndefined();
+  });
+
+  it('rejects a gallery crop outside the first screenshot slice', async () => {
+    const source = await sharp({ create: { width: 1_440, height: 6_000, channels: 3, background: 'white' } }).jpeg().toBuffer();
+    const slices = await createScreenshotSlices(source);
+
+    await expect(cropVisiblePortrait(slices, {
+      sliceIndex: 1,
+      confidence: 'high',
+      box: { x: 100, y: 100, width: 300, height: 300 }
+    })).resolves.toBeUndefined();
+  });
+
+  it('rejects a narrow identity-text strip instead of accepting it as a portrait', async () => {
+    const source = await sharp({ create: { width: 500, height: 500, channels: 3, background: 'white' } }).jpeg().toBuffer();
+    const slices = await createScreenshotSlices(source);
+
+    await expect(cropVisiblePortrait(slices, {
+      sliceIndex: 0,
+      confidence: 'high',
+      box: { x: 50, y: 50, width: 85, height: 192 }
+    })).resolves.toBeUndefined();
+  });
+
+  it('rejects a fractional box that rounds outside the slice', async () => {
+    const source = await sharp({ create: { width: 500, height: 500, channels: 3, background: 'white' } }).jpeg().toBuffer();
+    const slices = await createScreenshotSlices(source);
+
+    await expect(cropVisiblePortrait(slices, {
+      sliceIndex: 0,
+      confidence: 'high',
+      box: { x: 399.5, y: 399.5, width: 100.5, height: 100.5 }
+    })).resolves.toBeUndefined();
   });
 
   it('rejects malformed and multi-frame portrait input', async () => {

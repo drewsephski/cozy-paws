@@ -4,6 +4,8 @@ import { RoverImportError, type ProfileVisionResult, type ScreenshotSlice } from
 const SLICE_HEIGHT = 3_200;
 const OVERLAP = 160;
 const MAX_SLICE_WIDTH = 1_440;
+const MIN_PORTRAIT_ASPECT_RATIO = 0.75;
+const MAX_PORTRAIT_ASPECT_RATIO = 1.33;
 
 export async function createScreenshotSlices(bytes: Uint8Array): Promise<ScreenshotSlice[]> {
   const image = sharp(bytes, { limitInputPixels: 30_000_000, animated: false }).rotate();
@@ -29,16 +31,19 @@ export async function createScreenshotSlices(bytes: Uint8Array): Promise<Screens
 
 export async function cropVisiblePortrait(slices: ScreenshotSlice[], portrait: NonNullable<ProfileVisionResult['portrait']>) {
   if (portrait.confidence !== 'high') return undefined;
+  if (portrait.sliceIndex !== slices[0]?.index) return undefined;
   const slice = slices.find((item) => item.index === portrait.sliceIndex);
   if (!slice) return undefined;
   const { x, y, width, height } = portrait.box;
-  if ([x, y, width, height].some((value) => !Number.isFinite(value) || value < 0 || value > 1000)) return undefined;
-  if (x + width > 1000 || y + height > 1000 || width <= 0 || height <= 0) return undefined;
-  const left = Math.round(slice.width * x / 1000);
-  const top = Math.round(slice.height * y / 1000);
-  const cropWidth = Math.round(slice.width * width / 1000);
-  const cropHeight = Math.round(slice.height * height / 1000);
-  if (cropWidth < 80 || cropHeight < 80 || cropWidth / cropHeight < 0.35 || cropWidth / cropHeight > 2) return undefined;
+  if ([x, y, width, height].some((value) => !Number.isFinite(value) || value < 0)) return undefined;
+  if (x + width > slice.width || y + height > slice.height || width <= 0 || height <= 0) return undefined;
+  const left = Math.round(x);
+  const top = Math.round(y);
+  const cropWidth = Math.round(width);
+  const cropHeight = Math.round(height);
+  if (left + cropWidth > slice.width || top + cropHeight > slice.height) return undefined;
+  const aspectRatio = cropWidth / cropHeight;
+  if (cropWidth < 80 || cropHeight < 80 || aspectRatio < MIN_PORTRAIT_ASPECT_RATIO || aspectRatio > MAX_PORTRAIT_ASPECT_RATIO) return undefined;
   const bytes = await sharp(slice.bytes, { animated: false, limitInputPixels: 30_000_000 }).extract({ left, top, width: cropWidth, height: cropHeight }).rotate().resize({ width: 1024, height: 1024, fit: 'inside', withoutEnlargement: true }).webp({ quality: 84 }).toBuffer();
   if (bytes.length > 5 * 1024 * 1024) return undefined;
   return { bytes: new Uint8Array(bytes), mediaType: 'image/webp' as const };
