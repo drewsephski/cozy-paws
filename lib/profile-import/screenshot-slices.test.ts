@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import sharp from 'sharp';
-import { createScreenshotSlices } from './portrait';
+import { createScreenshotSlices } from './screenshot-slices';
 
 describe('profile screenshot slicing', () => {
   it('creates ordered overlapping slices that cover the visible page', async () => {

@@ -2,7 +2,7 @@ import { canonicalizeRoverProfileUrl } from '../domain/rover-profile-url';
 import { normalizeReviewedProfilePatch, type ReviewedProfilePatch } from '../domain/profile-content';
 import type { ProfileRecord } from '../profile-ownership';
 import type { ImportAdmission } from './admission';
-import { createScreenshotSlices } from './portrait';
+import { createScreenshotSlices } from './screenshot-slices';
 import type { ReviewedProfileWriter } from './profile-writer';
 import { RoverImportError, type PageCapture, type ProfileVision, type RoverReviewDraft } from './types';
 import { createHash } from 'node:crypto';
