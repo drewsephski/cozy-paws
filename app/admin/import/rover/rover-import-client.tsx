@@ -6,7 +6,8 @@ import { AlertCircle, CheckCircle2, LoaderCircle, RotateCcw, WandSparkles } from
 import { Button } from '@/components/ui/button';
 import { RoverImportCard, type RoverImportDraft } from '@/components/rover-import-card';
 import type { ImportConfidence, ServiceFieldConfidence } from '@/lib/profile-import/types';
-import { createBrowserReviewStore, createReviewDraftPersistence, loadRestorableRoverReview, normalizeRestorableRoverReview, reviewKey, synchronizeRoverReviewServices, type StoredRoverReview } from './review-store';
+import type { ImportConfidence, RoverReviewEvidence, ServiceFieldConfidence } from '@/lib/profile-import/types';
+import { createBrowserReviewStore, createReviewDraftPersistence, loadRestorableRoverReview, normalizeRestorableRoverReview, reviewKey, stripEphemeralRoverReviewEvidence, synchronizeRoverReviewServices, type StoredRoverReview } from './review-store';
 
 type Site = { subdomain: string; sitterName?: string; businessName?: string; onboardingCompletedAt?: number | null };
 type Review = StoredRoverReview & {
@@ -41,6 +42,7 @@ export function RoverImportClient({ site }: { site: Site }) {
   const [source, setSource] = useState<RoverImportDraft | null>(null);
   const [status, setStatus] = useState<'ready'|'capture'|'captured'|'analysis'|'review'|'applying'|'success'|'error'>('ready');
   const [review, setReview] = useState<Review | null>(null);
+  const [evidence, setEvidence] = useState<RoverReviewEvidence>({ profile: {}, services: {} });
   const [error, setError] = useState('');
   const prepareController = useRef<AbortController | null>(null);
 
@@ -52,6 +54,7 @@ export function RoverImportClient({ site }: { site: Site }) {
       if (lastKey) {
         const restored = await loadRestorableRoverReview(store, lastKey, site.subdomain);
         if (restored.review) {
+          setEvidence({ profile: {}, services: {} });
           setReview(restored.review as Review);
           setStatus('review');
         } else {
@@ -81,7 +84,7 @@ export function RoverImportClient({ site }: { site: Site }) {
   }, [persistence, review, site.subdomain, status]);
 
   function saveReview(next: Review) {
-    const save = persistence.save(next);
+    const save = persistence.save(stripEphemeralRoverReviewEvidence(next));
     void save.catch(() => setError('Your latest review edits could not be saved in this browser. Keep this tab open and try again.'));
     return save;
   }
@@ -104,7 +107,7 @@ export function RoverImportClient({ site }: { site: Site }) {
     const controller = new AbortController();
     prepareController.current = controller;
     const attemptId = crypto.randomUUID();
-    setError(''); setStatus('capture'); setReview(null);
+    setError(''); setStatus('capture'); setReview(null); setEvidence({ profile: {}, services: {} });
     try {
       const response = await fetch('/api/profile-import/rover/prepare', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ subdomain: site.subdomain, ...next, attemptId }), signal: controller.signal });
       if (!response.ok || !response.body) throw new Error((await response.json()).error?.message || 'Import could not start.');
@@ -112,7 +115,11 @@ export function RoverImportClient({ site }: { site: Site }) {
       while (true) { const { done, value } = await reader.read(); buffer += decoder.decode(value || new Uint8Array(), { stream: !done }); const lines = buffer.split('\n'); buffer = lines.pop() || '';
         for (const line of lines) { if (!line) continue; const event = JSON.parse(line); if (event.type === 'progress') setStatus(event.stage === 'analysis_active' ? 'analysis' : event.stage === 'capture_complete' ? 'captured' : 'capture'); if (event.type === 'error') throw new Error(event.error.message); if (event.type === 'review_ready') {
           const draft = event.draft;
-          const stored = { ...draft, reviewed: draft.reviewed } as Review; await saveReview(stored); localStorage.setItem(`rover-profile-review:last:${site.subdomain}`, reviewKey(stored.subdomain, stored.attemptId)); setReview(stored); setStatus('review');
+          const { evidence: nextEvidence, ...draftWithoutEvidence } = draft;
+          const stored = { ...draftWithoutEvidence, reviewed: draft.reviewed } as Review;
+          await saveReview(stored);
+          setEvidence(nextEvidence ?? { profile: {}, services: {} });
+          localStorage.setItem(`rover-profile-review:last:${site.subdomain}`, reviewKey(stored.subdomain, stored.attemptId)); setReview(stored); setStatus('review');
         } } if (done) break;
       }
     } catch (reason) {
@@ -188,6 +195,11 @@ export function RoverImportClient({ site }: { site: Site }) {
     ['Care routine', 'careRoutine'], ['Home environment', 'homeEnvironment'], ['Pet preferences', 'petPreferences'],
     ['Experience', 'experienceSummary'], ['Special care', 'specialCareSummary']
   ] as const;
+  const hasVisibleSource = Object.keys(evidence.profile).length > 0 || Object.values(evidence.services).some((service) => Object.keys(service).length > 0);
+
+  function visibleSource(value?: string) {
+    return value ? <p className="mt-1 text-xs leading-5 text-muted-foreground"><span className="font-medium text-foreground">Visible source:</span> {value}</p> : null;
+  }
 
   function renderTextFields(fields: typeof PROFILE_FIELDS | typeof CARE_FIELDS) {
     return fields.map(([name, label]) => {
@@ -199,7 +211,7 @@ export function RoverImportClient({ site }: { site: Site }) {
         {long
           ? <textarea id={name} rows={5} value={value} onChange={(event) => update(name, event.target.value)} className="mt-2 w-full rounded-xl border border-input bg-background p-3 text-sm" />
           : <input id={name} value={value} onChange={(event) => update(name, event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-input bg-background px-3 text-sm" />}
-        <p className="mt-1 text-xs leading-5 text-muted-foreground">{statusText(value, current)}</p>
+        <p className="mt-1 text-xs leading-5 text-muted-foreground">{statusText(value, current)}</p>{visibleSource(evidence.profile[name])}
       </div>;
     });
   }
@@ -210,7 +222,7 @@ export function RoverImportClient({ site }: { site: Site }) {
     {(status === 'capture' || status === 'captured' || status === 'analysis' || status === 'applying') && <div role="status" className="mt-10 max-w-2xl rounded-2xl border border-border bg-card p-8"><LoaderCircle className="size-7 animate-spin text-emerald-700" /><h2 className="mt-5 text-xl font-semibold">{status === 'capture' ? 'Capturing your visible Rover profile…' : status === 'captured' ? 'Capture complete. Preparing analysis…' : status === 'analysis' ? 'Organizing your profile details…' : 'Applying your reviewed profile…'}</h2><p className="mt-2 text-sm text-muted-foreground">Your live profile has not changed yet.</p></div>}
     {status === 'review' && review && <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
       <section className="space-y-5">
-        <div><h2 className="text-2xl font-semibold">Review what we found</h2><p className="mt-2 text-sm text-muted-foreground">Open each section when you&apos;re ready. Not-found fields are called out explicitly and leave your current content unchanged.</p></div>
+        <div><h2 className="text-2xl font-semibold">Review what we found</h2><p className="mt-2 text-sm text-muted-foreground">Open each section when you&apos;re ready. Not-found fields are called out explicitly and leave your current content unchanged.</p><p className="mt-2 text-xs leading-5 text-muted-foreground">{hasVisibleSource ? 'Visible source snippets are shown only during this active import session and are not retained with the draft.' : 'Visible source snippets are available only during the active import session; this restored review does not retain them.'}</p></div>
         {error && <div role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950"><strong>Needs attention.</strong> {error}</div>}
 
         <details open className="group rounded-2xl border border-border bg-card p-5">
@@ -229,11 +241,11 @@ export function RoverImportClient({ site }: { site: Site }) {
               const currentDetails = (review.current.serviceDetails as Record<string, Record<string, string>> | undefined)?.[service] || {};
               const confidence = review.serviceConfidence?.[service];
               return <fieldset key={service} className="rounded-xl border border-border p-4">
-                <legend className="px-1 text-sm font-semibold">{service}{confidenceLabel(confidence?.name)}</legend>
+                <legend className="px-1 text-sm font-semibold">{service}{confidenceLabel(confidence?.name)}</legend>{visibleSource(evidence.services[service]?.name)}
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="sm:col-span-2"><label className="text-xs font-medium" htmlFor={`service-${service}-description`}>Description{confidenceLabel(confidence?.description)}</label><textarea id={`service-${service}-description`} value={details.description || ''} onChange={(event) => updateServiceDetail(service,'description',event.target.value)} placeholder="Service description" rows={3} className="mt-1 w-full rounded-lg border border-input bg-background p-3 text-sm" /><p className="mt-1 text-xs text-muted-foreground">{statusText(details.description || '', currentDetails.description || '')}</p></div>
-                  <div><label className="text-xs font-medium" htmlFor={`service-${service}-price`}>Starting price{confidenceLabel(confidence?.startingPrice)}</label><input id={`service-${service}-price`} value={details.startingPrice || ''} onChange={(event) => updateServiceDetail(service,'startingPrice',event.target.value)} placeholder="$45" className="mt-1 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm" /><p className="mt-1 text-xs text-muted-foreground">{statusText(details.startingPrice || '', currentDetails.startingPrice || '')}</p></div>
-                  <div><label className="text-xs font-medium" htmlFor={`service-${service}-unit`}>Billing unit{confidenceLabel(confidence?.billingUnit)}</label><input id={`service-${service}-unit`} value={details.billingUnit || ''} onChange={(event) => updateServiceDetail(service,'billingUnit',event.target.value)} placeholder="per night" className="mt-1 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm" /><p className="mt-1 text-xs text-muted-foreground">{statusText(details.billingUnit || '', currentDetails.billingUnit || '')}</p></div>
+                  <div className="sm:col-span-2"><label className="text-xs font-medium" htmlFor={`service-${service}-description`}>Description{confidenceLabel(confidence?.description)}</label><textarea id={`service-${service}-description`} value={details.description || ''} onChange={(event) => updateServiceDetail(service,'description',event.target.value)} placeholder="Service description" rows={3} className="mt-1 w-full rounded-lg border border-input bg-background p-3 text-sm" /><p className="mt-1 text-xs text-muted-foreground">{statusText(details.description || '', currentDetails.description || '')}</p>{visibleSource(evidence.services[service]?.description)}</div>
+                  <div><label className="text-xs font-medium" htmlFor={`service-${service}-price`}>Starting price{confidenceLabel(confidence?.startingPrice)}</label><input id={`service-${service}-price`} value={details.startingPrice || ''} onChange={(event) => updateServiceDetail(service,'startingPrice',event.target.value)} placeholder="$45" className="mt-1 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm" /><p className="mt-1 text-xs text-muted-foreground">{statusText(details.startingPrice || '', currentDetails.startingPrice || '')}</p>{visibleSource(evidence.services[service]?.startingPrice)}</div>
+                  <div><label className="text-xs font-medium" htmlFor={`service-${service}-unit`}>Billing unit{confidenceLabel(confidence?.billingUnit)}</label><input id={`service-${service}-unit`} value={details.billingUnit || ''} onChange={(event) => updateServiceDetail(service,'billingUnit',event.target.value)} placeholder="per night" className="mt-1 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm" /><p className="mt-1 text-xs text-muted-foreground">{statusText(details.billingUnit || '', currentDetails.billingUnit || '')}</p>{visibleSource(evidence.services[service]?.billingUnit)}</div>
                 </div>
               </fieldset>;
             })}</div>

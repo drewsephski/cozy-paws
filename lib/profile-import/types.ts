@@ -18,8 +18,17 @@ export class RoverImportError extends Error {
 }
 
 export type ImportConfidence = 'high' | 'medium';
-export type ReviewField<T = string> = { value: T; confidence: ImportConfidence };
-export type ServiceFieldConfidence = Partial<Record<'name' | 'description' | 'startingPrice' | 'billingUnit', ImportConfidence>>;
+export const VISIBLE_SOURCE_MAX_LENGTH = 240;
+export type VisibleSourceEvidence = string & { readonly __visibleSourceEvidence: unique symbol };
+export type ServiceFieldName = 'name' | 'description' | 'startingPrice' | 'billingUnit';
+export type ReviewField<T = string> = { value: T; confidence: ImportConfidence; evidence: VisibleSourceEvidence };
+export type ServiceFieldConfidence = Partial<Record<ServiceFieldName, ImportConfidence>>;
+export type ProfileFieldEvidence = Partial<Record<keyof ReviewedProfilePatch, VisibleSourceEvidence>>;
+export type ServiceFieldEvidence = Partial<Record<ServiceFieldName, VisibleSourceEvidence>>;
+export type RoverReviewEvidence = {
+  profile: ProfileFieldEvidence;
+  services: Record<string, ServiceFieldEvidence>;
+};
 
 export type RoverReviewDraft = {
   attemptId: string;
@@ -30,6 +39,7 @@ export type RoverReviewDraft = {
   reviewed: ReviewedProfilePatch;
   confidence: Partial<Record<keyof ReviewedProfilePatch, ImportConfidence>>;
   serviceConfidence?: Record<string, ServiceFieldConfidence>;
+  evidence?: RoverReviewEvidence;
   expiresAt: number;
 };
 
@@ -41,5 +51,6 @@ export type ProfileVisionResult = {
   reviewed: ReviewedProfilePatch;
   confidence: Partial<Record<keyof ReviewedProfilePatch, ImportConfidence>>;
   serviceConfidence?: Record<string, ServiceFieldConfidence>;
+  evidence?: RoverReviewEvidence;
 };
 export type ProfileVision = { extract(slices: ScreenshotSlice[], signal: AbortSignal): Promise<ProfileVisionResult> };

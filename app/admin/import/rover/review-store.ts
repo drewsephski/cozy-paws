@@ -1,11 +1,12 @@
 'use client';
 
 import { canonicalizeRoverProfileUrl } from '@/lib/domain/rover-profile-url';
+import type { RoverReviewEvidence } from '@/lib/profile-import/types';
 
 const DB_NAME = 'sitterfolio-import-drafts';
 const STORE = 'reviews';
 const REVIEW_TTL_MS = 30 * 60_000;
-const FORBIDDEN = new Set(['screenshot', 'screenshots', 'slices', 'prompt', 'rawModelResponse', 'visibleEvidence', 'providerKey', 'authenticationToken', 'roverAssetUrl']);
+const FORBIDDEN = new Set(['screenshot', 'screenshots', 'slices', 'prompt', 'rawModelResponse', 'visibleEvidence', 'evidence', 'serviceEvidence', 'providerKey', 'authenticationToken', 'roverAssetUrl']);
 const CONFIDENCE = new Set(['high', 'medium']);
 const PATCH_TEXT_LIMITS = {
   sitterName: 80,
@@ -37,6 +38,14 @@ export type StoredRoverReview = {
   reviewed: Record<string, unknown>;
   [key: string]: unknown;
 };
+
+export type ActiveRoverReview = StoredRoverReview & { evidence?: RoverReviewEvidence };
+
+export function stripEphemeralRoverReviewEvidence(value: ActiveRoverReview): StoredRoverReview {
+  const stored = { ...value } as StoredRoverReview;
+  delete stored.evidence;
+  return stored;
+}
 
 export const reviewKey = (subdomain: string, attemptId: string) => `rover-profile-review:${subdomain}:${attemptId}`;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;

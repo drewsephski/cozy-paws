@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ServiceFieldConfidence } from '@/lib/profile-import/types';
-import { createMemoryReviewStore, createReviewDraftPersistence, createReviewStore, isRestorableRoverReview, loadRestorableRoverReview, normalizeRestorableRoverReview, reviewKey, synchronizeRoverReviewServices, type StoredRoverReview } from './review-store';
+import { createMemoryReviewStore, createReviewDraftPersistence, createReviewStore, isRestorableRoverReview, loadRestorableRoverReview, normalizeRestorableRoverReview, reviewKey, stripEphemeralRoverReviewEvidence, synchronizeRoverReviewServices, type ActiveRoverReview, type StoredRoverReview } from './review-store';
 
 describe('browser-local Rover review store', () => {
   it('restores within 30 minutes, isolates keys, and sweeps expired drafts', async () => {
@@ -18,6 +18,29 @@ describe('browser-local Rover review store', () => {
   it('rejects forbidden provider artifacts before browser serialization', async () => {
     const store = createMemoryReviewStore();
     await expect(store.save({ attemptId: 'a', subdomain: 'one', expiresAt: Date.now() + 1_000, reviewed: {}, rawModelResponse: 'nope' })).rejects.toThrow('forbidden');
+    await expect(store.save({ attemptId: 'a', subdomain: 'one', expiresAt: Date.now() + 1_000, reviewed: {}, evidence: { profile: { about: 'Visible source' }, services: {} } } as StoredRoverReview)).rejects.toThrow('forbidden');
+  });
+
+  it('strips ephemeral evidence before saving a review draft', async () => {
+    const store = createMemoryReviewStore(() => 1_000);
+    const attemptId = '00000000-0000-0000-0000-000000000001';
+    const key = reviewKey('one', attemptId);
+    const active = {
+      attemptId,
+      subdomain: 'one',
+      expiresAt: 1_000 + 30 * 60_000,
+      reviewed: { about: 'Visible profile' },
+      evidence: { profile: { about: 'Visible source' }, services: {} }
+    };
+
+    await store.save(stripEphemeralRoverReviewEvidence(active as unknown as ActiveRoverReview));
+
+    await expect(store.load(key)).resolves.toEqual({
+      attemptId,
+      subdomain: 'one',
+      expiresAt: 1_000 + 30 * 60_000,
+      reviewed: { about: 'Visible profile' }
+    });
   });
 
   it('restores the latest reviewed edits and service details', async () => {

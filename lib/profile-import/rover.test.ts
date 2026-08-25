@@ -9,7 +9,7 @@ const site = { ownerId: 'owner-1', subdomain: 'happy-tails', emoji: 'dog', creat
 describe('Rover profile import module', () => {
   it('resolves ownership before providers and prepares a transient review without mutation', async () => {
     const capture = { capture: vi.fn().mockResolvedValue({ bytes: new Uint8Array(2_000), mediaType: 'image/jpeg', width: 500, height: 500 }) };
-    const vision = { extract: vi.fn().mockResolvedValue({ reviewed: { about: 'Imported' }, confidence: { about: 'high' } }) };
+    const vision = { extract: vi.fn().mockResolvedValue({ reviewed: { about: 'Imported' }, confidence: { about: 'high' }, evidence: { profile: { about: 'Visible profile text' }, services: {} } }) };
     const imports = createRoverProfileImports({ profiles: { getOwned: vi.fn().mockResolvedValue(null) }, admission: createMemoryImportAdmission(), capture, vision, writer: createMemoryReviewedProfileWriter([site]) });
     await expect(imports.prepareOwnedReview({ ownerId: 'owner-2', subdomain: 'happy-tails', roverUrl: 'https://www.rover.com/members/jamie/', attestationAccepted: true, attemptId: '00000000-0000-4000-8000-000000000001', signal: new AbortController().signal })).rejects.toMatchObject({ code: 'SITE_NOT_OWNED' });
     expect(capture.capture).not.toHaveBeenCalled();
@@ -20,13 +20,14 @@ describe('Rover profile import module', () => {
     const imports = createRoverProfileImports({
       profiles: { getOwned: vi.fn().mockResolvedValue(site) }, admission: createMemoryImportAdmission(),
       capture: { capture: vi.fn().mockResolvedValue({ bytes: await import('sharp').then(({ default: sharp }) => sharp({ create: { width: 500, height: 500, channels: 3, background: 'white' } }).jpeg().toBuffer()), mediaType: 'image/jpeg', width: 500, height: 500 }) },
-      vision: { extract: vi.fn().mockResolvedValue({ reviewed: { about: 'Imported' }, confidence: { about: 'high' } }) },
+      vision: { extract: vi.fn().mockResolvedValue({ reviewed: { about: 'Imported' }, confidence: { about: 'high' }, evidence: { profile: { about: 'Visible profile text' }, services: {} } }) },
       writer
     });
     const draft = await imports.prepareOwnedReview({ ownerId: 'owner-1', subdomain: 'happy-tails', roverUrl: 'https://www.rover.com/members/jamie/?x=1', attestationAccepted: true, attemptId: '00000000-0000-4000-8000-000000000001', signal: new AbortController().signal });
-    expect(draft).toMatchObject({ canonicalRoverUrl: 'https://www.rover.com/members/jamie/', expectedProfileRevision: 2, reviewed: { about: 'Imported' } });
+    expect(draft).toMatchObject({ canonicalRoverUrl: 'https://www.rover.com/members/jamie/', expectedProfileRevision: 2, reviewed: { about: 'Imported' }, evidence: { profile: { about: 'Visible profile text' }, services: {} } });
     await expect(imports.applyOwnedReview({ ownerId: 'owner-1', subdomain: 'happy-tails', applyId: '00000000-0000-4000-8000-000000000002', expectedProfileRevision: 2, reviewed: { about: 'Imported' } })).rejects.toMatchObject({ code: 'APPLY_FAILED' });
     expect(writer.applyOwned).toHaveBeenCalledWith({ ownerId: 'owner-1', subdomain: 'happy-tails', expectedRevision: 2, reviewed: { about: 'Imported' } });
+    expect(writer.applyOwned.mock.calls[0]?.[0].reviewed).not.toHaveProperty('evidence');
   });
 
   it('propagates cancellation to capture and releases the active prepare', async () => {

@@ -26,6 +26,7 @@ describe('OpenRouter vision', () => {
     const vision = createOpenRouterVision({ apiKey: 'secret', model: 'openai/gpt-5.4-mini', generate });
     const result = await vision.extract([{ index: 0, top: 0, width: 10, height: 10, bytes: new Uint8Array([1]), mediaType: 'image/jpeg' }], new AbortController().signal);
     expect(result.reviewed).toEqual({ sitterName: 'Jamie', services: ['Boarding'], serviceDetails: { Boarding: { description: 'Care in my home', startingPrice: '$55', billingUnit: 'per night' } } });
+    expect(result.evidence).toEqual({ profile: { sitterName: 'Jamie' }, services: { Boarding: { name: 'Boarding', description: 'Care in my home', startingPrice: '$55', billingUnit: 'per night' } } });
     expect(result.serviceConfidence).toEqual({ Boarding: { name: 'high', description: 'medium', startingPrice: 'medium', billingUnit: 'high' } });
     expect(generate).toHaveBeenCalledWith(expect.objectContaining({ maxRetries: 0, timeout: { totalMs: 25_000 }, providerOptions: { openrouter: { provider: { require_parameters: true, allow_fallbacks: false, data_collection: 'deny', zdr: true } } } }));
     expect(generate.mock.calls[0]?.[0].messages).toEqual([expect.objectContaining({ content: expect.arrayContaining([
@@ -42,5 +43,29 @@ describe('OpenRouter vision', () => {
     const generate = vi.fn().mockResolvedValue({ output: { profileFields, services: [] } });
     const vision = createOpenRouterVision({ apiKey: 'secret', model: 'model', generate });
     await expect(vision.extract([{ index: 0, top: 0, width: 10, height: 10, bytes: new Uint8Array([1]), mediaType: 'image/jpeg' }], new AbortController().signal)).rejects.toMatchObject({ code: 'NO_VISIBLE_PROFILE_CONTENT' });
+  });
+
+  it('keeps accepted evidence while suppressing low-confidence and missing-evidence candidates', async () => {
+    const profileFields = ['sitterName','businessName','tagline','location','about','careRoutine','homeEnvironment','petPreferences','experienceSummary','specialCareSummary'].map((field) => ({
+      field,
+      value: field === 'sitterName' ? 'Jamie' : field === 'about' ? 'Do not import' : field === 'businessName' ? 'Missing evidence' : null,
+      confidence: field === 'about' ? 'low' : field === 'sitterName' || field === 'businessName' ? 'high' : 'low',
+      visibleEvidence: field === 'sitterName' ? '  Jamie  ' : field === 'about' ? 'Visible but uncertain' : null,
+      unknownReason: null
+    }));
+    const generate = vi.fn().mockResolvedValue({ output: {
+      profileFields,
+      services: [{
+        name: { value: 'Boarding', confidence: 'high', visibleEvidence: ' Boarding ', unknownReason: null },
+        description: { value: 'Unverified detail', confidence: 'high', visibleEvidence: null, unknownReason: null },
+        startingPrice: { value: '$55', confidence: 'low', visibleEvidence: '$55', unknownReason: null },
+        billingUnit: { value: 'per night', confidence: 'high', visibleEvidence: 'per night', unknownReason: null }
+      }]
+    } });
+    const vision = createOpenRouterVision({ apiKey: 'secret', model: 'model', generate });
+    const result = await vision.extract([{ index: 0, top: 0, width: 10, height: 10, bytes: new Uint8Array([1]), mediaType: 'image/jpeg' }], new AbortController().signal);
+
+    expect(result.reviewed).toEqual({ sitterName: 'Jamie', services: ['Boarding'], serviceDetails: { Boarding: { billingUnit: 'per night' } } });
+    expect(result.evidence).toEqual({ profile: { sitterName: 'Jamie' }, services: { Boarding: { name: 'Boarding', billingUnit: 'per night' } } });
   });
 });

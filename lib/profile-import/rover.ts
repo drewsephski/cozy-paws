@@ -56,6 +56,7 @@ export function createRoverProfileImports({ profiles, admission, capture, vision
           attemptId: input.attemptId, subdomain: profile.subdomain, canonicalRoverUrl,
           expectedProfileRevision: profile.profileRevision, current: currentProfile(profile), reviewed: extraction.reviewed,
           confidence: extraction.confidence, serviceConfidence: extraction.serviceConfidence,
+          evidence: extraction.evidence,
           expiresAt: now() + 30 * 60_000
         };
         input.onProgress?.('review_ready');
