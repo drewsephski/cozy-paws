@@ -26,7 +26,7 @@ cover every one.
 
 **Resolved:** “Then fill in the details autonomously” and “This user flow must feel very intuitive and easy for users to set up from transitioning over from Rover.”
 **Requirement:** After successful analysis, compatible Sitterfolio profile fields are populated without requiring the sitter to retype the extracted content.
-**Constraints:** Candidates require explicit sitter review before they change the owned Site. The one eligible primary image follows D12’s visible-crop, validation, owned-storage, and manual-fallback contract.
+**Constraints:** Candidates require explicit sitter review before they change the owned Site. Profile photos are not imported; the sitter uses Sitterfolio's normal manual upload for a full-quality image.
 
 ## D5 — The first release is a local, private proof of concept
 
@@ -36,8 +36,8 @@ cover every one.
 
 ## D6 — Only visible sitter profile content is eligible
 
-**Resolved:** For the private proof of concept, exclude reviews, gallery or stay photos, badges, and source-only, hidden, or private records.
-**Requirement:** Extraction considers only sitter profile text and the primary profile photo visibly rendered in the captured public-profile page; it ignores reviews, gallery/stay media, badges, and any record available only in HTML, serialized application state, an undocumented endpoint, or a robots-disallowed path.
+**Resolved:** For the private proof of concept, exclude reviews, all photos, badges, and source-only, hidden, or private records.
+**Requirement:** Extraction considers only visible sitter profile text; it ignores profile/gallery/stay media, reviews, badges, and any record available only in HTML, serialized application state, an undocumented endpoint, or a robots-disallowed path.
 **Constraints:** Rendered HTML or embedded React state must not be parsed to recover hidden or source-only content. The proof of concept does not enumerate or import multiple Rover images.
 
 ## D7 — The sitter reviews candidates before applying them
@@ -60,7 +60,7 @@ cover every one.
 
 ## D10 — The richer profile uses one bounded content bundle
 
-**Resolved:** Yes—the richer profile bundle includes a long About section; per-service descriptions with visible starting price and billing unit; care routine; home/environment summary; pet preferences; experience and special-care descriptions; and the primary visible sitter photo. Every imported field is editable before applying. Reviews, badges, platform metrics, availability calendars, gallery/stay photos, and unverifiable claims are excluded.
+**Resolved:** Yes—the richer profile bundle includes a long About section; per-service descriptions with visible starting price and billing unit; care routine; home/environment summary; pet preferences; and experience and special-care descriptions. Every imported field is editable before applying. Photos, reviews, badges, platform metrics, availability calendars, and unverifiable claims are excluded.
 **Requirement:** Screenshot analysis returns candidates for the approved richer-profile fields plus compatible existing Site fields, and the review screen lets the sitter edit every candidate before one explicit apply action updates the owned Site.
 **Constraints:** Store displayed service prices as descriptive advertised starting prices with their visible billing unit, not guaranteed quotes or payment amounts. Do not infer absent content, convert Rover platform metrics into Sitterfolio claims, or import excluded categories. The primary sitter photo is the only eligible imported image.
 
@@ -70,17 +70,17 @@ cover every one.
 **Requirement:** `/build` offers an optional Rover-import step, incomplete-Site onboarding offers import at the start, and an existing Site’s profile editor keeps import available as a secondary action.
 **Constraints:** Before authentication, `/build` only validates and stores the Rover URL and ownership attestation in the browser-local draft. ScreenshotOne and vision processing begins only after authentication during `/launch` or owned onboarding. There is no unauthenticated paid-provider endpoint, and skipping import preserves the current manual flow.
 
-## D12 — The primary photo becomes a Sitterfolio-owned asset
+## D12 — Profile photos are not imported
 
-**Resolved:** The current image contract and the approved visible-content boundary require the one eligible primary sitter photo to be copied into Sitterfolio’s existing owned profile-media storage rather than hotlinked from Rover.
-**Requirement:** If the visibly rendered screenshot yields a usable primary sitter portrait, the proof of concept keeps the validated crop with the review candidate and stores it through the authenticated Site’s Vercel Blob profile path only when the sitter explicitly applies the candidate.
-**Constraints:** Accept only the repository’s supported JPEG, PNG, or WebP formats within its 5 MiB limit. Do not request a source-only Rover image URL, enumerate other photos, or retain a Rover hotlink. If no usable visible portrait can be isolated, leave the current image unchanged and let the sitter upload one manually.
+**Resolved:** Rover's visible profile thumbnail is too small to produce a reliable full-quality Sitterfolio profile image, and source-asset fetching remains outside the approved import boundary.
+**Requirement:** The import never changes the Site's profile image and does not offer a scraped photo candidate.
+**Constraints:** Do not request, fetch, or hotlink a Rover image URL. Keep the current Sitterfolio image unchanged and direct the sitter to the normal manual upload when they want to replace it.
 
 ## D13 — Provider artifacts are ephemeral
 
 **Resolved:** A local/private proof of concept does not need a durable import-job or raw-artifact history when the owned Site changes only after explicit review.
 **Requirement:** Keep the screenshot, model prompt/response, and unapplied candidate transient; persist only the sitter-approved Site content and its Sitterfolio-owned primary photo.
-**Constraints:** Use ScreenshotOne’s direct binary response rather than a temporary screenshot URL or rendered-HTML metadata. Do not persist screenshots, hidden page content, model reasoning, or failed candidates in PostgreSQL or Blob. A refresh before apply may discard the candidate and require a new import.
+**Constraints:** Use ScreenshotOne’s direct binary response rather than a temporary screenshot URL or rendered-HTML metadata. Do not persist screenshots, images, hidden page content, model reasoning, or failed candidates in PostgreSQL or Blob. A refresh before apply may discard the candidate and require a new import.
 
 ## D14 — Import is bounded, observable, and safely retryable
 
@@ -109,8 +109,8 @@ cover every one.
 ## D18 — Review state stays transient and browser-local
 
 **Resolved:** The private POC uses one request-coupled capture/analysis request and keeps the completed review draft in browser IndexedDB for 30 minutes rather than adding an import-job table, queue, or raw-artifact store.
-**Requirement:** A same-browser refresh may restore the bounded review draft, while apply, discard, restart, or expiry deletes it.
-**Constraints:** The browser store may contain normalized candidates and the visible portrait crop, but never the full screenshot, prompt, raw model response, provider key, or authentication token. Browser state is not authorization; prepare and apply both re-derive Site ownership from the authenticated User.
+**Requirement:** A same-browser refresh may restore the bounded text review draft, while apply, discard, restart, or expiry deletes it.
+**Constraints:** The browser store may contain normalized text candidates, but never images, the full screenshot, prompt, raw model response, provider key, or authentication token. Browser state is not authorization; prepare and apply both re-derive Site ownership from the authenticated User.
 
 ## D19 — Rich profile content remains part of the Site aggregate
 
@@ -120,15 +120,15 @@ cover every one.
 
 ## D20 — Reviewed apply uses revisioned transactional ownership
 
-**Resolved:** Add a monotonic Site profile revision and apply the reviewed non-empty patch through one owner-derived PostgreSQL transaction. Stage a deterministic Sitterfolio-owned portrait Blob before the transaction and compensate it if the database write does not commit.
+**Resolved:** Add a monotonic Site profile revision and apply the reviewed non-empty text patch through one owner-derived PostgreSQL transaction.
 **Requirement:** Concurrent profile changes produce a review conflict rather than a silent overwrite, and every reviewed Site field becomes publicly visible together.
-**Constraints:** Empty imported review values preserve current content. Blob and PostgreSQL cannot share a transaction; deterministic naming, a Site apply lock, preflight existence check, and compensating delete are the bounded POC guarantee, not distributed atomicity.
+**Constraints:** Empty imported review values preserve current content. The transaction never changes the Site's profile image.
 
-## D21 — The primary image is a crop of visible screenshot pixels
+## D21 — Screenshot portrait cropping is retired
 
-**Resolved:** The vision model identifies a high-confidence bounding box for the primary sitter portrait in ordered screenshot slices, and Sitterfolio crops those visible pixels in memory.
-**Requirement:** Only a validated, metadata-stripped JPEG/PNG/WebP crop selected during review may be copied to the authenticated Site's Blob path on apply.
-**Constraints:** Sitterfolio never fetches or hotlinks a Rover image URL. Failure to isolate a safe visible portrait is non-fatal and preserves the current photo or manual-upload path.
+**Resolved:** Live verification showed that Rover's rendered profile thumbnail is too low-resolution for a reliable imported profile image.
+**Requirement:** Vision extraction and reviewed apply are text-only and preserve the Site's current profile image.
+**Constraints:** Sitterfolio never fetches, hotlinks, crops, stores, or applies a Rover image. Manual profile upload remains the only image replacement path.
 
 ## D22 — Rover-assisted Site creation remains unpublished until setup completes
 

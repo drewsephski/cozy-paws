@@ -4,7 +4,7 @@ import { RoverImportError } from '@/lib/profile-import/types';
 import type { RoverProfileImports } from '@/lib/profile-import/rover';
 
 describe('Rover apply route', () => {
-  it('rejects unauthenticated requests before configuration or Blob work', async () => {
+  it('rejects unauthenticated requests before configuration work', async () => {
     const createImports = vi.fn();
     const handler = createApplyHandler({ getUserId: vi.fn().mockResolvedValue(null), createImports });
     const response = await handler(new Request('http://localhost/api/profile-import/rover/apply', { method: 'POST' }));
@@ -22,10 +22,10 @@ describe('Rover apply route', () => {
     expect(await response.json()).toEqual({ error: { code: 'PROFILE_CHANGED', message: expect.not.stringContaining('private') } });
   });
 
-  it('rejects an oversized multipart request before constructing Blob or provider adapters', async () => {
+  it('rejects an oversized multipart request before constructing provider adapters', async () => {
     const createImports = vi.fn();
     const handler = createApplyHandler({ getUserId: vi.fn().mockResolvedValue('owner'), createImports });
-    const response = await handler(new Request('http://localhost/api/profile-import/rover/apply', { method: 'POST', headers: { 'content-length': String(5 * 1024 * 1024 + 128 * 1024 + 1) } }));
+    const response = await handler(new Request('http://localhost/api/profile-import/rover/apply', { method: 'POST', headers: { 'content-length': String(128 * 1024 + 1) } }));
     expect(response.status).toBe(400);
     expect(createImports).not.toHaveBeenCalled();
   });
