@@ -5,7 +5,6 @@ import { canonicalizeRoverProfileUrl } from '@/lib/domain/rover-profile-url';
 const DB_NAME = 'sitterfolio-import-drafts';
 const STORE = 'reviews';
 const REVIEW_TTL_MS = 30 * 60_000;
-const MAX_PORTRAIT_BYTES = 5 * 1024 * 1024;
 const FORBIDDEN = new Set(['screenshot', 'screenshots', 'slices', 'prompt', 'rawModelResponse', 'visibleEvidence', 'providerKey', 'authenticationToken', 'roverAssetUrl']);
 const CONFIDENCE = new Set(['high', 'medium']);
 const PATCH_TEXT_LIMITS = {
@@ -28,7 +27,7 @@ const PATCH_ARRAY_LIMITS = { services: 8, careCapabilities: 12, selfReportedCred
 const PATCH_KEYS = new Set([...Object.keys(PATCH_TEXT_LIMITS), ...Object.keys(PATCH_ARRAY_LIMITS), 'yearsExperience', 'serviceDetails']);
 const REVIEW_KEYS = new Set([
   'attemptId', 'subdomain', 'expiresAt', 'expectedProfileRevision', 'canonicalRoverUrl', 'current', 'reviewed',
-  'confidence', 'serviceConfidence', 'portrait', 'portraitWarning', 'includePortrait', 'applyId'
+  'confidence', 'serviceConfidence', 'applyId'
 ]);
 
 export type StoredRoverReview = {
@@ -36,7 +35,6 @@ export type StoredRoverReview = {
   subdomain: string;
   expiresAt: number;
   reviewed: Record<string, unknown>;
-  includePortrait?: boolean;
   [key: string]: unknown;
 };
 
@@ -145,9 +143,7 @@ export function normalizeRestorableRoverReview(value: unknown, expectedSubdomain
       || !Number.isSafeInteger(value.expiresAt) || Number(value.expiresAt) <= now || Number(value.expiresAt) > now + REVIEW_TTL_MS
       || !Number.isSafeInteger(value.expectedProfileRevision) || Number(value.expectedProfileRevision) < 0
       || typeof value.canonicalRoverUrl !== 'string' || canonicalizeRoverProfileUrl(value.canonicalRoverUrl) !== value.canonicalRoverUrl
-      || (value.includePortrait !== undefined && typeof value.includePortrait !== 'boolean')
       || (value.applyId !== undefined && (typeof value.applyId !== 'string' || !UUID.test(value.applyId)))
-      || (value.portraitWarning !== undefined && (typeof value.portraitWarning !== 'string' || value.portraitWarning.length > 500))
     ) return null;
     const current = normalizeProfilePatch(value.current);
     const reviewed = normalizeProfilePatch(value.reviewed);
@@ -155,10 +151,6 @@ export function normalizeRestorableRoverReview(value: unknown, expectedSubdomain
     const confidence = normalizeConfidence(value.confidence, reviewed);
     const serviceConfidence = normalizeServiceConfidence(value.serviceConfidence, reviewed);
     if (!confidence || serviceConfidence === null) return null;
-    const portrait = value.portrait;
-    if (portrait !== undefined && (!(portrait instanceof Blob) || portrait.type !== 'image/webp' || portrait.size <= 0 || portrait.size > MAX_PORTRAIT_BYTES)) return null;
-    if (value.includePortrait === true && !portrait) return null;
-
     return {
       attemptId: value.attemptId,
       subdomain: value.subdomain,
@@ -169,9 +161,6 @@ export function normalizeRestorableRoverReview(value: unknown, expectedSubdomain
       reviewed,
       confidence,
       ...(serviceConfidence === undefined ? {} : { serviceConfidence }),
-      ...(portrait === undefined ? {} : { portrait }),
-      ...(value.portraitWarning === undefined ? {} : { portraitWarning: value.portraitWarning }),
-      ...(value.includePortrait === undefined ? {} : { includePortrait: value.includePortrait }),
       ...(value.applyId === undefined ? {} : { applyId: value.applyId })
     };
   } catch {

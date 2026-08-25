@@ -5,7 +5,7 @@ export const ROVER_IMPORT_ERROR_CODES = [
   'POC_DISABLED', 'PROVIDER_NOT_CONFIGURED', 'ADMISSION_UNAVAILABLE', 'ATTEMPT_ACTIVE',
   'ATTEMPT_ALREADY_USED', 'CAPTURE_TIMEOUT', 'CAPTURE_FAILED', 'CAPTURE_TOO_LARGE',
   'ANALYSIS_TIMEOUT', 'ANALYSIS_UNAVAILABLE', 'ANALYSIS_INVALID', 'NO_VISIBLE_PROFILE_CONTENT',
-  'PROFILE_CHANGED', 'INVALID_REVIEW', 'PHOTO_INVALID', 'APPLY_FAILED'
+  'PROFILE_CHANGED', 'INVALID_REVIEW', 'APPLY_FAILED'
 ] as const;
 
 export type RoverImportErrorCode = typeof ROVER_IMPORT_ERROR_CODES[number];
@@ -30,8 +30,6 @@ export type RoverReviewDraft = {
   reviewed: ReviewedProfilePatch;
   confidence: Partial<Record<keyof ReviewedProfilePatch, ImportConfidence>>;
   serviceConfidence?: Record<string, ServiceFieldConfidence>;
-  portrait?: { bytes: Uint8Array; mediaType: 'image/webp' };
-  portraitWarning?: string;
   expiresAt: number;
 };
 
@@ -43,6 +41,5 @@ export type ProfileVisionResult = {
   reviewed: ReviewedProfilePatch;
   confidence: Partial<Record<keyof ReviewedProfilePatch, ImportConfidence>>;
   serviceConfidence?: Record<string, ServiceFieldConfidence>;
-  portrait?: { sliceIndex: number; confidence: 'high' | 'medium' | 'low'; box: { x: number; y: number; width: number; height: number } };
 };
 export type ProfileVision = { extract(slices: ScreenshotSlice[], signal: AbortSignal): Promise<ProfileVisionResult> };

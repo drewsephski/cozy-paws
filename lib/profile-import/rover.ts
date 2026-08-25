@@ -2,8 +2,7 @@ import { canonicalizeRoverProfileUrl } from '../domain/rover-profile-url';
 import { normalizeReviewedProfilePatch, type ReviewedProfilePatch } from '../domain/profile-content';
 import type { ProfileRecord } from '../profile-ownership';
 import type { ImportAdmission } from './admission';
-import type { ProfileMedia } from './media';
-import { createScreenshotSlices, cropVisiblePortrait } from './portrait';
+import { createScreenshotSlices } from './portrait';
 import type { ReviewedProfileWriter } from './profile-writer';
 import { RoverImportError, type PageCapture, type ProfileVision, type RoverReviewDraft } from './types';
 import { createHash } from 'node:crypto';
@@ -12,13 +11,13 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 
 type ProfileLookup = { getOwned(subdomain: string, ownerId: string): Promise<ProfileRecord | null> };
 type SafeLogEvent = Record<string, string | number | boolean | undefined>;
-type Dependencies = { profiles: ProfileLookup; admission: ImportAdmission; capture: PageCapture; vision: ProfileVision; writer: ReviewedProfileWriter; media: ProfileMedia; now?: () => number; log?: (event: SafeLogEvent) => void };
+type Dependencies = { profiles: ProfileLookup; admission: ImportAdmission; capture: PageCapture; vision: ProfileVision; writer: ReviewedProfileWriter; now?: () => number; log?: (event: SafeLogEvent) => void };
 
 export type PrepareOwnedReviewInput = {
   ownerId: string; subdomain: string; roverUrl: string; attestationAccepted: true; attemptId: string; signal: AbortSignal;
   onProgress?: (stage: 'capture_active' | 'capture_complete' | 'analysis_active' | 'review_ready') => void;
 };
-export type ApplyOwnedReviewInput = { ownerId: string; subdomain: string; applyId: string; expectedProfileRevision: number; reviewed: ReviewedProfilePatch; portrait?: { bytes: Uint8Array; mediaType: string } };
+export type ApplyOwnedReviewInput = { ownerId: string; subdomain: string; applyId: string; expectedProfileRevision: number; reviewed: ReviewedProfilePatch };
 
 function currentProfile(profile: ProfileRecord): ReviewedProfilePatch {
   return Object.fromEntries(Object.entries({
@@ -31,7 +30,7 @@ function currentProfile(profile: ProfileRecord): ReviewedProfilePatch {
   }).filter(([, value]) => value !== undefined));
 }
 
-export function createRoverProfileImports({ profiles, admission, capture, vision, writer, media, now = Date.now, log = () => {} }: Dependencies) {
+export function createRoverProfileImports({ profiles, admission, capture, vision, writer, now = Date.now, log = () => {} }: Dependencies) {
   return {
     async prepareOwnedReview(input: PrepareOwnedReviewInput): Promise<RoverReviewDraft> {
       if (!input.attestationAccepted) throw new RoverImportError('ATTESTATION_REQUIRED');
@@ -53,12 +52,10 @@ export function createRoverProfileImports({ profiles, admission, capture, vision
         input.onProgress?.('analysis_active');
         const extraction = await vision.extract(slices, input.signal);
         log({ event: 'rover_analysis_completed', attemptId: input.attemptId, subdomain: profile.subdomain, durationMs: now() - startedAt, sliceCount: slices.length });
-        const portrait = extraction.portrait ? await cropVisiblePortrait(slices, extraction.portrait) : undefined;
         const draft: RoverReviewDraft = {
           attemptId: input.attemptId, subdomain: profile.subdomain, canonicalRoverUrl,
           expectedProfileRevision: profile.profileRevision, current: currentProfile(profile), reviewed: extraction.reviewed,
-          confidence: extraction.confidence, serviceConfidence: extraction.serviceConfidence, portrait,
-          portraitWarning: portrait ? undefined : 'We could not safely isolate a profile photo. Your current photo will stay unchanged.',
+          confidence: extraction.confidence, serviceConfidence: extraction.serviceConfidence,
           expiresAt: now() + 30 * 60_000
         };
         input.onProgress?.('review_ready');
@@ -77,12 +74,11 @@ export function createRoverProfileImports({ profiles, admission, capture, vision
       const profile = await profiles.getOwned(input.subdomain, input.ownerId);
       if (!profile) throw new RoverImportError('SITE_NOT_OWNED');
       const reviewed = normalizeReviewedProfilePatch(input.reviewed);
-      if (!Object.keys(reviewed).length && !input.portrait) throw new RoverImportError('INVALID_REVIEW');
-      const fingerprint = createHash('sha256').update(JSON.stringify(reviewed)).update(input.portrait?.bytes ?? new Uint8Array()).digest('hex');
+      if (!Object.keys(reviewed).length) throw new RoverImportError('INVALID_REVIEW');
+      const fingerprint = createHash('sha256').update(JSON.stringify(reviewed)).digest('hex');
       const startedAt = now();
       log({ event: 'rover_import_apply_started', applyId: input.applyId, subdomain: profile.subdomain, expectedRevision: input.expectedProfileRevision });
       const token = await admission.acquireApply(input.ownerId, profile.subdomain);
-      let staged: Awaited<ReturnType<ProfileMedia['stageOwnedPortrait']>> | undefined;
       try {
         const replay = await admission.readApplyResult(input.ownerId, profile.subdomain, input.applyId);
         if (replay) {
@@ -90,14 +86,12 @@ export function createRoverProfileImports({ profiles, admission, capture, vision
           log({ event: 'rover_import_applied', applyId: input.applyId, subdomain: profile.subdomain, profileRevision: profile.profileRevision, replay: true, durationMs: now() - startedAt });
           return profile;
         }
-        if (input.portrait) staged = await media.stageOwnedPortrait(profile.subdomain, input.portrait.bytes, input.portrait.mediaType);
-        const updated = await writer.applyOwned({ ownerId: input.ownerId, subdomain: profile.subdomain, expectedRevision: input.expectedProfileRevision, reviewed, profileImageUrl: staged?.url });
+        const updated = await writer.applyOwned({ ownerId: input.ownerId, subdomain: profile.subdomain, expectedRevision: input.expectedProfileRevision, reviewed });
         try { await admission.storeApplyResult(input.ownerId, profile.subdomain, input.applyId, { fingerprint, profileRevision: updated.profileRevision }); } catch { /* the committed profile remains authoritative; writer matching still supports exact replay */ }
         log({ event: 'rover_import_applied', applyId: input.applyId, subdomain: profile.subdomain, profileRevision: updated.profileRevision, replay: false, durationMs: now() - startedAt });
         return updated;
       } catch (error) {
         log({ event: 'rover_import_apply_failed', applyId: input.applyId, subdomain: profile.subdomain, durationMs: now() - startedAt, errorCode: error instanceof RoverImportError ? error.code : 'APPLY_FAILED' });
-        if (staged?.created) await staged.cleanup();
         if (error instanceof RoverImportError) throw error;
         throw new RoverImportError('APPLY_FAILED');
       } finally {

@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { AlertCircle, CheckCircle2, LoaderCircle, RotateCcw, WandSparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RoverImportCard, type RoverImportDraft } from '@/components/rover-import-card';
@@ -16,8 +15,6 @@ type Review = StoredRoverReview & {
   confidence: Record<string, ImportConfidence>;
   serviceConfidence?: Record<string, ServiceFieldConfidence>;
   canonicalRoverUrl: string;
-  portrait?: Blob;
-  portraitWarning?: string;
 };
 const PROFILE_FIELDS = [
   ['sitterName','Your name'], ['businessName','Business name'], ['tagline','Tagline'], ['location','Service area'], ['about','About']
@@ -45,15 +42,7 @@ export function RoverImportClient({ site }: { site: Site }) {
   const [status, setStatus] = useState<'ready'|'capture'|'captured'|'analysis'|'review'|'applying'|'success'|'error'>('ready');
   const [review, setReview] = useState<Review | null>(null);
   const [error, setError] = useState('');
-  const [portraitUrl, setPortraitUrl] = useState('');
   const prepareController = useRef<AbortController | null>(null);
-  const includePortrait = review?.includePortrait !== false;
-
-  useEffect(() => {
-    if (!review?.portrait) { setPortraitUrl(''); return; }
-    const url = URL.createObjectURL(review.portrait); setPortraitUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [review?.portrait]);
 
   useEffect(() => { void (async () => {
     try { await store.sweep(); } catch { setError('This browser could not open the private review store. Allow site storage, then try again.'); setStatus('error'); return; }
@@ -63,7 +52,7 @@ export function RoverImportClient({ site }: { site: Site }) {
       if (lastKey) {
         const restored = await loadRestorableRoverReview(store, lastKey, site.subdomain);
         if (restored.review) {
-          setReview({ ...restored.review, includePortrait: restored.review.includePortrait !== false } as Review);
+          setReview(restored.review as Review);
           setStatus('review');
         } else {
           localStorage.removeItem(`rover-profile-review:last:${site.subdomain}`);
@@ -122,8 +111,8 @@ export function RoverImportClient({ site }: { site: Site }) {
       const reader = response.body.getReader(); const decoder = new TextDecoder(); let buffer = '';
       while (true) { const { done, value } = await reader.read(); buffer += decoder.decode(value || new Uint8Array(), { stream: !done }); const lines = buffer.split('\n'); buffer = lines.pop() || '';
         for (const line of lines) { if (!line) continue; const event = JSON.parse(line); if (event.type === 'progress') setStatus(event.stage === 'analysis_active' ? 'analysis' : event.stage === 'capture_complete' ? 'captured' : 'capture'); if (event.type === 'error') throw new Error(event.error.message); if (event.type === 'review_ready') {
-          const draft = event.draft; let portrait: Blob | undefined; if (draft.portrait?.base64) { const binary = atob(draft.portrait.base64); portrait = new Blob([Uint8Array.from(binary, (character) => character.charCodeAt(0))], { type: draft.portrait.mediaType }); }
-          const stored = { ...draft, portrait, reviewed: draft.reviewed, includePortrait: Boolean(portrait) } as Review; await saveReview(stored); localStorage.setItem(`rover-profile-review:last:${site.subdomain}`, reviewKey(stored.subdomain, stored.attemptId)); setReview(stored); setStatus('review');
+          const draft = event.draft;
+          const stored = { ...draft, reviewed: draft.reviewed } as Review; await saveReview(stored); localStorage.setItem(`rover-profile-review:last:${site.subdomain}`, reviewKey(stored.subdomain, stored.attemptId)); setReview(stored); setStatus('review');
         } } if (done) break;
       }
     } catch (reason) {
@@ -146,7 +135,6 @@ export function RoverImportClient({ site }: { site: Site }) {
   function update(name: string, value: string) { if (review) commitReview({ ...review, reviewed: { ...review.reviewed, [name]: value } }); }
   function updateServices(value: string) { if (review) commitReview({ ...review, reviewed: { ...review.reviewed, services: value.split(',').map((name) => name.trim()).filter(Boolean).slice(0, 8) } }); }
   function updateServiceDetail(service: string, name: 'description'|'startingPrice'|'billingUnit', value: string) { if (review) commitReview({ ...review, reviewed: { ...review.reviewed, serviceDetails: { ...(review.reviewed.serviceDetails as Record<string, unknown> || {}), [service]: { ...((review.reviewed.serviceDetails as Record<string, Record<string, string>> | undefined)?.[service] || {}), [name]: value } } } }); }
-  function updatePortraitPreference(include: boolean) { if (review) commitReview({ ...review, includePortrait: include }); }
 
   async function apply() {
     if (!review) return;
@@ -156,10 +144,10 @@ export function RoverImportClient({ site }: { site: Site }) {
       setReview(null); setError('This private review expired or became invalid. Start a fresh import.'); setStatus('error');
       return;
     }
-    const validReview = { ...normalized, includePortrait: normalized.includePortrait !== false } as Review;
+    const validReview = normalized as Review;
     setStatus('applying'); setError('');
     try { const applyId = typeof validReview.applyId === 'string' ? validReview.applyId : crypto.randomUUID(); const nextReview = { ...validReview, applyId }; if (!validReview.applyId) { setReview(nextReview); await saveReview(nextReview); }
-      const form = new FormData(); form.set('review', JSON.stringify({ subdomain: site.subdomain, applyId, expectedProfileRevision: validReview.expectedProfileRevision, reviewed: validReview.reviewed })); if (validReview.portrait && validReview.includePortrait !== false) form.set('portrait', validReview.portrait, 'rover-profile.webp');
+      const form = new FormData(); form.set('review', JSON.stringify({ subdomain: site.subdomain, applyId, expectedProfileRevision: validReview.expectedProfileRevision, reviewed: validReview.reviewed }));
       const response = await fetch('/api/profile-import/rover/apply', { method: 'POST', body: form }); const result = await response.json(); if (!response.ok) throw new Error(result.error?.message || 'Import could not be applied.');
       await persistence.remove(reviewKey(validReview.subdomain, validReview.attemptId)); localStorage.removeItem(`rover-profile-review:last:${site.subdomain}`); setStatus('success'); localStorage.removeItem('sitterfolio-draft');
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'Import could not be applied.'); setStatus('review'); }
@@ -197,7 +185,7 @@ export function RoverImportClient({ site }: { site: Site }) {
   }
 
   return <main className="mx-auto w-full max-w-6xl px-5 py-10 lg:px-8">
-    <div className="max-w-2xl"><p className="text-xs font-medium uppercase tracking-[.16em] text-emerald-700">Optional jump-start</p><h1 className="mt-2 text-4xl font-semibold tracking-[-.04em]">Bring your Rover profile over.</h1><p className="mt-4 text-base leading-7 text-muted-foreground">We&apos;ll capture the visible profile, organize supported details, and let you edit everything before applying it.</p></div>
+    <div className="max-w-2xl"><p className="text-xs font-medium uppercase tracking-[.16em] text-emerald-700">Optional jump-start</p><h1 className="mt-2 text-4xl font-semibold tracking-[-.04em]">Bring your Rover profile over.</h1><p className="mt-4 text-base leading-7 text-muted-foreground">We&apos;ll capture the visible profile, organize supported details, and let you edit everything before applying it. Profile photos are not imported, so your current image stays unchanged.</p></div>
     {status === 'ready' && <div className="mt-8 max-w-2xl"><RoverImportCard site={site.subdomain} initialValue={source ?? undefined} onChoose={(value) => { setSource(value); void start(value); }} /><Button variant="ghost" className="mt-3" onClick={() => router.push('/admin')}>Enter details myself</Button></div>}
     {(status === 'capture' || status === 'captured' || status === 'analysis' || status === 'applying') && <div role="status" className="mt-10 max-w-2xl rounded-2xl border border-border bg-card p-8"><LoaderCircle className="size-7 animate-spin text-emerald-700" /><h2 className="mt-5 text-xl font-semibold">{status === 'capture' ? 'Capturing your visible Rover profile…' : status === 'captured' ? 'Capture complete. Preparing analysis…' : status === 'analysis' ? 'Organizing your profile details…' : 'Applying your reviewed profile…'}</h2><p className="mt-2 text-sm text-muted-foreground">Your live profile has not changed yet.</p></div>}
     {status === 'review' && review && <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
@@ -237,18 +225,12 @@ export function RoverImportClient({ site }: { site: Site }) {
           <div className="mt-5 grid gap-5 sm:grid-cols-2">{renderTextFields(CARE_FIELDS)}</div>
         </details>
 
-        <details className="group rounded-2xl border border-border bg-card p-5">
-          <summary className="cursor-pointer list-none font-semibold marker:hidden">Profile photo <span className="ml-2 text-xs font-normal text-muted-foreground group-open:hidden">Review media</span></summary>
-          {portraitUrl ? <><Image unoptimized src={portraitUrl} width={128} height={128} alt="Imported profile photo crop to review" className={`mt-4 size-32 rounded-2xl object-cover ${includePortrait ? '' : 'opacity-40 grayscale'}`} /><label className="mt-4 flex items-start gap-3 text-sm"><input type="checkbox" checked={includePortrait} onChange={(event) => updatePortraitPreference(event.target.checked)} className="mt-0.5 size-4" /><span>Use this photo crop. Turn this off to keep my current photo.</span></label>{!includePortrait && <p className="mt-2 text-xs text-muted-foreground">Photo import is off. Your current photo stays unchanged.</p>}</> : <p className="mt-3 text-sm text-muted-foreground">No safe portrait crop was found. Your current photo will stay unchanged and manual upload remains available.</p>}
-          {review.portraitWarning && <p className="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">{review.portraitWarning}</p>}
-        </details>
-
         <div className="flex flex-wrap gap-3"><Button onClick={() => void apply()}>Apply to my Sitterfolio</Button><Button variant="outline" onClick={() => void start()}><RotateCcw className="size-4" />Start over</Button><Button variant="ghost" onClick={() => void discard()}>Discard</Button></div>
       </section>
 
       <aside className="self-start rounded-2xl border border-border bg-muted/25 p-5 lg:sticky lg:top-24">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Public preview</p>
-        {portraitUrl && includePortrait ? <Image unoptimized src={portraitUrl} width={80} height={80} alt="Profile preview" className="mt-6 size-20 rounded-2xl object-cover" /> : <WandSparkles className="mt-8 size-8 text-emerald-700" />}
+        <WandSparkles className="mt-8 size-8 text-emerald-700" />
         <h3 className="mt-4 text-2xl font-semibold">{previewValue('businessName') || previewValue('sitterName') || site.businessName || site.sitterName || 'Your profile'}</h3>
         <p className="mt-1 text-xs text-muted-foreground">{previewValue('location') || 'Your service area'}</p>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">{previewValue('tagline') || 'Your introduction will appear here.'}</p>

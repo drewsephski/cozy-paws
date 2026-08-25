@@ -16,7 +16,7 @@ export function createApplyHandler(dependencies: Dependencies) {
   return async function apply(request: Request) {
     const ownerId = await dependencies.getUserId();
     if (!ownerId) return errorResponse(new RoverImportError('AUTHENTICATION_REQUIRED'));
-    if (Number(request.headers.get('content-length') || 0) > 5 * 1024 * 1024 + 128 * 1024) return errorResponse(new RoverImportError('INVALID_REVIEW'));
+    if (Number(request.headers.get('content-length') || 0) > 128 * 1024) return errorResponse(new RoverImportError('INVALID_REVIEW'));
     let imports: RoverProfileImports;
     try { imports = dependencies.createImports(); } catch (error) { return errorResponse(error); }
     try {
@@ -24,18 +24,12 @@ export function createApplyHandler(dependencies: Dependencies) {
       const reviewText = String(form.get('review') || '');
       if (!reviewText || reviewText.length > 64 * 1024) throw new RoverImportError('INVALID_REVIEW');
       const review = JSON.parse(reviewText) as { subdomain?: unknown; applyId?: unknown; expectedProfileRevision?: unknown; reviewed?: unknown };
-      const portraitEntry = form.get('portrait');
-      const portrait = portraitEntry instanceof File && portraitEntry.size
-        ? { bytes: new Uint8Array(await portraitEntry.arrayBuffer()), mediaType: portraitEntry.type }
-        : undefined;
-      if (portrait && portrait.bytes.length > 5 * 1024 * 1024) throw new RoverImportError('PHOTO_INVALID');
       const profile = await imports.applyOwnedReview({
         ownerId,
         subdomain: String(review.subdomain || ''),
         applyId: String(review.applyId || ''),
         expectedProfileRevision: Number(review.expectedProfileRevision),
-        reviewed: review.reviewed && typeof review.reviewed === 'object' ? review.reviewed : {},
-        portrait
+        reviewed: review.reviewed && typeof review.reviewed === 'object' ? review.reviewed : {}
       });
       return Response.json({ profile: { subdomain: profile.subdomain, profileRevision: profile.profileRevision } }, { headers: { 'Cache-Control': 'no-store' } });
     } catch (error) {

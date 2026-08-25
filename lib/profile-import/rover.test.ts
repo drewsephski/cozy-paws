@@ -30,19 +30,20 @@ describe('Rover profile import module', () => {
     expect(cleanup).toHaveBeenCalledOnce();
   });
 
-  it('keeps a valid primary portrait when vision returns normalized coordinates for a tall slice', async () => {
+  it('uses a focused header slice and actual pixel coordinates for the primary portrait', async () => {
     const sharp = (await import('sharp')).default;
     const screenshot = await sharp({ create: { width: 1_440, height: 3_200, channels: 3, background: 'white' } })
-      .composite([{ input: await sharp({ create: { width: 216, height: 216, channels: 3, background: '#dc2626' } }).png().toBuffer(), left: 1_152, top: 320 }])
+      .composite([{ input: await sharp({ create: { width: 110, height: 110, channels: 3, background: '#dc2626' } }).png().toBuffer(), left: 150, top: 92 }])
       .jpeg({ quality: 100 })
       .toBuffer();
+    const vision = vi.fn().mockResolvedValue({
+      reviewed: { about: 'Imported' }, confidence: { about: 'high' },
+      portrait: { sliceIndex: 0, confidence: 'high', box: { x: 136.72, y: 54.69, width: 214.84, height: 214.84 } }
+    });
     const imports = createRoverProfileImports({
       profiles: { getOwned: vi.fn().mockResolvedValue(site) }, admission: createMemoryImportAdmission(),
       capture: { capture: vi.fn().mockResolvedValue({ bytes: screenshot, mediaType: 'image/jpeg', width: 1_440, height: 3_200 }) },
-      vision: { extract: vi.fn().mockResolvedValue({
-        reviewed: { about: 'Imported' }, confidence: { about: 'high' },
-        portrait: { sliceIndex: 0, confidence: 'high', box: { x: 800, y: 100, width: 150, height: 67.5 } }
-      }) },
+      vision: { extract: vision },
       writer: createMemoryReviewedProfileWriter([site]), media: { stageOwnedPortrait: vi.fn() }
     });
 
@@ -53,6 +54,7 @@ describe('Rover profile import module', () => {
 
     expect(draft.portraitWarning).toBeUndefined();
     expect(draft.portrait?.mediaType).toBe('image/webp');
+    expect(vision.mock.calls[0]?.[0][0]).toMatchObject({ width: 1_024, height: 1_024 });
     const { channels } = await sharp(draft.portrait!.bytes).stats();
     expect(channels[0].mean).toBeGreaterThan(180);
     expect(channels[1].mean).toBeLessThan(80);

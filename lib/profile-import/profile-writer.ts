@@ -10,14 +10,12 @@ export type ApplyOwnedProfileInput = {
   subdomain: string;
   expectedRevision: number;
   reviewed: ReviewedProfilePatch;
-  profileImageUrl?: string;
 };
 export type ReviewedProfileWriter = { applyOwned(input: ApplyOwnedProfileInput): Promise<ProfileRecord> };
 
-function mergeProfile(current: ProfileRecord, raw: ReviewedProfilePatch, profileImageUrl?: string): ProfileRecord {
+function mergeProfile(current: ProfileRecord, raw: ReviewedProfilePatch): ProfileRecord {
   const patch = normalizeReviewedProfilePatch(raw);
   const merged = { ...current, ...patch };
-  if (profileImageUrl) merged.profileImageUrl = profileImageUrl;
   if (!patch.services) {
     merged.services = current.services;
     merged.serviceDetails = current.serviceDetails;
@@ -28,8 +26,8 @@ function mergeProfile(current: ProfileRecord, raw: ReviewedProfilePatch, profile
 }
 
 function matchesApplied(current: ProfileRecord, input: ApplyOwnedProfileInput) {
-  const expected = mergeProfile({ ...current, profileRevision: input.expectedRevision }, input.reviewed, input.profileImageUrl);
-  const fields = [...Object.keys(normalizeReviewedProfilePatch(input.reviewed)), ...(input.profileImageUrl ? ['profileImageUrl'] : [])] as Array<keyof ProfileRecord>;
+  const expected = mergeProfile({ ...current, profileRevision: input.expectedRevision }, input.reviewed);
+  const fields = Object.keys(normalizeReviewedProfilePatch(input.reviewed)) as Array<keyof ProfileRecord>;
   return current.profileRevision === input.expectedRevision + 1 && fields.every((field) => JSON.stringify(current[field]) === JSON.stringify(expected[field]));
 }
 
@@ -43,7 +41,7 @@ export function createMemoryReviewedProfileWriter(initial: ProfileRecord[]): Rev
         if (matchesApplied(current, input)) return { ...current };
         throw new RoverImportError('PROFILE_CHANGED');
       }
-      const merged = { ...mergeProfile(current, input.reviewed, input.profileImageUrl), profileRevision: current.profileRevision + 1 };
+      const merged = { ...mergeProfile(current, input.reviewed), profileRevision: current.profileRevision + 1 };
       records.set(input.subdomain, merged);
       return { ...merged };
     }
@@ -57,7 +55,7 @@ async function applyTransaction(client: PoolClient, input: ApplyOwnedProfileInpu
     if (matchesApplied(current, input)) return current;
     throw new RoverImportError('PROFILE_CHANGED');
   }
-  const merged = mergeProfile(current, input.reviewed, input.profileImageUrl);
+  const merged = mergeProfile(current, input.reviewed);
   const updated = await writeOwnedProfileInTransaction(client, input.subdomain, merged);
   if (!updated) throw new RoverImportError('SITE_NOT_OWNED');
   return updated;

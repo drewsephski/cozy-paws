@@ -2,7 +2,7 @@ import { RoverImportError, type RoverImportErrorCode } from '@/lib/profile-impor
 
 const STATUS: Partial<Record<RoverImportErrorCode, number>> = {
   AUTHENTICATION_REQUIRED: 401, SITE_NOT_OWNED: 404, INVALID_URL: 400, ATTESTATION_REQUIRED: 400,
-  INVALID_REVIEW: 400, PHOTO_INVALID: 400, POC_DISABLED: 404, PROVIDER_NOT_CONFIGURED: 503,
+  INVALID_REVIEW: 400, POC_DISABLED: 404, PROVIDER_NOT_CONFIGURED: 503,
   ADMISSION_UNAVAILABLE: 503, ATTEMPT_ACTIVE: 409, ATTEMPT_ALREADY_USED: 409, PROFILE_CHANGED: 409,
   CAPTURE_TIMEOUT: 504, ANALYSIS_TIMEOUT: 504, CAPTURE_TOO_LARGE: 422
 };
@@ -17,7 +17,7 @@ const COPY: Record<RoverImportErrorCode, string> = {
   ANALYSIS_TIMEOUT: 'Profile analysis took too long. Your site was not changed.', ANALYSIS_UNAVAILABLE: 'Profile analysis is temporarily unavailable. Your site was not changed.',
   ANALYSIS_INVALID: 'We could not confidently organize that profile. Your site was not changed.', NO_VISIBLE_PROFILE_CONTENT: 'We could not find supported visible profile content.',
   PROFILE_CHANGED: 'Your profile changed after this review began. Restart the import to compare the latest version.',
-  INVALID_REVIEW: 'Review the imported details and try again.', PHOTO_INVALID: 'That imported photo could not be used safely.', APPLY_FAILED: 'We could not apply the import. Your site was not changed.'
+  INVALID_REVIEW: 'Review the imported details and try again.', APPLY_FAILED: 'We could not apply the import. Your site was not changed.'
 };
 
 export function safeImportError(error: unknown) {

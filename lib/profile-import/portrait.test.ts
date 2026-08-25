@@ -6,8 +6,12 @@ describe('portrait processing', () => {
   it('creates ordered overlapping slices and crops only a high-confidence visible box', async () => {
     const source = await sharp({ create: { width: 1_440, height: 6_000, channels: 3, background: '#c8a080' } }).jpeg().toBuffer();
     const slices = await createScreenshotSlices(source);
-    expect(slices.map((slice) => [slice.index, slice.top, slice.height])).toEqual([[0, 0, 3200], [1, 3040, 2960]]);
-    const portrait = await cropVisiblePortrait(slices, { sliceIndex: 0, confidence: 'high', box: { x: 69.444, y: 31.25, width: 208.333, height: 93.75 } });
+    expect(slices.map((slice) => [slice.index, slice.top, slice.width, slice.height])).toEqual([
+      [0, 64, 1_024, 1_024],
+      [1, 0, 1_440, 4_160],
+      [2, 4_000, 1_440, 2_000]
+    ]);
+    const portrait = await cropVisiblePortrait(slices, { sliceIndex: 0, confidence: 'high', box: { x: 97.65625, y: 97.65625, width: 292.96875, height: 292.96875 } });
     expect(portrait?.mediaType).toBe('image/webp');
     await expect(sharp(portrait!.bytes).metadata()).resolves.toMatchObject({ width: 300, height: 300 });
   });
@@ -18,8 +22,9 @@ describe('portrait processing', () => {
     const slices = await createScreenshotSlices(source);
 
     expect(slices.map((slice) => [slice.index, slice.top, slice.width, slice.height])).toEqual([
-      [0, 0, 1_440, 3_200],
-      [1, 3_040, 1_440, 1_280]
+      [0, 64, 1_024, 1_024],
+      [1, 0, 1_440, 4_160],
+      [2, 4_000, 1_440, 320]
     ]);
     for (const slice of slices) {
       await expect(sharp(slice.bytes).metadata()).resolves.toMatchObject({
@@ -65,7 +70,7 @@ describe('portrait processing', () => {
     await expect(cropVisiblePortrait(slices, {
       sliceIndex: 0,
       confidence: 'high',
-      box: { x: 799, y: 799, width: 201, height: 201 }
+      box: { x: 901.85546875, y: 901.85546875, width: 98.14453125, height: 98.14453125 }
     })).resolves.toBeUndefined();
   });
 

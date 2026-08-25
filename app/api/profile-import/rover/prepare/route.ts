@@ -40,10 +40,7 @@ export function createPrepareHandler(dependencies: Dependencies) {
           signal: request.signal,
           onProgress: (stage) => send({ type: 'progress', stage })
         }).then((draft) => {
-          send({ type: 'review_ready', draft: {
-            ...draft,
-            portrait: draft.portrait ? { mediaType: draft.portrait.mediaType, base64: Buffer.from(draft.portrait.bytes).toString('base64') } : undefined
-          } });
+          send({ type: 'review_ready', draft });
         }).catch((error) => {
           const safe = safeImportError(error);
           send({ type: 'error', error: { code: safe.code, message: safe.message } });
