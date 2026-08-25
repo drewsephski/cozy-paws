@@ -30,6 +30,35 @@ describe('Rover profile import module', () => {
     expect(cleanup).toHaveBeenCalledOnce();
   });
 
+  it('keeps a valid primary portrait when vision returns normalized coordinates for a tall slice', async () => {
+    const sharp = (await import('sharp')).default;
+    const screenshot = await sharp({ create: { width: 1_440, height: 3_200, channels: 3, background: 'white' } })
+      .composite([{ input: await sharp({ create: { width: 216, height: 216, channels: 3, background: '#dc2626' } }).png().toBuffer(), left: 1_152, top: 320 }])
+      .jpeg({ quality: 100 })
+      .toBuffer();
+    const imports = createRoverProfileImports({
+      profiles: { getOwned: vi.fn().mockResolvedValue(site) }, admission: createMemoryImportAdmission(),
+      capture: { capture: vi.fn().mockResolvedValue({ bytes: screenshot, mediaType: 'image/jpeg', width: 1_440, height: 3_200 }) },
+      vision: { extract: vi.fn().mockResolvedValue({
+        reviewed: { about: 'Imported' }, confidence: { about: 'high' },
+        portrait: { sliceIndex: 0, confidence: 'high', box: { x: 800, y: 100, width: 150, height: 67.5 } }
+      }) },
+      writer: createMemoryReviewedProfileWriter([site]), media: { stageOwnedPortrait: vi.fn() }
+    });
+
+    const draft = await imports.prepareOwnedReview({
+      ownerId: 'owner-1', subdomain: 'happy-tails', roverUrl: 'https://www.rover.com/members/jamie/',
+      attestationAccepted: true, attemptId: '00000000-0000-4000-8000-000000000006', signal: new AbortController().signal
+    });
+
+    expect(draft.portraitWarning).toBeUndefined();
+    expect(draft.portrait?.mediaType).toBe('image/webp');
+    const { channels } = await sharp(draft.portrait!.bytes).stats();
+    expect(channels[0].mean).toBeGreaterThan(180);
+    expect(channels[1].mean).toBeLessThan(80);
+    expect(channels[2].mean).toBeLessThan(80);
+  });
+
   it('propagates cancellation to capture and releases the active prepare', async () => {
     const capture = vi.fn((_: string, signal: AbortSignal) => new Promise<never>((_, reject) => {
       const cancel = () => reject(new RoverImportError('CAPTURE_FAILED'));

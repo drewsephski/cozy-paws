@@ -36,7 +36,8 @@ describe('OpenRouter vision', () => {
     expect(VISION_SYSTEM_PROMPT).toMatch(/ignore.*instruction/i);
     expect(VISION_SYSTEM_PROMPT).toMatch(/photo pixels only/i);
     expect(VISION_SYSTEM_PROMPT).toMatch(/exclude.*name.*rating/i);
-    expect(VISION_SYSTEM_PROMPT).toMatch(/actual screenshot pixels/i);
+    expect(VISION_SYSTEM_PROMPT).toMatch(/normalized 0-1000 coordinates/i);
+    expect(VISION_SYSTEM_PROMPT).toMatch(/x and width.*slice width/i);
   });
 
   it('suppresses low-confidence or unevidenced output', async () => {

@@ -7,7 +7,7 @@ describe('portrait processing', () => {
     const source = await sharp({ create: { width: 1_440, height: 6_000, channels: 3, background: '#c8a080' } }).jpeg().toBuffer();
     const slices = await createScreenshotSlices(source);
     expect(slices.map((slice) => [slice.index, slice.top, slice.height])).toEqual([[0, 0, 3200], [1, 3040, 2960]]);
-    const portrait = await cropVisiblePortrait(slices, { sliceIndex: 0, confidence: 'high', box: { x: 100, y: 100, width: 300, height: 300 } });
+    const portrait = await cropVisiblePortrait(slices, { sliceIndex: 0, confidence: 'high', box: { x: 69.444, y: 31.25, width: 208.333, height: 93.75 } });
     expect(portrait?.mediaType).toBe('image/webp');
     await expect(sharp(portrait!.bytes).metadata()).resolves.toMatchObject({ width: 300, height: 300 });
   });
@@ -65,7 +65,7 @@ describe('portrait processing', () => {
     await expect(cropVisiblePortrait(slices, {
       sliceIndex: 0,
       confidence: 'high',
-      box: { x: 399.5, y: 399.5, width: 100.5, height: 100.5 }
+      box: { x: 799, y: 799, width: 201, height: 201 }
     })).resolves.toBeUndefined();
   });
 

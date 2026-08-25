@@ -4,6 +4,7 @@ import { RoverImportError, type ProfileVisionResult, type ScreenshotSlice } from
 const SLICE_HEIGHT = 3_200;
 const OVERLAP = 160;
 const MAX_SLICE_WIDTH = 1_440;
+const NORMALIZED_BOX_SCALE = 1_000;
 const MIN_PORTRAIT_ASPECT_RATIO = 0.75;
 const MAX_PORTRAIT_ASPECT_RATIO = 1.33;
 
@@ -35,12 +36,12 @@ export async function cropVisiblePortrait(slices: ScreenshotSlice[], portrait: N
   const slice = slices.find((item) => item.index === portrait.sliceIndex);
   if (!slice) return undefined;
   const { x, y, width, height } = portrait.box;
-  if ([x, y, width, height].some((value) => !Number.isFinite(value) || value < 0)) return undefined;
-  if (x + width > slice.width || y + height > slice.height || width <= 0 || height <= 0) return undefined;
-  const left = Math.round(x);
-  const top = Math.round(y);
-  const cropWidth = Math.round(width);
-  const cropHeight = Math.round(height);
+  if ([x, y, width, height].some((value) => !Number.isFinite(value) || value < 0 || value > NORMALIZED_BOX_SCALE)) return undefined;
+  if (x + width > NORMALIZED_BOX_SCALE || y + height > NORMALIZED_BOX_SCALE || width <= 0 || height <= 0) return undefined;
+  const left = Math.round(slice.width * x / NORMALIZED_BOX_SCALE);
+  const top = Math.round(slice.height * y / NORMALIZED_BOX_SCALE);
+  const cropWidth = Math.round(slice.width * width / NORMALIZED_BOX_SCALE);
+  const cropHeight = Math.round(slice.height * height / NORMALIZED_BOX_SCALE);
   if (left + cropWidth > slice.width || top + cropHeight > slice.height) return undefined;
   const aspectRatio = cropWidth / cropHeight;
   if (cropWidth < 80 || cropHeight < 80 || aspectRatio < MIN_PORTRAIT_ASPECT_RATIO || aspectRatio > MAX_PORTRAIT_ASPECT_RATIO) return undefined;
