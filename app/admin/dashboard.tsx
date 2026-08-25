@@ -31,6 +31,8 @@ import { editableSiteOptions, reviewedBookingDraft, type ReviewedBookingDraft } 
 import type { ProfileRecord } from '@/lib/profile-ownership';
 import { RoverImportCard } from '@/components/rover-import-card';
 import { ProfileCareFields, ProfileServiceFields } from './profile-rich-fields';
+import { ActivationChecklist } from './activation-checklist';
+import { activationChecklist, nextActivationItem } from './activation-model';
 
 type SiteProfile = ProfileRecord;
 
@@ -346,7 +348,7 @@ function SiteEditor({ sites, roverImportEnabled }: { sites: SiteProfile[]; rover
   const selected = sites.find((site) => site.subdomain === selectedSubdomain) || sites[0];
   if (!selected) return null;
   const options = editableSiteOptions(sites);
-  return <section className="space-y-4">
+  return <section id="site-editor" className="space-y-4">
     {sites.length > 1 && <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted/20 p-4 sm:flex-row sm:items-center sm:justify-between"><div><label htmlFor="site-editor-select" className="text-sm font-semibold">Site to edit</label><p className="mt-1 text-xs text-muted-foreground">Choose any owned Site. Saving changes only this Site.</p></div><select id="site-editor-select" value={selected.subdomain} onChange={(event) => setSelectedSubdomain(event.target.value)} className="h-11 min-w-56 rounded-lg border border-input bg-background px-3 text-sm">{options.map((option) => <option key={option.value} value={option.value}>{option.label} · {option.value}</option>)}</select></div>}
     <ProfileEditor key={selected.subdomain} site={selected} roverImportEnabled={roverImportEnabled} />
   </section>;
@@ -470,7 +472,7 @@ function StripeSetup({ businesses, stripeReturn }: { businesses: PaymentSetup[];
           : null;
 
   return (
-    <section className={`rounded-xl bg-card ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)] ${isReady ? 'p-5 sm:p-6' : 'p-4 sm:p-5'}`}>
+    <section id="stripe-setup" className={`rounded-xl bg-card ring-1 ring-foreground/12 shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_-24px_rgba(0,0,0,.35)] ${isReady ? 'p-5 sm:p-6' : 'p-4 sm:p-5'}`}>
       <div className="flex items-start gap-3">
         <span className={`grid shrink-0 place-items-center rounded-full bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 ${isReady ? 'size-10' : 'size-9'}`}><CreditCard className={isReady ? 'size-5' : 'size-4'} aria-hidden="true" /></span>
         <div>
@@ -494,6 +496,8 @@ export function AdminDashboard({ sites, leads, conversationMessages, clientHouse
   const [activeTab, setActiveTab] = useState('dashboard');
   const [bookingDraft, setBookingDraft] = useState<ReviewedBookingDraft | null>(null);
   const clientHouseholdByLead = Object.fromEntries(clientHouseholds.map((household) => [household.sourceLeadId, household.id]));
+  const activationItems = activationChecklist({ sites, leads, conversationMessages, paymentSetup, clientHouseholds, bookings });
+  const nextActivation = nextActivationItem(activationItems);
 
   function createDraftBooking(leadId: string, householdId: string) {
     const lead = leads.find((item) => item.id === leadId);
@@ -520,8 +524,9 @@ export function AdminDashboard({ sites, leads, conversationMessages, clientHouse
           <TabsTrigger value="bookings"><CalendarDays className="size-4" aria-hidden="true" />Bookings</TabsTrigger>
         </TabsList>
         <TabsContent value="dashboard" forceMount className="space-y-12 pt-8 data-[state=inactive]:hidden">
-          <section className="space-y-4"><div><h2 className="text-xl font-semibold">Requests</h2><p className="mt-1 text-sm text-muted-foreground">Read and reply to pet owners in one place.</p></div><LeadInbox sites={sites} leads={leads} conversationMessages={conversationMessages} clientHouseholdByLead={clientHouseholdByLead} onCreateDraftBooking={createDraftBooking} /></section>
-          <section className="space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><SiteGrid sites={sites} action={action} isPending={isPending} /></section>
+          <ActivationChecklist items={activationItems} next={nextActivation} onOpenTab={setActiveTab} />
+          <section id="requests" className="space-y-4"><div><h2 className="text-xl font-semibold">Requests</h2><p className="mt-1 text-sm text-muted-foreground">Read and reply to pet owners in one place.</p></div><LeadInbox sites={sites} leads={leads} conversationMessages={conversationMessages} clientHouseholdByLead={clientHouseholdByLead} onCreateDraftBooking={createDraftBooking} /></section>
+          <section id="share-site" className="scroll-mt-24 space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><SiteGrid sites={sites} action={action} isPending={isPending} /></section>
           {paymentSetup.some((business) => business.status !== 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
           <SiteEditor sites={sites} roverImportEnabled={roverImportEnabled} />
           {paymentSetup.length > 0 && paymentSetup.every((business) => business.status === 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
@@ -537,7 +542,7 @@ export function AdminDashboard({ sites, leads, conversationMessages, clientHouse
           <div className="mb-5"><h2 className="text-xl font-semibold">Clients and pets</h2><p className="mt-1 text-sm text-muted-foreground">Reusable household and pet details saved from qualified inquiries.</p></div>
           <ClientHouseholds households={clientHouseholds} />
         </TabsContent>
-        <TabsContent value="bookings" forceMount className="pt-8 data-[state=inactive]:hidden">
+        <TabsContent value="bookings" forceMount className="scroll-mt-24 pt-8 data-[state=inactive]:hidden" id="bookings">
           <div className="mb-5"><h2 className="text-xl font-semibold">Bookings</h2><p className="mt-1 text-sm text-muted-foreground">Plan care for saved clients and keep each booking status current.</p></div>
           <Bookings households={clientHouseholds} bookings={bookings} draft={bookingDraft} />
         </TabsContent>

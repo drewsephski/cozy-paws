@@ -40,6 +40,11 @@ describe('LeadForm', () => {
     expect(html).toContain('Ask about availability');
     expect(html).toContain('Service needed');
     expect(html).toContain('Choose care dates');
+    expect(html).toContain('Start with the basics');
+    expect(html).toContain('Add helpful pet details');
+    expect(html).toContain('name="petTypes"');
+    expect(html).toContain('name="postalCode"');
+    expect(html).toContain('name="details"');
     expect(html).toContain('name="startDate"');
     expect(html).toContain('name="endDate"');
     expect(html).toContain('Request availability');
