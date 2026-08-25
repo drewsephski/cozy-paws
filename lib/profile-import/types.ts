@@ -39,7 +39,7 @@ export type RoverReviewDraft = {
   reviewed: ReviewedProfilePatch;
   confidence: Partial<Record<keyof ReviewedProfilePatch, ImportConfidence>>;
   serviceConfidence?: Record<string, ServiceFieldConfidence>;
-  evidence?: RoverReviewEvidence;
+  evidence: RoverReviewEvidence;
   expiresAt: number;
 };
 
@@ -51,6 +51,6 @@ export type ProfileVisionResult = {
   reviewed: ReviewedProfilePatch;
   confidence: Partial<Record<keyof ReviewedProfilePatch, ImportConfidence>>;
   serviceConfidence?: Record<string, ServiceFieldConfidence>;
-  evidence?: RoverReviewEvidence;
+  evidence: RoverReviewEvidence;
 };
 export type ProfileVision = { extract(slices: ScreenshotSlice[], signal: AbortSignal): Promise<ProfileVisionResult> };

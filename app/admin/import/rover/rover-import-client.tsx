@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { AlertCircle, CheckCircle2, LoaderCircle, RotateCcw, WandSparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RoverImportCard, type RoverImportDraft } from '@/components/rover-import-card';
-import type { ImportConfidence, ServiceFieldConfidence } from '@/lib/profile-import/types';
 import type { ImportConfidence, RoverReviewEvidence, ServiceFieldConfidence } from '@/lib/profile-import/types';
 import { createBrowserReviewStore, createReviewDraftPersistence, loadRestorableRoverReview, normalizeRestorableRoverReview, reviewKey, stripEphemeralRoverReviewEvidence, synchronizeRoverReviewServices, type StoredRoverReview } from './review-store';
 
@@ -139,7 +138,15 @@ export function RoverImportClient({ site }: { site: Site }) {
     }
     setReview(next); void saveReview(next);
   }
-  function update(name: string, value: string) { if (review) commitReview({ ...review, reviewed: { ...review.reviewed, [name]: value } }); }
+  function update(name: string, value: string) {
+    if (!review) return;
+    setEvidence((current) => {
+      const profile = { ...current.profile };
+      delete profile[name as keyof typeof profile];
+      return { ...current, profile };
+    });
+    commitReview({ ...review, reviewed: { ...review.reviewed, [name]: value } });
+  }
   function updateServices(value: string) {
     if (!review) return;
     const services = value.split(',').map((name) => name.trim()).filter(Boolean).slice(0, 8);
@@ -148,6 +155,10 @@ export function RoverImportClient({ site }: { site: Site }) {
       review.reviewed.serviceDetails as Record<string, Record<string, string>> | undefined,
       review.serviceConfidence
     );
+    setEvidence((current) => ({
+      ...current,
+      services: Object.fromEntries(Object.entries(current.services).filter(([service]) => services.includes(service)))
+    }));
     commitReview({
       ...review,
       reviewed: {
@@ -160,6 +171,13 @@ export function RoverImportClient({ site }: { site: Site }) {
   }
   function updateServiceDetail(service: string, name: 'description'|'startingPrice'|'billingUnit', value: string) {
     if (!review || !Array.isArray(review.reviewed.services) || !review.reviewed.services.includes(service)) return;
+    setEvidence((current) => {
+      const serviceEvidence = current.services[service];
+      if (!serviceEvidence) return current;
+      const nextServiceEvidence = { ...serviceEvidence };
+      delete nextServiceEvidence[name];
+      return { ...current, services: { ...current.services, [service]: nextServiceEvidence } };
+    });
     commitReview({ ...review, reviewed: { ...review.reviewed, serviceDetails: { ...(review.reviewed.serviceDetails as Record<string, unknown> || {}), [service]: { ...((review.reviewed.serviceDetails as Record<string, Record<string, string>> | undefined)?.[service] || {}), [name]: value } } } });
   }
 

@@ -68,4 +68,24 @@ describe('OpenRouter vision', () => {
     expect(result.reviewed).toEqual({ sitterName: 'Jamie', services: ['Boarding'], serviceDetails: { Boarding: { billingUnit: 'per night' } } });
     expect(result.evidence).toEqual({ profile: { sitterName: 'Jamie' }, services: { Boarding: { name: 'Boarding', billingUnit: 'per night' } } });
   });
+
+  it('accepts the evidence boundary and rejects overlong provider evidence', async () => {
+    const profileFields = ['sitterName','businessName','tagline','location','about','careRoutine','homeEnvironment','petPreferences','experienceSummary','specialCareSummary'].map((field) => ({
+      field,
+      value: field === 'sitterName' ? 'Jamie' : null,
+      confidence: field === 'sitterName' ? 'high' : 'low',
+      visibleEvidence: field === 'sitterName' ? 'x'.repeat(240) : null,
+      unknownReason: null
+    }));
+    const generate = vi.fn().mockResolvedValue({ output: { profileFields, services: [] } });
+    const vision = createOpenRouterVision({ apiKey: 'secret', model: 'model', generate });
+    const result = await vision.extract([{ index: 0, top: 0, width: 10, height: 10, bytes: new Uint8Array([1]), mediaType: 'image/jpeg' }], new AbortController().signal);
+    expect(result.evidence?.profile.sitterName).toHaveLength(240);
+
+    generate.mockResolvedValueOnce({ output: {
+      profileFields: profileFields.map((field) => ({ ...field, visibleEvidence: field.field === 'sitterName' ? 'x'.repeat(241) : null })),
+      services: []
+    } });
+    await expect(vision.extract([{ index: 0, top: 0, width: 10, height: 10, bytes: new Uint8Array([1]), mediaType: 'image/jpeg' }], new AbortController().signal)).rejects.toMatchObject({ code: 'ANALYSIS_INVALID' });
+  });
 });
