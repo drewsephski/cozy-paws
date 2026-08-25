@@ -6,7 +6,7 @@ import { AlertCircle, CheckCircle2, LoaderCircle, RotateCcw, WandSparkles } from
 import { Button } from '@/components/ui/button';
 import { RoverImportCard, type RoverImportDraft } from '@/components/rover-import-card';
 import type { ImportConfidence, ServiceFieldConfidence } from '@/lib/profile-import/types';
-import { createBrowserReviewStore, createReviewDraftPersistence, loadRestorableRoverReview, normalizeRestorableRoverReview, reviewKey, type StoredRoverReview } from './review-store';
+import { createBrowserReviewStore, createReviewDraftPersistence, loadRestorableRoverReview, normalizeRestorableRoverReview, reviewKey, synchronizeRoverReviewServices, type StoredRoverReview } from './review-store';
 
 type Site = { subdomain: string; sitterName?: string; businessName?: string; onboardingCompletedAt?: number | null };
 type Review = StoredRoverReview & {
@@ -133,8 +133,28 @@ export function RoverImportClient({ site }: { site: Site }) {
     setReview(next); void saveReview(next);
   }
   function update(name: string, value: string) { if (review) commitReview({ ...review, reviewed: { ...review.reviewed, [name]: value } }); }
-  function updateServices(value: string) { if (review) commitReview({ ...review, reviewed: { ...review.reviewed, services: value.split(',').map((name) => name.trim()).filter(Boolean).slice(0, 8) } }); }
-  function updateServiceDetail(service: string, name: 'description'|'startingPrice'|'billingUnit', value: string) { if (review) commitReview({ ...review, reviewed: { ...review.reviewed, serviceDetails: { ...(review.reviewed.serviceDetails as Record<string, unknown> || {}), [service]: { ...((review.reviewed.serviceDetails as Record<string, Record<string, string>> | undefined)?.[service] || {}), [name]: value } } } }); }
+  function updateServices(value: string) {
+    if (!review) return;
+    const services = value.split(',').map((name) => name.trim()).filter(Boolean).slice(0, 8);
+    const synchronized = synchronizeRoverReviewServices(
+      services,
+      review.reviewed.serviceDetails as Record<string, Record<string, string>> | undefined,
+      review.serviceConfidence
+    );
+    commitReview({
+      ...review,
+      reviewed: {
+        ...review.reviewed,
+        services,
+        ...(synchronized.serviceDetails === undefined ? {} : { serviceDetails: synchronized.serviceDetails })
+      },
+      ...(synchronized.serviceConfidence === undefined ? {} : { serviceConfidence: synchronized.serviceConfidence })
+    });
+  }
+  function updateServiceDetail(service: string, name: 'description'|'startingPrice'|'billingUnit', value: string) {
+    if (!review || !Array.isArray(review.reviewed.services) || !review.reviewed.services.includes(service)) return;
+    commitReview({ ...review, reviewed: { ...review.reviewed, serviceDetails: { ...(review.reviewed.serviceDetails as Record<string, unknown> || {}), [service]: { ...((review.reviewed.serviceDetails as Record<string, Record<string, string>> | undefined)?.[service] || {}), [name]: value } } } });
+  }
 
   async function apply() {
     if (!review) return;

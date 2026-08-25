@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createMemoryReviewStore, createReviewDraftPersistence, createReviewStore, isRestorableRoverReview, loadRestorableRoverReview, normalizeRestorableRoverReview, reviewKey, type StoredRoverReview } from './review-store';
+import type { ServiceFieldConfidence } from '@/lib/profile-import/types';
+import { createMemoryReviewStore, createReviewDraftPersistence, createReviewStore, isRestorableRoverReview, loadRestorableRoverReview, normalizeRestorableRoverReview, reviewKey, synchronizeRoverReviewServices, type StoredRoverReview } from './review-store';
 
 describe('browser-local Rover review store', () => {
   it('restores within 30 minutes, isolates keys, and sweeps expired drafts', async () => {
@@ -83,6 +84,66 @@ describe('browser-local Rover review store', () => {
     };
 
     expect(normalizeRestorableRoverReview(draft, 'one', reviewKey('one', attemptId), 1_000)).toEqual(draft);
+  });
+
+  it('keeps service edits restorable without stale detail or confidence keys', () => {
+    const attemptId = '00000000-0000-4000-8000-000000000001';
+    const key = reviewKey('one', attemptId);
+    const draft = {
+      attemptId,
+      subdomain: 'one',
+      expiresAt: 1_000 + 30 * 60_000,
+      expectedProfileRevision: 4,
+      canonicalRoverUrl: 'https://www.rover.com/members/jamie/',
+      current: {},
+      reviewed: {
+        services: ['Boarding', 'Dog walking'],
+        serviceDetails: {
+          Boarding: { description: 'Overnight care', startingPrice: '$55' },
+          'Dog walking': { description: 'Neighborhood walks', startingPrice: '$25' }
+        }
+      },
+      confidence: { services: 'high' },
+      serviceConfidence: {
+        Boarding: { name: 'high', description: 'high', startingPrice: 'medium' },
+        'Dog walking': { name: 'high', description: 'medium', startingPrice: 'high' }
+      } as Record<string, ServiceFieldConfidence>
+    };
+
+    const editedServices = ['Boarding'];
+    const editedDetails = { ...draft.reviewed.serviceDetails, Boarding: { ...draft.reviewed.serviceDetails.Boarding, description: 'Edited overnight care' } };
+    const synchronized = synchronizeRoverReviewServices(editedServices, editedDetails, draft.serviceConfidence);
+    const edited = {
+      ...draft,
+      reviewed: { ...draft.reviewed, services: editedServices, serviceDetails: synchronized.serviceDetails },
+      serviceConfidence: synchronized.serviceConfidence
+    };
+
+    expect(normalizeRestorableRoverReview(edited, 'one', key, 1_000)).toMatchObject({
+      reviewed: { services: ['Boarding'], serviceDetails: { Boarding: editedDetails.Boarding } },
+      serviceConfidence: { Boarding: draft.serviceConfidence.Boarding }
+    });
+    expect(edited.reviewed.serviceDetails).not.toHaveProperty('Dog walking');
+    expect(edited.serviceConfidence).not.toHaveProperty('Dog walking');
+
+    const unchanged = synchronizeRoverReviewServices(draft.reviewed.services, draft.reviewed.serviceDetails, draft.serviceConfidence);
+    expect(unchanged).toEqual({ serviceDetails: draft.reviewed.serviceDetails, serviceConfidence: draft.serviceConfidence });
+    expect(normalizeRestorableRoverReview({ ...draft, reviewed: { ...draft.reviewed, serviceDetails: unchanged.serviceDetails }, serviceConfidence: unchanged.serviceConfidence }, 'one', key, 1_000)).not.toBeNull();
+
+    const renamedServices = ['Overnight boarding'];
+    const renamed = synchronizeRoverReviewServices(renamedServices, draft.reviewed.serviceDetails, draft.serviceConfidence);
+    const renamedReview = {
+      ...draft,
+      reviewed: { ...draft.reviewed, services: renamedServices, serviceDetails: renamed.serviceDetails },
+      serviceConfidence: renamed.serviceConfidence
+    };
+
+    expect(normalizeRestorableRoverReview(renamedReview, 'one', key, 1_000)).toMatchObject({
+      reviewed: { services: renamedServices, serviceDetails: {} },
+      serviceConfidence: {}
+    });
+    expect(renamedReview.reviewed.serviceDetails).not.toHaveProperty('Overnight boarding');
+    expect(renamedReview.serviceConfidence).not.toHaveProperty('Overnight boarding');
   });
 
   it('discards malformed nested candidates, removed media fields, and overlong expiry', () => {

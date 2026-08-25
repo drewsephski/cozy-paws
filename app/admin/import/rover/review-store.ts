@@ -132,6 +132,25 @@ function normalizeServiceConfidence(value: unknown, reviewed: Record<string, unk
   return output;
 }
 
+/** Retain review fields only while their exact service name remains selected. */
+type RoverServiceConfidence = Partial<Record<'name' | 'description' | 'startingPrice' | 'billingUnit', 'high' | 'medium'>>;
+
+export function synchronizeRoverReviewServices(
+  services: string[],
+  serviceDetails: Record<string, Record<string, string>> | undefined,
+  serviceConfidence: Record<string, RoverServiceConfidence> | undefined
+) {
+  const selectedServices = new Set(services);
+  const retainSelected = <T>(value: Record<string, T> | undefined) => value === undefined
+    ? undefined
+    : Object.fromEntries(Object.entries(value).filter(([service]) => selectedServices.has(service)));
+
+  return {
+    serviceDetails: retainSelected(serviceDetails),
+    serviceConfidence: retainSelected(serviceConfidence)
+  };
+}
+
 export function normalizeRestorableRoverReview(value: unknown, expectedSubdomain: string, key: string, now = Date.now()): StoredRoverReview | null {
   try {
     if (!isRecord(value) || !hasOnlyKeys(value, REVIEW_KEYS)) return null;
