@@ -12,7 +12,7 @@ preserve them and perform the drift checks in each plan before editing.
 | 002 | Patch the vulnerable Tailwind build dependency | P1 | S | — | DONE |
 | 003 | Show AI import provenance without persisting provider artifacts | P1 | M | 001 | DONE |
 | 004 | Design an assistive inbox copilot | P1 | M | 002, 003 | DONE |
-| 005 | Add an activation-first dashboard slice and browser proof | P2 | M | 001, 002 | TODO |
+| 005 | Add an activation-first dashboard slice and browser proof | P2 | M | 001, 002 | IN PROGRESS — implementation complete; browser gate unverified |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason).
 
