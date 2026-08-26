@@ -7,17 +7,38 @@ const base = {
   conversationMessages: {},
   paymentSetup: [{ status: 'not_started' }],
   clientHouseholds: [],
-  bookings: []
+  bookings: [],
+  growthActivation: { setupActivated: false, valueActivated: false }
 };
 
 describe('activation checklist', () => {
   it('keeps setup and provider progress honest for an empty workspace', () => {
     const items = activationChecklist(base);
 
-    expect(items.find((item) => item.id === 'site-setup')?.complete).toBe(true);
+    expect(items.find((item) => item.id === 'site-setup')?.complete).toBe(false);
     expect(items.find((item) => item.id === 'connect-stripe')?.complete).toBe(false);
     expect(items.find((item) => item.id === 'share-site')?.complete).toBe(false);
-    expect(nextActivationItem(items)?.id).toBe('connect-stripe');
+    expect(nextActivationItem(items)?.id).toBe('site-setup');
+  });
+
+  it('completes setup and share progress only after durable share evidence exists', () => {
+    const items = activationChecklist({
+      ...base,
+      growthActivation: { setupActivated: true, valueActivated: false }
+    });
+
+    expect(items.find((item) => item.id === 'site-setup')?.complete).toBe(true);
+    expect(items.find((item) => item.id === 'share-site')?.complete).toBe(true);
+  });
+
+  it('does not let an unfinished second Site hide an activated Business', () => {
+    const items = activationChecklist({
+      ...base,
+      sites: [{ onboardingCompletedAt: 1 }, { onboardingCompletedAt: null }],
+      growthActivation: { setupActivated: true, valueActivated: false }
+    });
+
+    expect(items.find((item) => item.id === 'site-setup')?.complete).toBe(true);
   });
 
   it('links incomplete setup to the site editor', () => {
@@ -45,10 +66,11 @@ describe('activation checklist', () => {
       conversationMessages: { 'lead-1': [{ sender: 'SITTER' }] },
       paymentSetup: [{ status: 'ready' }],
       clientHouseholds: [{}],
-      bookings: [{}]
+      bookings: [{}],
+      growthActivation: { setupActivated: true, valueActivated: true }
     });
 
     expect(items.filter((item) => item.id !== 'share-site').every((item) => item.complete)).toBe(true);
-    expect(nextActivationItem(items)?.id).toBe('share-site');
+    expect(nextActivationItem(items)).toBeNull();
   });
 });

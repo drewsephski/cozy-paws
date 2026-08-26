@@ -33,6 +33,7 @@ import { RoverImportCard } from '@/components/rover-import-card';
 import { ProfileCareFields, ProfileServiceFields } from './profile-rich-fields';
 import { ActivationChecklist } from './activation-checklist';
 import { activationChecklist, nextActivationItem } from './activation-model';
+import type { OwnerGrowthActivation } from '@/lib/growth-evidence';
 
 type SiteProfile = ProfileRecord;
 
@@ -488,7 +489,7 @@ function StripeSetup({ businesses, stripeReturn }: { businesses: PaymentSetup[];
   );
 }
 
-export function AdminDashboard({ sites, leads, conversationMessages, clientHouseholds, bookings, revenue, paymentSetup, stripeReturn, roverImportEnabled }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; conversationMessages: Record<string, import('@/lib/conversations').ConversationMessage[]>; clientHouseholds: ClientHousehold[]; bookings: Booking[]; revenue: RevenueSnapshot; paymentSetup: PaymentSetup[]; stripeReturn?: string; roverImportEnabled: boolean }) {
+export function AdminDashboard({ sites, leads, conversationMessages, clientHouseholds, bookings, revenue, paymentSetup, growthActivation, stripeReturn, roverImportEnabled }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; conversationMessages: Record<string, import('@/lib/conversations').ConversationMessage[]>; clientHouseholds: ClientHousehold[]; bookings: Booking[]; revenue: RevenueSnapshot; paymentSetup: PaymentSetup[]; growthActivation: OwnerGrowthActivation; stripeReturn?: string; roverImportEnabled: boolean }) {
   const [state, action, isPending] = useActionState<DeleteState, FormData>(
     deleteSubdomainAction,
     {}
@@ -496,7 +497,7 @@ export function AdminDashboard({ sites, leads, conversationMessages, clientHouse
   const [activeTab, setActiveTab] = useState('dashboard');
   const [bookingDraft, setBookingDraft] = useState<ReviewedBookingDraft | null>(null);
   const clientHouseholdByLead = Object.fromEntries(clientHouseholds.map((household) => [household.sourceLeadId, household.id]));
-  const activationItems = activationChecklist({ sites, leads, conversationMessages, paymentSetup, clientHouseholds, bookings });
+  const activationItems = activationChecklist({ sites, leads, conversationMessages, paymentSetup, clientHouseholds, bookings, growthActivation });
   const nextActivation = nextActivationItem(activationItems);
 
   function createDraftBooking(leadId: string, householdId: string) {

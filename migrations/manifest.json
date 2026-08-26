@@ -15,5 +15,6 @@
   { "file": "2026-08-24-payment-account-snapshot-preparation.sql" },
   { "file": "2026-08-24-payment-account-snapshots.sql", "confirmationSetting": "sitterfolio.confirm_payment_account_snapshot_migration" },
   { "file": "2026-08-24-site-availability-trust.sql" },
-  { "file": "2026-08-24-rover-profile-import.sql" }
+  { "file": "2026-08-24-rover-profile-import.sql" },
+  { "file": "2026-08-26-growth-evidence.sql" }
 ]

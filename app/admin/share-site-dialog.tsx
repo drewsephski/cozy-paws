@@ -13,6 +13,9 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { recordSiteShareAction } from '@/app/actions';
+import { useRouter } from 'next/navigation';
+import { copySiteForSharing } from './share-site-model';
 
 type ShareableSite = {
   name: string;
@@ -21,6 +24,7 @@ type ShareableSite = {
 };
 
 export function ShareSiteDialog({ sites }: { sites: ShareableSite[] }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [selectedSubdomain, setSelectedSubdomain] = useState(sites[0]?.subdomain ?? '');
   const [status, setStatus] = useState<'idle' | 'copied' | 'error'>('idle');
@@ -34,7 +38,12 @@ export function ShareSiteDialog({ sites }: { sites: ShareableSite[] }) {
     if (!selectedSite) return;
 
     try {
-      await navigator.clipboard.writeText(selectedSite.url);
+      await copySiteForSharing(selectedSite, {
+        copy: (url) => navigator.clipboard.writeText(url),
+        record: recordSiteShareAction,
+        recorded: () => router.refresh(),
+        recordFailed: (error) => console.error('Site share evidence could not be recorded', { subdomain: selectedSite.subdomain, error })
+      });
       setStatus('copied');
     } catch {
       setStatus('error');

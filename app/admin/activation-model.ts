@@ -1,3 +1,5 @@
+import type { OwnerGrowthActivation } from '@/lib/growth-evidence';
+
 export type ActivationDestination =
   | { kind: 'anchor'; href: string }
   | { kind: 'tab'; value: 'dashboard' | 'messages' | 'clients' | 'bookings' };
@@ -19,12 +21,14 @@ type ActivationInput = {
   paymentSetup: ReadonlyArray<{ status: string }>;
   clientHouseholds: ReadonlyArray<unknown>;
   bookings: ReadonlyArray<unknown>;
+  growthActivation: OwnerGrowthActivation;
 };
 
 const handledLeadStatuses = new Set(['QUALIFIED', 'QUOTED', 'BOOKED']);
 
 export function activationChecklist(input: ActivationInput): ActivationItem[] {
-  const siteSetupComplete = input.sites.length > 0 && input.sites.every((site) => site.onboardingCompletedAt != null);
+  const hasCompletedSite = input.sites.some((site) => site.onboardingCompletedAt != null);
+  const siteSetupComplete = input.growthActivation.setupActivated;
   const hasNewInquiry = input.leads.some((lead) => !lead.status || lead.status === 'NEW');
   const hasSitterReply = input.leads.some((lead) => input.conversationMessages[lead.id]?.some((message) => message.sender === 'SITTER'));
   const hasQualifiedLead = input.leads.some((lead) => Boolean(lead.status && handledLeadStatuses.has(lead.status)));
@@ -34,20 +38,20 @@ export function activationChecklist(input: ActivationInput): ActivationItem[] {
   return [
     {
       id: 'site-setup',
-      label: 'Set up your site',
-      detail: siteSetupComplete ? 'Your profile is ready to share.' : 'Finish the basics pet owners need to understand your care.',
-      actionLabel: siteSetupComplete ? 'View site links' : 'Finish setup',
+      label: 'Publish and share your site',
+      detail: siteSetupComplete ? 'Your live site has been shared.' : hasCompletedSite ? 'Share your live site to complete setup activation.' : 'Finish the basics pet owners need to understand your care.',
+      actionLabel: siteSetupComplete ? 'View site links' : hasCompletedSite ? 'Share site' : 'Finish setup',
       complete: siteSetupComplete,
       actionable: !siteSetupComplete,
-      destination: { kind: 'anchor', href: siteSetupComplete ? '#share-site' : '#site-editor' }
+      destination: { kind: 'anchor', href: hasCompletedSite ? '#share-site' : '#site-editor' }
     },
     {
       id: 'share-site',
       label: 'Share your site',
-      detail: 'Send your live site to a first client or add it to your existing profile links.',
+      detail: input.growthActivation.setupActivated ? 'You have shared a live site.' : 'Send your live site to a first client or add it to your existing profile links.',
       actionLabel: 'Open site links',
-      complete: false,
-      actionable: true,
+      complete: input.growthActivation.setupActivated,
+      actionable: hasCompletedSite && !input.growthActivation.setupActivated,
       destination: { kind: 'anchor', href: '#share-site' }
     },
     ...(stripeRelevant ? [{
@@ -90,6 +94,6 @@ export function activationChecklist(input: ActivationInput): ActivationItem[] {
 }
 
 export function nextActivationItem(items: ReadonlyArray<ActivationItem>) {
-  const priority = ['site-setup', 'respond-to-inquiry', 'connect-stripe', 'save-client', 'create-booking', 'share-site'];
+  const priority = ['respond-to-inquiry', 'site-setup', 'connect-stripe', 'save-client', 'create-booking', 'share-site'];
   return priority.map((id) => items.find((item) => item.id === id && !item.complete && item.actionable)).find(Boolean) ?? null;
 }

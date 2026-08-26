@@ -22,6 +22,7 @@ import { normalizeLinkedInProfileUrl } from '@/lib/domain/linkedin-profile';
 import { isCalendarDate } from '@/lib/calendar-date';
 import { normalizeManualProfilePatch, type ServiceProfileDetail } from '@/lib/domain/profile-content';
 import { resolveRoverImportConfig } from '@/lib/profile-import/config';
+import { growthEvidence } from '@/lib/growth-evidence';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -165,6 +166,11 @@ export async function completeOnboardingAction(formData: FormData): Promise<neve
 
   revalidatePath(`/s/${updated.subdomain}`);
   redirect(`/admin/complete?site=${encodeURIComponent(updated.subdomain)}`);
+}
+
+export async function recordSiteShareAction(subdomain: string) {
+  const user = await requireUser();
+  return growthEvidence.recordOwnedSiteShare(user.id, subdomain);
 }
 
 export type LeadSubmissionState = {
