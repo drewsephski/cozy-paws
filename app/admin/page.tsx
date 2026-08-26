@@ -11,6 +11,7 @@ import { listOwnerClientHouseholds } from '@/lib/client-households';
 import { listOwnerBookings } from '@/lib/bookings';
 import { isRoverImportPrepareAvailable } from '@/lib/profile-import/config';
 import { growthEvidence } from '@/lib/growth-evidence';
+import { commercialLifecycle } from '@/lib/commercial-lifecycle';
 
 export const metadata: Metadata = {
   title: `Sitter dashboard | ${rootDomain}`,
@@ -28,12 +29,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const today = new Date();
   const bookingStart = new Date(Date.UTC(today.getUTCFullYear() - 1, today.getUTCMonth(), today.getUTCDate())).toISOString().slice(0, 10);
   const bookingEnd = new Date(Date.UTC(today.getUTCFullYear() + 2, today.getUTCMonth(), today.getUTCDate())).toISOString().slice(0, 10);
-  const [revenue, paymentSetup, conversationMessages, clientHouseholds, bookings, growthActivation] = await Promise.all([getOwnerRevenue(session.user.id), getOwnerPaymentSetup(session.user.id), getOwnerConversationMessages(session.user.id, 500), listOwnerClientHouseholds(session.user.id, 100), listOwnerBookings(session.user.id, { startDate: bookingStart, endDate: bookingEnd }), growthEvidence.getOwnerActivation(session.user.id)]);
+  const [revenue, paymentSetup, conversationMessages, clientHouseholds, bookings, growthActivation, commercialStates] = await Promise.all([getOwnerRevenue(session.user.id), getOwnerPaymentSetup(session.user.id), getOwnerConversationMessages(session.user.id, 500), listOwnerClientHouseholds(session.user.id, 100), listOwnerBookings(session.user.id, { startDate: bookingStart, endDate: bookingEnd }), growthEvidence.getOwnerActivation(session.user.id), commercialLifecycle.listOwnerCommercialStates(session.user.id)]);
 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader dashboard signedIn />
-      <main><AdminDashboard sites={sites} leads={leads} conversationMessages={conversationMessages} clientHouseholds={clientHouseholds} bookings={bookings} revenue={revenue} paymentSetup={paymentSetup} growthActivation={growthActivation} stripeReturn={stripeReturn} roverImportEnabled={isRoverImportPrepareAvailable()} /></main>
+      <main><AdminDashboard sites={sites} leads={leads} conversationMessages={conversationMessages} clientHouseholds={clientHouseholds} bookings={bookings} revenue={revenue} paymentSetup={paymentSetup} growthActivation={growthActivation} commercialStates={commercialStates} stripeReturn={stripeReturn} roverImportEnabled={isRoverImportPrepareAvailable()} /></main>
     </div>
   );
 }

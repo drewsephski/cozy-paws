@@ -43,7 +43,7 @@ order by tablename;
 select table_name, column_name, is_nullable, data_type
 from information_schema.columns
 where table_schema = current_schema()
-  and table_name in ('business','site','lead','payment_request','public_payment','client_household','client_pet','booking','booking_pet','stripe_webhook_event')
+  and table_name in ('business','business_commercial_state','site','lead','payment_request','public_payment','client_household','client_pet','booking','booking_pet','stripe_webhook_event')
 order by table_name, ordinal_position;
 
 select column_name, column_default
@@ -87,6 +87,10 @@ from booking_pet bp
 left join booking b on b.id=bp.booking_id and b.household_id=bp.household_id
 left join client_pet p on p.id=bp.pet_id and p.household_id=bp.household_id
 where b.id is null or p.id is null;
+
+select count(*) invalid_business_trials
+from business_commercial_state
+where trial_ends_at <> trial_started_at + interval '30 days';
 
 select lead_id, count(*)
 from payment_request

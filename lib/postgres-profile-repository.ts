@@ -3,6 +3,7 @@ import { query, transaction } from './db';
 import { redisProfileRepository as legacy } from './redis-profile-repository';
 import { createHash } from 'node:crypto';
 import type { PoolClient } from 'pg';
+import { startBusinessTrialFromOwnedPublishedSite } from './commercial-lifecycle';
 
 export type ProfileRow = { owner_id: string; subdomain: string; emoji: string; created_at: Date; sitter_name: string | null; business_name: string | null; tagline: string | null; location: string | null; services: string[]; phone: string | null; email: string | null; linkedin_url: string | null; profile_image_url: string | null; onboarding_completed_at: Date | null; payment_link_url: string | null; availability_status: BusinessProfile['availabilityStatus']; availability_until: Date | string | null; years_experience: number | null; care_capabilities: string[]; meet_and_greet_expectations: string | null; cancellation_expectations: string | null; self_reported_credentials: string[]; about: string | null; care_routine: string | null; home_environment: string | null; pet_preferences: string | null; experience_summary: string | null; special_care_summary: string | null; service_details: BusinessProfile['serviceDetails']; profile_revision: string | number | null };
 type LeadRow = { id: string; customer_name: string; customer_email: string; service_requested: string; requested_start_date: Date | string | null; requested_end_date: Date | string | null; date_details: string; pet_types: string[]; pet_count: number | null; postal_code: string; care_details: string; source: string; campaign: string | null; status: Lead['status']; read_at: Date | null; created_at: Date };
@@ -24,6 +25,7 @@ export async function writeOwnedProfileInTransaction(client: PoolClient, subdoma
   const updated = await client.query<ProfileRow>(`update site s set emoji=$2,sitter_name=$3,business_name=$4,tagline=$5,location=$6,services=$7,phone=$8,email=$9,linkedin_url=$10,profile_image_url=$11,onboarding_completed_at=$12,availability_status=$13,availability_until=$14,years_experience=$15,care_capabilities=$16,meet_and_greet_expectations=$17,cancellation_expectations=$18,self_reported_credentials=$19,about=$20,care_routine=$21,home_environment=$22,pet_preferences=$23,experience_summary=$24,special_care_summary=$25,service_details=$26,profile_revision=profile_revision+1,updated_at=now() from business b where s.business_id=b.id and s.subdomain=$1 and b.owner_user_id=$27 and s.deleted_at is null returning ${PROFILE_SELECT}`, [subdomain, profile.emoji, profile.sitterName ?? null, profile.businessName ?? null, profile.tagline ?? null, profile.location ?? null, profile.services ?? [], profile.phone ?? null, profile.email ?? null, profile.linkedinUrl ?? null, profile.profileImageUrl ?? null, profile.onboardingCompletedAt ? new Date(profile.onboardingCompletedAt) : null, profile.availabilityStatus ?? 'ACCEPTING', profile.availabilityUntil ?? null, profile.yearsExperience ?? null, profile.careCapabilities ?? [], profile.meetAndGreetExpectations ?? null, profile.cancellationExpectations ?? null, profile.selfReportedCredentials ?? [], profile.about ?? null, profile.careRoutine ?? null, profile.homeEnvironment ?? null, profile.petPreferences ?? null, profile.experienceSummary ?? null, profile.specialCareSummary ?? null, JSON.stringify(profile.serviceDetails ?? {}), profile.ownerId]);
   if (!updated.rows[0]) return null;
   await client.query(`update business b set name=$2,payment_link_url=$3,updated_at=now() from site s where s.business_id=b.id and s.subdomain=$1 and b.owner_user_id=$4`, [subdomain, profile.businessName || profile.sitterName || subdomain, profile.paymentLinkUrl ?? null, profile.ownerId]);
+  await startBusinessTrialFromOwnedPublishedSite(client, profile.ownerId, subdomain);
   return { ...mapProfile(updated.rows[0]), paymentLinkUrl: profile.paymentLinkUrl };
 }
 
@@ -66,6 +68,7 @@ async function migrateProfileInTransaction(client: PoolClient, subdomain: string
     await client.query(`delete from business where id=$1`, [business.rows[0].id]);
     return false;
   }
+  await startBusinessTrialFromOwnedPublishedSite(client, profile.ownerId, subdomain);
   for (const [index, lead] of leads.entries()) {
     const id = deterministicLegacyLeadId(subdomain, lead, index);
     const inserted = await client.query<{ id: string }>(`insert into lead(id,site_id,business_id,customer_name,customer_email,service_requested,requested_start_date,requested_end_date,date_details,pet_types,pet_count,postal_code,care_details,source,campaign,status,read_at,created_at,updated_at) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,to_timestamp($18/1000.0),now()) on conflict(id) do nothing returning id`, [id, site.rows[0].id, site.rows[0].business_id, lead.name, lead.email, lead.serviceRequested ?? '', lead.requestedStartDate ?? null, lead.requestedEndDate ?? null, lead.dates, lead.petTypes ?? [], lead.petCount ?? null, lead.postalCode ?? '', lead.message, lead.source ?? 'direct', lead.campaign ?? null, lead.status ?? 'NEW', lead.readAt ? new Date(lead.readAt) : null, lead.createdAt]);
@@ -95,10 +98,12 @@ export const postgresProfileRepository: ProfileRepository = {
   },
   async createProfile(subdomain, profile) {
     if (!profile.ownerId) return false;
+    const ownerId = profile.ownerId;
     try {
       await transaction(async (client) => {
-        const business = await client.query<{ id: string }>(`insert into business(owner_user_id,name) values($1,$2) returning id`, [profile.ownerId, profile.businessName || profile.sitterName || subdomain]);
+        const business = await client.query<{ id: string }>(`insert into business(owner_user_id,name) values($1,$2) returning id`, [ownerId, profile.businessName || profile.sitterName || subdomain]);
         await client.query(`insert into site(business_id,subdomain,emoji,sitter_name,business_name,tagline,location,services,phone,email,linkedin_url,profile_image_url,onboarding_completed_at,about,care_routine,home_environment,pet_preferences,experience_summary,special_care_summary,service_details,profile_revision,created_at) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,to_timestamp($22/1000.0))`, [business.rows[0].id, subdomain, profile.emoji, profile.sitterName ?? null, profile.businessName ?? null, profile.tagline ?? null, profile.location ?? null, profile.services ?? [], profile.phone ?? null, profile.email ?? null, profile.linkedinUrl ?? null, profile.profileImageUrl ?? null, profile.onboardingCompletedAt ? new Date(profile.onboardingCompletedAt) : null, profile.about ?? null, profile.careRoutine ?? null, profile.homeEnvironment ?? null, profile.petPreferences ?? null, profile.experienceSummary ?? null, profile.specialCareSummary ?? null, JSON.stringify(profile.serviceDetails ?? {}), profile.profileRevision ?? 0, profile.createdAt]);
+        await startBusinessTrialFromOwnedPublishedSite(client, ownerId, subdomain);
       }); return true;
     } catch (error) { if ((error as { code?: string }).code === '23505') return false; throw error; }
   },
