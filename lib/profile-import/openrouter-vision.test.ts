@@ -35,6 +35,7 @@ describe('OpenRouter vision', () => {
     ]) })]);
     expect(VISION_SYSTEM_PROMPT).toMatch(/untrusted data/i);
     expect(VISION_SYSTEM_PROMPT).toMatch(/ignore.*instruction/i);
+    expect(VISION_SYSTEM_PROMPT).toMatch(/exclude reviews, ratings, badges/i);
     expect(VISION_SYSTEM_PROMPT).toMatch(/exclude.*profile photos/i);
   });
 

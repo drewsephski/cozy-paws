@@ -17,5 +17,6 @@
   { "file": "2026-08-24-site-availability-trust.sql" },
   { "file": "2026-08-24-rover-profile-import.sql" },
   { "file": "2026-08-26-growth-evidence.sql" },
-  { "file": "2026-08-26-business-commercial-trials.sql" }
+  { "file": "2026-08-26-business-commercial-trials.sql" },
+  { "file": "2026-08-26-self-published-testimonials.sql" }
 ]

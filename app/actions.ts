@@ -23,6 +23,7 @@ import { isCalendarDate } from '@/lib/calendar-date';
 import { normalizeManualProfilePatch, type ServiceProfileDetail } from '@/lib/domain/profile-content';
 import { resolveRoverImportConfig } from '@/lib/profile-import/config';
 import { growthEvidence } from '@/lib/growth-evidence';
+import { TestimonialError, trustReferralEligibility } from '@/lib/trust-referral-eligibility';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -171,6 +172,61 @@ export async function completeOnboardingAction(formData: FormData): Promise<neve
 export async function recordSiteShareAction(subdomain: string) {
   const user = await requireUser();
   return growthEvidence.recordOwnedSiteShare(user.id, subdomain);
+}
+
+export type TestimonialActionState = { error?: string; success?: string };
+
+function testimonialActionError(error: unknown) {
+  if (error instanceof TestimonialError) return error.message;
+  return 'The testimonial could not be saved. Refresh and try again.';
+}
+
+export async function createTestimonialAction(_state: TestimonialActionState, formData: FormData): Promise<TestimonialActionState> {
+  const user = await requireUser();
+  try {
+    await trustReferralEligibility.createOwnedTestimonial(user.id, {
+      subdomain: String(formData.get('subdomain') || ''), text: formData.get('text'), source: formData.get('source'),
+      permissionAttested: formData.get('permissionAttested') === 'true', published: formData.get('published') === 'true'
+    });
+    revalidatePath('/admin');
+    revalidatePath(`/s/${String(formData.get('subdomain') || '')}`);
+    return { success: 'Testimonial published.' };
+  } catch (error) { return { error: testimonialActionError(error) }; }
+}
+
+export async function updateTestimonialAction(_state: TestimonialActionState, formData: FormData): Promise<TestimonialActionState> {
+  const user = await requireUser();
+  try {
+    const updated = await trustReferralEligibility.updateOwnedTestimonial(user.id, String(formData.get('testimonialId') || ''), {
+      text: formData.get('text'), source: formData.get('source'), permissionAttested: formData.get('permissionAttested') === 'true'
+    });
+    revalidatePath('/admin');
+    revalidatePath(`/s/${updated.siteSubdomain}`);
+    return { success: 'Testimonial updated.' };
+  } catch (error) { return { error: testimonialActionError(error) }; }
+}
+
+export async function setTestimonialPublishedAction(_state: TestimonialActionState, formData: FormData): Promise<TestimonialActionState> {
+  const user = await requireUser();
+  try {
+    const published = formData.get('published') === 'true';
+    const updated = await trustReferralEligibility.setOwnedTestimonialPublished(user.id, String(formData.get('testimonialId') || ''), published);
+    revalidatePath('/admin');
+    revalidatePath(`/s/${updated.siteSubdomain}`);
+    return { success: published ? 'Testimonial published.' : 'Testimonial hidden.' };
+  } catch (error) { return { error: testimonialActionError(error) }; }
+}
+
+export async function removeTestimonialAction(_state: TestimonialActionState, formData: FormData): Promise<TestimonialActionState> {
+  const user = await requireUser();
+  try {
+    const testimonialId = String(formData.get('testimonialId') || '');
+    const testimonial = (await trustReferralEligibility.listOwnedTestimonials(user.id)).find((item) => item.id === testimonialId);
+    await trustReferralEligibility.removeOwnedTestimonial(user.id, testimonialId);
+    revalidatePath('/admin');
+    if (testimonial) revalidatePath(`/s/${testimonial.siteSubdomain}`);
+    return { success: 'Testimonial removed.' };
+  } catch (error) { return { error: testimonialActionError(error) }; }
 }
 
 export type LeadSubmissionState = {

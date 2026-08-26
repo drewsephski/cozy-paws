@@ -33,4 +33,12 @@ describe('profile content', () => {
       'Boarding', 'House sitting', 'Drop-in visits', 'Dog walking', 'Doggy day care', 'Cat naps', 'One', 'Two'
     ]);
   });
+
+  it('does not admit Rover reviews or testimonials into an importable profile patch', () => {
+    expect(normalizeReviewedProfilePatch({
+      about: 'Visible sitter biography',
+      reviews: [{ text: 'Marketplace review', source: 'Rover' }],
+      testimonials: [{ text: 'Imported praise', permissionAttested: true }]
+    })).toEqual({ about: 'Visible sitter biography' });
+  });
 });

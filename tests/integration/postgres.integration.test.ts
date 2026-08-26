@@ -41,7 +41,7 @@ afterAll(teardownIntegrationDatabase);
 describe('canonical PostgreSQL migrations and constraints', () => {
   it('applies the manifest and exposes every expected table', async () => {
     const result = await query<{ names: string[] }>(`select array_agg(tablename::text order by tablename)::text[] names from pg_tables where schemaname=current_schema()`);
-    expect(result.rows[0].names).toEqual(expect.arrayContaining(['business', 'business_commercial_state', 'site', 'lead', 'payment_request', 'public_payment', 'booking', 'booking_pet', 'growth_event', 'stripe_webhook_event']));
+    expect(result.rows[0].names).toEqual(expect.arrayContaining(['business', 'business_commercial_state', 'site', 'lead', 'payment_request', 'public_payment', 'booking', 'booking_pet', 'growth_event', 'testimonial', 'stripe_webhook_event']));
   });
 
   it('enforces Site/Business ownership with a composite foreign key', async () => {

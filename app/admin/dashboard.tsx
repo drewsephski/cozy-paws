@@ -36,6 +36,8 @@ import { activationChecklist, nextActivationItem } from './activation-model';
 import type { OwnerGrowthActivation } from '@/lib/growth-evidence';
 import type { BusinessCommercialState } from '@/lib/commercial-lifecycle';
 import { FoundingPlan } from './founding-plan';
+import { Testimonials } from './testimonials';
+import type { Testimonial } from '@/lib/trust-referral-eligibility';
 
 type SiteProfile = ProfileRecord;
 
@@ -492,7 +494,7 @@ function StripeSetup({ businesses, stripeReturn }: { businesses: PaymentSetup[];
   );
 }
 
-export function AdminDashboard({ sites, leads, conversationMessages, clientHouseholds, bookings, revenue, paymentSetup, growthActivation, commercialStates, stripeReturn, roverImportEnabled }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; conversationMessages: Record<string, import('@/lib/conversations').ConversationMessage[]>; clientHouseholds: ClientHousehold[]; bookings: Booking[]; revenue: RevenueSnapshot; paymentSetup: PaymentSetup[]; growthActivation: OwnerGrowthActivation; commercialStates: BusinessCommercialState[]; stripeReturn?: string; roverImportEnabled: boolean }) {
+export function AdminDashboard({ sites, leads, conversationMessages, clientHouseholds, bookings, testimonials, revenue, paymentSetup, growthActivation, commercialStates, stripeReturn, roverImportEnabled }: { sites: SiteProfile[]; leads: import('@/lib/profile-ownership').OwnedLead[]; conversationMessages: Record<string, import('@/lib/conversations').ConversationMessage[]>; clientHouseholds: ClientHousehold[]; bookings: Booking[]; testimonials: Testimonial[]; revenue: RevenueSnapshot; paymentSetup: PaymentSetup[]; growthActivation: OwnerGrowthActivation; commercialStates: BusinessCommercialState[]; stripeReturn?: string; roverImportEnabled: boolean }) {
   const [state, action, isPending] = useActionState<DeleteState, FormData>(
     deleteSubdomainAction,
     {}
@@ -534,6 +536,7 @@ export function AdminDashboard({ sites, leads, conversationMessages, clientHouse
           <section id="share-site" className="scroll-mt-24 space-y-4"><div><h2 className="text-xl font-semibold">Share your site</h2><p className="mt-1 text-sm text-muted-foreground">Preview each live site or copy its link to send to a pet owner.</p></div><SiteGrid sites={sites} action={action} isPending={isPending} /></section>
           {paymentSetup.some((business) => business.status !== 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
           <SiteEditor sites={sites} roverImportEnabled={roverImportEnabled} />
+          <Testimonials sites={sites.map((site) => ({ subdomain: site.subdomain, name: site.businessName || site.sitterName || site.subdomain }))} testimonials={testimonials} />
           {paymentSetup.length > 0 && paymentSetup.every((business) => business.status === 'ready') && <StripeSetup businesses={paymentSetup} stripeReturn={stripeReturn} />}
         </TabsContent>
         <TabsContent value="stats" forceMount className="pt-8 data-[state=inactive]:hidden">
