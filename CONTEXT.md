@@ -6,11 +6,16 @@ This document onboards coding agents to the current repository. Treat source cod
 
 Sitterfolio gives an independent pet sitter a public website at an address such as `happy-tails.sitterfolio.com`. A sitter creates a profile, publishes services and contact details, receives availability inquiries, reviews and replies to them in a private dashboard, can turn a qualified inquiry into a payment request, and can plan dated Bookings for saved clients. It is a direct-business presence and solo-sitter operating tool, not a marketplace or staff scheduling system.
 
-Use these domain terms: a **Site** is the public business profile; a **Profile** is its sitter identity and care details; a **Business** is the operating/legal pet-care business owned by one authenticated **User**; a **Lead** is an availability request; a **Conversation** is the one-to-one message history attached to a Lead, beginning with the original request; a **Client household** is the reusable owner/household record promoted from a qualified Lead; a **Pet profile** is reusable care information under a Client household; a **Booking** is dated care for one Client household and one or more of its Pet profiles, with an agreed integer-cent amount and its own lifecycle; a **Payment request** is a customer-facing fixed-cent amount associated with a Lead; **Generated revenue** is paid customer volume net of refunds, not Sitterfolio's application-fee revenue. Avoid `tenant`, `contact record`, and `invoice` for these concepts.
+Use these domain terms: a **Site** is the public business profile; a **Profile** is its sitter identity and care details; a **Business** is the operating/legal pet-care business owned by one authenticated **User**; a **Lead** is an availability request; a **Conversation** is the one-to-one message history attached to a Lead, beginning with the original request; a **Client household** is the reusable owner/household record promoted from a qualified Lead; a **Pet profile** is reusable care information under a Client household; a **Booking** is dated care for one Client household and one or more of its Pet profiles, with an agreed integer-cent amount and its own lifecycle; a **Payment request** is a customer-facing fixed-cent amount associated with a Lead; **Generated revenue** is paid customer volume net of refunds; **Platform revenue** is money earned by Sitterfolio from subscriptions and application fees; a **Verified care review** is feedback submitted by a pet owner after a Lead-attributed payment has settled and its associated Booking has been completed; a **Self-published testimonial** is sitter-provided praise displayed with its source and the sitter's confirmation that they have permission to publish it, whose underlying care Sitterfolio does not verify. Avoid `tenant`, `contact record`, and `invoice` for these concepts.
 
 An **Import draft** is a transient, sitter-reviewable set of proposed Profile
 details derived from visible external profile content. It is not part of the
 owned Site until the authenticated sitter explicitly applies it.
+
+**Setup activation** occurs when a Business has a completed public Site and the
+owner intentionally shares that Site. **Value activation** occurs when that
+same Business receives a qualified Lead within 14 days after Setup activation.
+Account creation and profile completion alone are not activation.
 
 ## User flow
 
@@ -80,6 +85,7 @@ Use pnpm (`pnpm@10.12.4`). Relevant variables are:
 DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL, BETTER_AUTH_TRUSTED_ORIGINS, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 NEXT_PUBLIC_ROOT_DOMAIN, KV_REST_API_URL, KV_REST_API_TOKEN, BLOB_READ_WRITE_TOKEN
 STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_ACCOUNT_WEBHOOK_SECRET
+SITTERFOLIO_GROWTH_OPERATOR_USER_ID
 ```
 
 Upstash Redis backs compatibility, rate limiting, and location caching. Vercel Blob stores profile-image bytes; PostgreSQL stores the resulting URL. Nominatim is reached through the validated, cached, throttled application API. Stripe handles connected accounts and Checkout. Never print or commit credentials. Keep local, preview, and production databases and Stripe modes separate.
