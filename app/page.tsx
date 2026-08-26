@@ -6,6 +6,7 @@ import { getSession } from '@/lib/session';
 import { NoiseTexture } from '@/components/ui/noise-texture';
 import { getAppOrigin } from '@/lib/app-url';
 import { LandingFaq } from '@/components/landing-faq';
+import { LandingProductBento } from '@/components/landing-product-bento';
 
 export const metadata = {
   title: 'Pet Sitter Website Builder',
@@ -70,6 +71,16 @@ export default async function HomePage() {
                 <p className="mt-5 text-center text-xs landing-muted">Build the draft first. Create an account when you publish.</p>
               </div>
             </section>
+          </div>
+        </section>
+
+        <section className="border-b landing-rule">
+          <div className="mx-auto w-full max-w-6xl px-5 py-20 lg:px-8 lg:py-28">
+            <div className="max-w-2xl">
+              <h2 className="landing-section-title font-semibold">From first look to booked care, keep it in one place.</h2>
+              <p className="mt-5 max-w-xl leading-7 landing-muted">Sitterfolio connects your public page, new requests, client details, bookings, and payment requests without stepping between you and the pet owner.</p>
+            </div>
+            <div className="mt-12"><LandingProductBento /></div>
           </div>
         </section>
 

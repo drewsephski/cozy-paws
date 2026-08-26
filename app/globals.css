@@ -188,6 +188,154 @@ html {
 .landing-rule { border-color: var(--color-landing-rule); }
 .landing-accent-soft { background: var(--color-landing-accent-soft); }
 
+.landing-bento-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.landing-bento-card {
+  background: var(--color-landing-paper-raised);
+  border: var(--rule-hair) solid var(--color-landing-rule);
+  border-radius: calc(var(--radius-panel) + 0.25rem);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 30rem;
+  min-width: 0;
+  overflow: hidden;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.landing-bento-card--request,
+.landing-bento-card--booking {
+  background: var(--color-landing-accent-soft);
+  border-color: color-mix(in oklab, var(--color-landing-accent-strong) 34%, var(--color-landing-rule));
+}
+
+.landing-bento-card--clients {
+  background: var(--color-landing-dark);
+  border-color: var(--color-landing-dark-rule);
+  color: var(--color-landing-on-dark);
+}
+
+.landing-bento-card--clients .landing-bento-copy > p:first-child {
+  color: var(--color-landing-accent);
+}
+
+.landing-bento-card--clients .landing-muted {
+  color: var(--color-landing-dark-muted);
+}
+
+.landing-bento-art {
+  align-items: flex-end;
+  display: flex;
+  justify-content: center;
+  min-height: 14rem;
+  pointer-events: none;
+  position: relative;
+}
+
+.landing-bento-art img {
+  filter: drop-shadow(0 1.5rem 1.4rem color-mix(in oklab, var(--color-landing-ink) 15%, transparent));
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 420ms var(--ease-out), filter 420ms var(--ease-out);
+  width: min(100%, 36rem);
+}
+
+.landing-bento-art--site img {
+  max-height: 36rem;
+  width: auto;
+}
+
+.landing-bento-art--request img,
+.landing-bento-art--inbox img {
+  transform: translateY(1rem);
+  width: min(108%, 32rem);
+}
+
+.landing-bento-art--clients img {
+  max-height: 24rem;
+  width: auto;
+}
+
+.landing-bento-art--booking img {
+  transform: translateY(0.75rem);
+  width: min(108%, 42rem);
+}
+
+.landing-bento-art--payment img {
+  width: min(108%, 42rem);
+}
+
+@media (min-width: 56rem) {
+  .landing-bento-grid {
+    grid-auto-rows: minmax(20rem, auto);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .landing-bento-card {
+    min-height: 20rem;
+    padding: 2rem;
+  }
+
+  .landing-bento-card--site {
+    grid-column: span 7;
+    grid-row: span 2;
+    min-height: 41rem;
+  }
+
+  .landing-bento-card--request,
+  .landing-bento-card--inbox {
+    grid-column: span 5;
+  }
+
+  .landing-bento-card--clients {
+    grid-column: span 4;
+    min-height: 27rem;
+  }
+
+  .landing-bento-card--booking {
+    grid-column: span 8;
+    min-height: 27rem;
+  }
+
+  .landing-bento-card--payment {
+    align-items: center;
+    grid-column: span 12;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-rows: 1fr;
+    min-height: 24rem;
+  }
+
+  .landing-bento-card--site .landing-bento-art {
+    min-height: 27rem;
+  }
+
+  .landing-bento-card--request .landing-bento-art,
+  .landing-bento-card--inbox .landing-bento-art {
+    min-height: 9rem;
+  }
+
+  .landing-bento-card--payment .landing-bento-art {
+    min-height: 19rem;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .landing-bento-card:hover .landing-bento-art img {
+    filter: drop-shadow(0 1.9rem 1.6rem color-mix(in oklab, var(--color-landing-ink) 19%, transparent));
+    transform: translateY(-0.25rem) scale(1.012);
+  }
+
+  .landing-bento-card:hover .landing-bento-art--request img,
+  .landing-bento-card:hover .landing-bento-art--inbox img,
+  .landing-bento-card:hover .landing-bento-art--booking img {
+    transform: translateY(0.4rem) scale(1.012);
+  }
+}
+
 .landing-step-card {
   transition: background-color 240ms var(--ease-out);
 }
@@ -295,6 +443,7 @@ html {
 .landing-secondary-cta:disabled { cursor: not-allowed; opacity: 0.55; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
+  .landing-bento-art img,
   .landing-step-card,
   .landing-step-noise,
   .landing-faq-answer,

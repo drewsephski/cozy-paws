@@ -1,0 +1,178 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e2]:
+    - banner [ref=f1e3]:
+      - generic [ref=f1e4]:
+        - link "Sitterfolio" [ref=f1e5] [cursor=pointer]:
+          - /url: /
+        - navigation "Primary navigation" [ref=f1e6]:
+          - link "Sign in" [ref=f1e7] [cursor=pointer]:
+            - /url: /auth
+          - button "Use dark mode" [ref=f1e379]
+    - main [ref=f1e9]:
+      - generic [ref=f1e11]:
+        - generic [ref=f1e12]:
+          - paragraph [ref=f1e13]: A simple website for your pet-sitting business
+          - heading "Get the details before you say yes." [level=1] [ref=f1e20]
+          - paragraph [ref=f1e21]: Publish your services, service area, and photo on one page. Pet owners can send their dates and care details before you start the conversation.
+          - button "Start building free" [ref=f1e23]
+          - generic [ref=f1e27]:
+            - generic [ref=f1e28]: A shareable web address
+            - generic [ref=f1e32]: No site design needed
+            - generic [ref=f1e36]: Inquiries in one inbox
+        - generic [ref=f1e41]:
+          - generic [ref=f1e43]:
+            - paragraph [ref=f1e44]: Start here
+            - heading "Choose your site address" [level=2] [ref=f1e45]
+          - generic [ref=f1e53]:
+            - generic [ref=f1e54]:
+              - generic [ref=f1e55]: Your site address
+              - generic [ref=f1e56]:
+                - textbox "Your site address" [ref=f1e57]:
+                  - /placeholder: happy-tails
+                - generic [ref=f1e58]: .localhost:3000
+            - generic [ref=f1e59]:
+              - generic [ref=f1e60]: Choose a pet
+              - radiogroup "Pet icon" [ref=f1e61]:
+                - radio "Dog" [ref=f1e62]
+                - radio "Cat" [ref=f1e69]
+                - radio "Rabbit" [ref=f1e75]
+                - radio "Bird" [ref=f1e83]
+                - radio "Fish" [ref=f1e90]
+                - radio "Turtle" [ref=f1e99]
+                - radio "Small pet" [ref=f1e107]
+                - radio "Squirrel" [ref=f1e115]
+              - paragraph [ref=f1e122]: Pick an icon for your draft. You can replace it with a photo later.
+            - button "Start building free" [disabled]
+          - paragraph [ref=f1e124]: Build the draft first. Create an account when you publish.
+      - generic [ref=f1e126]:
+        - generic [ref=f1e127]:
+          - heading "A polished front door. A clearer first request." [level=2] [ref=f1e128]
+          - paragraph [ref=f1e129]: Sitterfolio connects the page pet owners see with the details you need before deciding whether the care is a fit.
+        - generic [ref=f1e131]:
+          - button [ref=f1e132] [cursor=pointer]:
+            - generic [ref=f1e133]:
+              - heading "Your care, clear at a glance." [level=3] [ref=f1e141]
+              - paragraph [ref=f1e142]: Give pet owners one place to understand who you are, where you work, and the services you offer.
+            - generic [ref=f1e143]:
+              - generic [ref=f1e144]: happy-tails.sitterfolio.com
+              - generic [ref=f1e153]:
+                - generic [ref=f1e161]:
+                  - paragraph [ref=f1e162]: Happy Tails Pet Care
+                  - paragraph [ref=f1e163]: Serving Oak Park
+                - paragraph [ref=f1e168]: Thoughtful care for pets who feel most comfortable at home.
+                - generic [ref=f1e169]:
+                  - generic [ref=f1e170]: Drop-in visits
+                  - generic [ref=f1e171]: Dog walking
+                  - generic [ref=f1e172]: Overnight care
+            - generic [ref=f1e173]:
+              - text: Public page
+              - generic [ref=f1e174]: →
+          - button [active] [pressed] [ref=f1e175] [cursor=pointer]:
+            - generic [ref=f1e176]:
+              - heading "The useful details arrive together." [level=3] [ref=f1e181]
+              - paragraph [ref=f1e182]: Dates, service, pets, and care notes are attached to the request from the start.
+            - generic [ref=f1e183]:
+              - generic [ref=f1e184]:
+                - generic [ref=f1e185]: New availability request
+                - generic [ref=f1e186]: New
+              - generic [ref=f1e187]:
+                - generic [ref=f1e192]:
+                  - strong [ref=f1e193]: Aug 28–30
+                  - generic [ref=f1e194]: Overnight care
+                - generic [ref=f1e202]:
+                  - strong [ref=f1e203]: Milo
+                  - generic [ref=f1e204]: Dog · medication with dinner
+                - generic [ref=f1e209]:
+                  - strong [ref=f1e210]: Care note
+                  - generic [ref=f1e211]: Meet-and-greet requested
+            - generic [ref=f1e212]:
+              - text: Availability request
+              - generic [ref=f1e213]: →
+          - button [ref=f1e214] [cursor=pointer]:
+            - generic [ref=f1e215]:
+              - heading "Know what needs a reply." [level=3] [ref=f1e221]
+              - paragraph [ref=f1e222]: Requests stay organized in one sitter-owned inbox, with the original care details close by.
+            - generic [ref=f1e223]:
+              - generic [ref=f1e224]: Inbox
+              - generic [ref=f1e229]:
+                - generic [ref=f1e230]: MP
+                - generic [ref=f1e231]:
+                  - strong [ref=f1e232]: Maya P.
+                  - generic [ref=f1e233]: Overnight care · Aug 28–30
+              - generic [ref=f1e235]:
+                - generic [ref=f1e236]: JL
+                - generic [ref=f1e237]:
+                  - strong [ref=f1e238]: Jordan L.
+                  - generic [ref=f1e239]: Dog walking · Sep 3
+            - generic [ref=f1e243]:
+              - text: Private inbox
+              - generic [ref=f1e244]: →
+      - generic [ref=f1e246]:
+        - generic [ref=f1e247]:
+          - heading "Your pet-sitting details, in one reliable place." [level=2] [ref=f1e248]
+          - paragraph [ref=f1e249]: Sitterfolio gives independent pet sitters a focused business page and a better way to collect new requests. You fill in the details. The page is built for you.
+        - generic [ref=f1e250]:
+          - article [ref=f1e251]:
+            - generic [ref=f1e259]:
+              - heading "Explain the care you offer" [level=3] [ref=f1e260]
+              - paragraph [ref=f1e261]: Add your photo, services, service area, and a short introduction in your own words.
+          - article [ref=f1e262]:
+            - generic [ref=f1e268]:
+              - heading "Share one reliable address" [level=3] [ref=f1e269]
+              - paragraph [ref=f1e270]: Use the same link in follow-ups, email signatures, social profiles, or business cards.
+          - article [ref=f1e271]:
+            - generic [ref=f1e277]:
+              - heading "Keep every request together" [level=3] [ref=f1e278]
+              - paragraph [ref=f1e279]: Clients send dates and care details into one sitter dashboard instead of an old message thread.
+      - generic [ref=f1e281]:
+        - generic [ref=f1e282]:
+          - paragraph [ref=f1e283]: How Sitterfolio works
+          - heading "Build the page. Share the link. Reply from your dashboard." [level=2] [ref=f1e284]
+        - generic [ref=f1e285]:
+          - article [ref=f1e286]:
+            - generic [ref=f1e287]:
+              - heading "1. Choose your address" [level=3] [ref=f1e292]
+              - paragraph [ref=f1e293]: Pick a memorable Sitterfolio address, then add your name, services, service area, and contact details.
+          - article [ref=f1e294]:
+            - generic [ref=f1e295]:
+              - heading "2. Share it with pet owners" [level=3] [ref=f1e300]
+              - paragraph [ref=f1e301]: Add the link to your social profiles, email signature, business card, or client follow-up messages.
+          - article [ref=f1e302]:
+            - generic [ref=f1e303]:
+              - heading "3. Review each request" [level=3] [ref=f1e308]
+              - paragraph [ref=f1e309]: See the requested service, dates, pets, and care notes together before you reply.
+      - generic [ref=f1e311]:
+        - generic [ref=f1e312]:
+          - paragraph [ref=f1e313]: Common questions
+          - heading "What pet sitters ask before building a site." [level=2] [ref=f1e314]
+        - generic [ref=f1e315]:
+          - article [ref=f1e316]:
+            - heading [level=3] [ref=f1e317]:
+              - button "What can I put on my pet-sitting website?" [expanded] [ref=f1e318]
+            - paragraph [ref=f1e326]: Your page can include your name or business name, photo, service area, services, contact details, and an availability request form.
+          - article [ref=f1e327]:
+            - heading [level=3] [ref=f1e328]:
+              - button "Do I need to know how to design a website?" [ref=f1e329]
+            - paragraph [ref=f1e335]: No. The builder asks for your business details one step at a time and turns them into a finished page.
+          - article [ref=f1e336]:
+            - heading [level=3] [ref=f1e337]:
+              - button "How do pet owners contact me?" [ref=f1e338]
+            - paragraph [ref=f1e344]: They send an availability request from your page. You receive their dates, service request, pet details, and message in your dashboard.
+          - article [ref=f1e345]:
+            - heading [level=3] [ref=f1e346]:
+              - button "Does Sitterfolio confirm bookings for me?" [ref=f1e347]
+            - paragraph [ref=f1e353]: No. You decide whether you are available and confirm care directly with the pet owner. Sitterfolio keeps the request and conversation organized.
+    - contentinfo [ref=f1e354]:
+      - generic [ref=f1e355]:
+        - paragraph [ref=f1e356]: Give your pet-care business a home online.
+        - button "Start building free" [ref=f1e358]
+      - generic [ref=f1e362]:
+        - generic [ref=f1e363]: Sitterfolio · Built for independent pet sitters.
+        - generic [ref=f1e364]:
+          - link "Privacy" [ref=f1e365] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=f1e366] [cursor=pointer]:
+            - /url: /terms
+          - generic [ref=f1e367]: © 2026
+  - button "Open Next.js Dev Tools" [ref=f1e373] [cursor=pointer]
+  - alert [ref=f1e378]
